@@ -39,8 +39,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Hello Android!",
-                modifier = modifier
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                text = "Hello Android!"
             )
             LazyColumn() {
                 items(5) { index ->

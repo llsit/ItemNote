@@ -14,12 +14,19 @@ fun ShopCard(modifier: Modifier = Modifier, title: String, onClick: () -> Unit) 
     Card(
         elevation = CardDefaults.cardElevation(6.dp),
         modifier = modifier
-            .padding(6.dp)
+            .padding(8.dp)
             .fillMaxWidth(),
         onClick = {
             onClick()
         }
     ) {
-        Text(modifier = modifier.padding(6.dp), text = "shop : $title")
+        Text(
+            modifier = modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+            text = "shop : $title"
+        )
+        Text(
+            modifier = modifier.padding(8.dp),
+            text = "price : $title"
+        )
     }
 }
