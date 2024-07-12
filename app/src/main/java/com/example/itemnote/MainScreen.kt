@@ -26,7 +26,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
         },
         floatingActionButton = {
             FloatingButton {
-
+                navController.navigate("addItem")
             }
         }
     )

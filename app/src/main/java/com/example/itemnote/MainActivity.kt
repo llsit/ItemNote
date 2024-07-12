@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.itemnote.screen.AddItemScreen
 import com.example.itemnote.screen.ShopListScreen
 import com.example.itemnote.ui.theme.ItemNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +33,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("shopList") {
-                        ShopListScreen(navController = navController,)
+                        ShopListScreen(navController = navController)
+                    }
+                    composable("addItem") {
+                        AddItemScreen(navController = navController)
                     }
                 }
 
