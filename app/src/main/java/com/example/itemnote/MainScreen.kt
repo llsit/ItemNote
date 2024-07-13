@@ -8,18 +8,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.itemnote.component.CardItem
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.ToolbarScreen
-import com.example.itemnote.ui.theme.ItemNoteTheme
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun MainScreen(navController: NavHostController) {
+    val mainViewModel: MainViewModel = hiltViewModel()
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Home", false)
@@ -31,6 +32,9 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
         }
     )
     { innerPadding ->
+        LaunchedEffect(Unit) {
+            mainViewModel.getItems()
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -44,7 +48,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             )
             LazyColumn() {
                 items(5) { index ->
-                    CardItem(modifier.padding(5.dp), text = "Item: $index") {
+                    CardItem(Modifier.padding(5.dp), text = "Item: $index") {
                         navController.navigate("shopList")
                     }
                 }

@@ -29,13 +29,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.itemnote.AddItemViewModel
 import com.example.itemnote.component.ToolbarScreen
 
 @Composable
 fun AddItemScreen(navController: NavHostController = rememberNavController()) {
-    var name by remember { mutableStateOf("Hello") }
+
+    val addViewModel: AddItemViewModel = hiltViewModel()
+    var name by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Add Item", true) {
@@ -92,7 +96,7 @@ fun AddItemScreen(navController: NavHostController = rememberNavController()) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(onClick = {
-
+                        addViewModel.addItem(name)
                     }) {
                         Text("Back")
                     }
