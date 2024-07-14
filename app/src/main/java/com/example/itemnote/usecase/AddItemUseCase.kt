@@ -1,7 +1,7 @@
 package com.example.itemnote.usecase
 
 import com.example.itemnote.data.model.ItemModel
-import com.example.itemnote.data.repository.AddItemRepository
+import com.example.itemnote.data.repository.ItemRepository
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -13,7 +13,7 @@ interface AddItemUseCase {
 }
 
 class AddItemUseCaseImpl @Inject constructor(
-    private val addItemRepository: AddItemRepository
+    private val itemRepository: ItemRepository
 ) : AddItemUseCase {
     override fun addItem(name: String): Flow<UiState<Unit>> {
         val data = ItemModel(
@@ -21,7 +21,7 @@ class AddItemUseCaseImpl @Inject constructor(
             name = name,
             date = Date().toString()
         )
-        return addItemRepository.addItem(data)
+        return itemRepository.addItem(data)
     }
 
 }

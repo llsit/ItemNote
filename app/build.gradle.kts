@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.service)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -73,6 +74,7 @@ dependencies {
     implementation(libs.firebase.analytic)
     implementation(libs.forebase.firestore)
     implementation(libs.timber)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

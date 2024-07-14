@@ -2,6 +2,8 @@ package com.example.itemnote.di
 
 import com.example.itemnote.usecase.AddItemUseCase
 import com.example.itemnote.usecase.AddItemUseCaseImpl
+import com.example.itemnote.usecase.GetItemUseCase
+import com.example.itemnote.usecase.GetItemUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,6 +15,11 @@ object UseCaseModule {
 
     @Provides
     fun provideAddItemUseCase(useCase: AddItemUseCaseImpl): AddItemUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideGetItemUseCase(useCase: GetItemUseCaseImpl): GetItemUseCase {
         return useCase
     }
 
