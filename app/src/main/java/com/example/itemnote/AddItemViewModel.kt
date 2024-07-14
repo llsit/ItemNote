@@ -15,23 +15,31 @@ class AddItemViewModel @Inject constructor(
     private val addItemUseCase: AddItemUseCase
 ) : ViewModel() {
 
-    private val _uiStateAddShop = MutableStateFlow<UiState<Boolean>>(UiState.Loading)
-    val uiStateAddShop: StateFlow<UiState<Boolean>> = _uiStateAddShop
+    private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Loading)
+    val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop
+
+    private val _uiStateEmptyName = MutableStateFlow<Boolean>(false)
+    val uiStateEmptyName: StateFlow<Boolean> = _uiStateEmptyName
 
     fun addItem(name: String) = viewModelScope.launch {
+
         addItemUseCase.addItem(name).collect {
-            when (it) {
-                is UiState.Error -> {
-                    _uiStateAddShop.value = UiState.Error(it.message)
-                }
+            if (name.isEmpty()) {
+                when (it) {
+                    is UiState.Error -> {
+                        _uiStateAddShop.value = UiState.Error(it.message)
+                    }
 
-                UiState.Loading -> {
-                    _uiStateAddShop.value = UiState.Loading
-                }
+                    UiState.Loading -> {
+                        _uiStateAddShop.value = UiState.Loading
+                    }
 
-                is UiState.Success -> {
-                    _uiStateAddShop.value = UiState.Success(it.data)
+                    is UiState.Success -> {
+                        _uiStateAddShop.value = UiState.Success(it.data)
+                    }
                 }
+            } else {
+                _uiStateEmptyName.value = true
             }
         }
     }

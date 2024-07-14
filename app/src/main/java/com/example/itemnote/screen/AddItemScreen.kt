@@ -1,5 +1,6 @@
 package com.example.itemnote.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,13 +37,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.itemnote.AddItemViewModel
+import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ToolbarScreen
+import com.example.itemnote.utils.UiState
+import timber.log.Timber
 
 @Composable
-fun AddItemScreen(navController: NavHostController = rememberNavController()) {
-
-    val addViewModel: AddItemViewModel = hiltViewModel()
+fun AddItemScreen(
+    navController: NavHostController = rememberNavController(),
+    addViewModel: AddItemViewModel = hiltViewModel()
+) {
     var name by remember { mutableStateOf("") }
+    val state = addViewModel.uiStateAddShop.collectAsState()
+    val errorState = addViewModel.uiStateEmptyName.collectAsState()
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Add Item", true) {
@@ -48,6 +58,31 @@ fun AddItemScreen(navController: NavHostController = rememberNavController()) {
         },
     )
     { innerPadding ->
+        when (errorState.value){
+            true -> {
+                Toast.makeText(LocalContext.current, "Name is Empty", Toast.LENGTH_LONG).show()
+            }
+            false -> {
+
+            }
+        }
+        when (state.value) {
+            is UiState.Error -> {
+                Loading(isLoading = false)
+                Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
+                Timber.tag("NutZa").d("Error")
+            }
+
+            UiState.Loading -> {
+                Loading(isLoading = true)
+            }
+
+            is UiState.Success -> {
+                Loading(isLoading = false)
+                Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
+                Timber.tag("NutZa").d("Success")
+            }
+        }
         Column(
             Modifier
                 .padding(innerPadding),
@@ -96,12 +131,12 @@ fun AddItemScreen(navController: NavHostController = rememberNavController()) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(onClick = {
-                        addViewModel.addItem(name)
+                        navController.popBackStack()
                     }) {
                         Text("Back")
                     }
                     Button(onClick = {
-                        navController.popBackStack()
+                        addViewModel.addItem(name)
                     }) {
                         Text("Save")
                     }
