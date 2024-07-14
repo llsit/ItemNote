@@ -14,16 +14,17 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,19 +38,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.itemnote.AddItemViewModel
+import com.example.itemnote.component.AlertDialogDefault
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.UiState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
 fun AddItemScreen(
     navController: NavHostController = rememberNavController(),
-    addViewModel: AddItemViewModel = hiltViewModel()
+    addViewModel: AddItemViewModel = hiltViewModel(),
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) {
     var name by remember { mutableStateOf("") }
     val state = addViewModel.uiStateAddShop.collectAsState()
     val errorState = addViewModel.uiStateEmptyName.collectAsState()
+    val openAlertDialog = remember { mutableStateOf(false) }
+    val isTextFieldError = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Add Item", true) {
@@ -58,10 +66,12 @@ fun AddItemScreen(
         },
     )
     { innerPadding ->
-        when (errorState.value){
+        when (errorState.value) {
             true -> {
+                isTextFieldError.value = true
                 Toast.makeText(LocalContext.current, "Name is Empty", Toast.LENGTH_LONG).show()
             }
+
             false -> {
 
             }
@@ -70,7 +80,6 @@ fun AddItemScreen(
             is UiState.Error -> {
                 Loading(isLoading = false)
                 Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
-                Timber.tag("NutZa").d("Error")
             }
 
             UiState.Loading -> {
@@ -80,7 +89,22 @@ fun AddItemScreen(
             is UiState.Success -> {
                 Loading(isLoading = false)
                 Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
-                Timber.tag("NutZa").d("Success")
+                AlertDialogDefault(
+                    onDismissRequest = {
+                        openAlertDialog.value = false
+                        coroutineScope.launch {
+                            delay(1000)
+                            navController.popBackStack()
+                        }
+                    },
+                    onConfirmation = null,
+                    dialogTitle = "Add Item Success",
+                    icon = Icons.Default.Info
+                )
+            }
+
+            else -> {
+                Loading(isLoading = false)
             }
         }
         Column(
@@ -123,7 +147,8 @@ fun AddItemScreen(
                 TextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") }
+                    label = { Text("Name") },
+                    isError = isTextFieldError.value
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

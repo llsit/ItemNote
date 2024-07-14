@@ -17,11 +17,12 @@ class AddItemRepositoryImpl @Inject constructor(
 ) : AddItemRepository {
     override fun addItem(data: ItemModel): Flow<UiState<Unit>> {
         return flow {
-            try {
+            runCatching {
                 firestore.collection("a").add(data).await()
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
+            }.onSuccess {
+                emit(UiState.Success(Unit))
+            }.onFailure { e ->
+                emit(UiState.Error(e.message.toString()))
             }
         }
     }

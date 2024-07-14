@@ -7,6 +7,7 @@ import com.example.itemnote.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,16 +16,15 @@ class AddItemViewModel @Inject constructor(
     private val addItemUseCase: AddItemUseCase
 ) : ViewModel() {
 
-    private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Loading)
-    val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop
+    private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop.asStateFlow()
 
-    private val _uiStateEmptyName = MutableStateFlow<Boolean>(false)
+    private val _uiStateEmptyName = MutableStateFlow(false)
     val uiStateEmptyName: StateFlow<Boolean> = _uiStateEmptyName
 
     fun addItem(name: String) = viewModelScope.launch {
-
         addItemUseCase.addItem(name).collect {
-            if (name.isEmpty()) {
+            if (name.isNotEmpty()) {
                 when (it) {
                     is UiState.Error -> {
                         _uiStateAddShop.value = UiState.Error(it.message)
@@ -37,6 +37,8 @@ class AddItemViewModel @Inject constructor(
                     is UiState.Success -> {
                         _uiStateAddShop.value = UiState.Success(it.data)
                     }
+
+                    else -> Unit
                 }
             } else {
                 _uiStateEmptyName.value = true
