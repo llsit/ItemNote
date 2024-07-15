@@ -4,12 +4,10 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,7 +62,8 @@ fun MainScreen(
                 is UiState.Error -> {
                     Loading(isLoading = false)
                     val error = (state.value as UiState.Error).message
-                    Toast.makeText(LocalContext.current, "Error : ${error}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(LocalContext.current, "Error : ${error}", Toast.LENGTH_LONG)
+                        .show()
                 }
 
                 UiState.Idle -> Loading(isLoading = false)
@@ -80,7 +79,7 @@ fun MainScreen(
                         (state.value as UiState.Success<List<ItemModel>>).data?.let {
                             items(it) {
                                 CardItem(Modifier.padding(5.dp), text = it.name) {
-                                    navController.navigate("shopList")
+                                    navController.navigate("shopList/${it.id}")
                                 }
                             }
                         }

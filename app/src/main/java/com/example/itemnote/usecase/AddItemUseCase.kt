@@ -5,7 +5,6 @@ import com.example.itemnote.data.repository.ItemRepository
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
-import java.util.UUID
 import javax.inject.Inject
 
 interface AddItemUseCase {
@@ -17,7 +16,6 @@ class AddItemUseCaseImpl @Inject constructor(
 ) : AddItemUseCase {
     override fun addItem(name: String): Flow<UiState<Unit>> {
         val data = ItemModel(
-            id = UUID.randomUUID().toString(),
             name = name,
             date = Date().toString()
         )

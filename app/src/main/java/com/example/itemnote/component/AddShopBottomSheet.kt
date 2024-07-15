@@ -1,5 +1,6 @@
 package com.example.itemnote.component
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,13 +15,18 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.itemnote.ShopListViewModel
+import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -29,12 +35,27 @@ import kotlinx.coroutines.launch
 fun AddShopBottomSheet(
     scope: CoroutineScope,
     sheetState: SheetState,
+    idItem: String? = "",
+    viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {}
 ) {
     var name by remember { mutableStateOf("Hello") }
     var location by remember { mutableStateOf("Thailand") }
     var price by remember { mutableStateOf("0") }
 
+    val state = viewModel.uiStateAddShop.collectAsState()
+    when (state.value) {
+        is UiState.Error -> {
+            Loading(isLoading = false)
+            Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
+        }
+        UiState.Idle -> Unit
+        UiState.Loading -> Loading(isLoading = true)
+        is UiState.Success -> {
+            Loading(isLoading = false)
+            Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
+        }
+    }
     ModalBottomSheet(
         onDismissRequest = {
             onClick(false)
@@ -77,7 +98,7 @@ fun AddShopBottomSheet(
                     Icon(Icons.Filled.Close, "closeIcon")
                 }
                 Button(onClick = {
-
+                    viewModel.addShop(name, location, price, idItem?: "")
                 }) {
                     Text("Save")
                 }

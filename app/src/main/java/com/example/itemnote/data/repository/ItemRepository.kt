@@ -20,7 +20,9 @@ class ItemRepositoryImpl @Inject constructor(
     override fun addItem(data: ItemModel): Flow<UiState<Unit>> {
         return flow {
             runCatching {
-                firestore.collection("a").add(data).await()
+                val ref = firestore.collection("a")
+                val id = ref.document().id
+                ref.document(id).set(data.copy(id = id)).await()
             }.onSuccess {
                 emit(UiState.Success(Unit))
             }.onFailure { e ->

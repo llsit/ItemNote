@@ -14,7 +14,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.itemnote.ShopListViewModel
 import com.example.itemnote.component.AddShopBottomSheet
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.ShopCard
@@ -22,10 +24,15 @@ import com.example.itemnote.component.ToolbarScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShopListScreen(navController: NavHostController) {
+fun ShopListScreen(
+    navController: NavHostController,
+    id: String?,
+    shopListViewModel: ShopListViewModel = hiltViewModel()
+) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
+
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Shop List", true) {
@@ -51,7 +58,7 @@ fun ShopListScreen(navController: NavHostController) {
         }
 
         if (showBottomSheet) {
-            AddShopBottomSheet(scope = scope, sheetState = sheetState) {
+            AddShopBottomSheet(scope = scope, sheetState = sheetState, idItem = id) {
                 showBottomSheet = it
             }
         }
