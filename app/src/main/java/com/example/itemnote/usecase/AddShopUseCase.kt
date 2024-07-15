@@ -28,6 +28,6 @@ class AddShopUseCaseImpl @Inject constructor(
             location = location,
             price = price
         )
-        return shopRepository.addItem(shop, idItem)
+        return shopRepository.addShop(shop, idItem)
     }
 }

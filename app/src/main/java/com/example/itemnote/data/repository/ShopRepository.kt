@@ -4,28 +4,43 @@ import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_SHOP_COLLECTION
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface ShopRepository {
-    fun addItem(shop: ShopModel, idItem: String): Flow<UiState<Unit>>
+    fun addShop(shop: ShopModel, idItem: String): Flow<UiState<Unit>>
+    fun getShop(idItem: String): Flow<UiState<List<ShopModel>>>
 }
 
 class ShopRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ShopRepository {
 
-    override fun addItem(shop: ShopModel, idItem: String): Flow<UiState<Unit>> = flow {
+    override fun addShop(shop: ShopModel, idItem: String): Flow<UiState<Unit>> = flow {
         runCatching {
-            val ref = firestore.collection("a")
+            firestore.collection("a")
                 .document(idItem)
-            ref.collection(FIREBASE_SHOP_COLLECTION)
-                .document(ref.id)
-                .set(shop.copy(ref.id)).await()
+                .collection(FIREBASE_SHOP_COLLECTION)
+                .document(shop.id)
+                .set(shop).await()
         }.onSuccess {
             emit(UiState.Success(Unit))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
+        }
+    }
+
+    override fun getShop(idItem: String): Flow<UiState<List<ShopModel>>> = flow {
+        runCatching {
+            firestore.collection("a")
+                .document(idItem).collection(FIREBASE_SHOP_COLLECTION)
+                .get()
+                .await().documents.mapNotNull { it.toObject<ShopModel>() }
+        }.onSuccess {
+            emit(UiState.Success(it))
         }.onFailure {
             emit(UiState.Error(it.message.toString()))
         }

@@ -8,25 +8,31 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.itemnote.data.model.ShopModel
 
 @Composable
-fun ShopCard(modifier: Modifier = Modifier, title: String, onClick: () -> Unit) {
+fun ShopCard(modifier: Modifier = Modifier, model: ShopModel) {
     Card(
         elevation = CardDefaults.cardElevation(6.dp),
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth(),
-        onClick = {
-            onClick()
-        }
+            .fillMaxWidth()
     ) {
         Text(
             modifier = modifier.padding(horizontal = 8.dp, vertical = 16.dp),
-            text = "shop : $title"
+            fontSize = 16.sp,
+            text = "Shop : ${model.name}"
         )
         Text(
-            modifier = modifier.padding(8.dp),
-            text = "price : $title"
+            modifier = modifier.padding(4.dp),
+            fontSize = 12.sp,
+            text = "Price : ${model.price}"
+        )
+        Text(
+            modifier = modifier.padding(4.dp),
+            fontSize = 12.sp,
+            text = "Location : ${model.location}"
         )
     }
 }

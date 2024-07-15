@@ -4,7 +4,11 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -39,9 +43,9 @@ fun AddShopBottomSheet(
     viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {}
 ) {
-    var name by remember { mutableStateOf("Hello") }
-    var location by remember { mutableStateOf("Thailand") }
-    var price by remember { mutableStateOf("0") }
+    var name by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
 
     val state = viewModel.uiStateAddShop.collectAsState()
     when (state.value) {
@@ -49,14 +53,18 @@ fun AddShopBottomSheet(
             Loading(isLoading = false)
             Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
         }
+
         UiState.Idle -> Unit
         UiState.Loading -> Loading(isLoading = true)
         is UiState.Success -> {
             Loading(isLoading = false)
             Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
+            onClick(false)
         }
     }
     ModalBottomSheet(
+        modifier = Modifier.fillMaxWidth(),
+        windowInsets = WindowInsets.ime,
         onDismissRequest = {
             onClick(false)
         },
@@ -98,11 +106,12 @@ fun AddShopBottomSheet(
                     Icon(Icons.Filled.Close, "closeIcon")
                 }
                 Button(onClick = {
-                    viewModel.addShop(name, location, price, idItem?: "")
+                    viewModel.addShop(name, location, price, idItem ?: "")
                 }) {
                     Text("Save")
                 }
             }
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }

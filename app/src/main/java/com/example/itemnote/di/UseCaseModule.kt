@@ -6,6 +6,8 @@ import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.AddShopUseCaseImpl
 import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemUseCaseImpl
+import com.example.itemnote.usecase.GetShopUseCase
+import com.example.itemnote.usecase.GetShopUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +29,11 @@ object UseCaseModule {
 
     @Provides
     fun provideAddShopUseCase(useCase: AddShopUseCaseImpl): AddShopUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideGetShopUseCase(useCase: GetShopUseCaseImpl): GetShopUseCase {
         return useCase
     }
 
