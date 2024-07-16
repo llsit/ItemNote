@@ -1,6 +1,8 @@
 package com.example.itemnote.data.repository
 
 import com.example.itemnote.data.model.ShopModel
+import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEMS_COLLECTION
+import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEM_COLLECTION
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_SHOP_COLLECTION
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,7 +23,9 @@ class ShopRepositoryImpl @Inject constructor(
 
     override fun addShop(shop: ShopModel, idItem: String): Flow<UiState<Unit>> = flow {
         runCatching {
-            firestore.collection("a")
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document("UserID")
+                .collection(FIREBASE_ITEM_COLLECTION)
                 .document(idItem)
                 .collection(FIREBASE_SHOP_COLLECTION)
                 .document(shop.id)
@@ -35,8 +39,11 @@ class ShopRepositoryImpl @Inject constructor(
 
     override fun getShop(idItem: String): Flow<UiState<List<ShopModel>>> = flow {
         runCatching {
-            firestore.collection("a")
-                .document(idItem).collection(FIREBASE_SHOP_COLLECTION)
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document("UserID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(idItem)
+                .collection(FIREBASE_SHOP_COLLECTION)
                 .get()
                 .await().documents.mapNotNull { it.toObject<ShopModel>() }
         }.onSuccess {

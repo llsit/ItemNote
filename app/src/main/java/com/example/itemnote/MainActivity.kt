@@ -10,7 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.itemnote.screen.AddItemScreen
+import com.example.itemnote.screen.Authentication.RegisterScreen
 import com.example.itemnote.screen.ShopListScreen
+import com.example.itemnote.screen.authentication.LoginScreen
 import com.example.itemnote.ui.theme.ItemNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,6 +26,12 @@ class MainActivity : ComponentActivity() {
             ItemNoteTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "mainScreen") {
+                    composable("loginScreen") {
+                        LoginScreen(navController = navController)
+                    }
+                    composable("registerScreen") {
+                        RegisterScreen(navController = navController)
+                    }
                     composable("mainScreen") {
                         MainScreen(navController = navController)
                     }
