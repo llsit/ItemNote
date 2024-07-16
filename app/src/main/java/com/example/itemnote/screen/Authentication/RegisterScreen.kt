@@ -59,6 +59,7 @@ fun RegisterScreen(
                 "Register Success",
                 Toast.LENGTH_SHORT
             ).show()
+            navController.navigate(NavigationItem.Login.route)
         }
     }
     Scaffold(

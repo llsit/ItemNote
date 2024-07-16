@@ -8,6 +8,8 @@ import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemUseCaseImpl
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.usecase.GetShopUseCaseImpl
+import com.example.itemnote.usecase.LoginUseCase
+import com.example.itemnote.usecase.LoginUseCaseImpl
 import com.example.itemnote.usecase.RegisterUseCase
 import com.example.itemnote.usecase.RegisterUseCaseImpl
 import dagger.Module
@@ -44,4 +46,8 @@ object UseCaseModule {
         return useCase
     }
 
+    @Provides
+    fun provideLoginUseCase(useCase: LoginUseCaseImpl): LoginUseCase {
+        return useCase
+    }
 }
