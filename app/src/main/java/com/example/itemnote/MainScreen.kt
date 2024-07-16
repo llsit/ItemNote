@@ -31,7 +31,6 @@ fun MainScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
-    val stateScroll = rememberScrollState()
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Home", false)

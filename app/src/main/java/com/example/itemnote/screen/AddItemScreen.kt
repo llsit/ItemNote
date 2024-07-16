@@ -133,9 +133,7 @@ fun AddItemScreen(
                         .background(Color.LightGray)
                         .align(Alignment.CenterHorizontally)
                         .wrapContentHeight()
-                        .clickable {
-
-                        }
+                        .clickable { }
                 )
             }
 

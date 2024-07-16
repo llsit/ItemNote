@@ -72,7 +72,8 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytic)
-    implementation(libs.forebase.firestore)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
 
