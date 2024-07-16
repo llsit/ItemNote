@@ -1,6 +1,5 @@
 package com.example.itemnote.screen.authentication
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.screen.Authentication.LoginViewModel
+import com.example.itemnote.utils.NavigationItem
 
 @Composable
 fun LoginScreen(
@@ -102,13 +102,10 @@ fun LoginScreen(
                 Text(
                     text = "Don't have an account? ",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                    modifier = Modifier.clickable {
-                        navController.navigate("RegisterScreen")
-                    }
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                 )
                 TextButton(onClick = {
-
+                    navController.navigate(NavigationItem.Register.route)
                 }) {
                     Text(text = "Register Now", color = MaterialTheme.colorScheme.primary)
                 }

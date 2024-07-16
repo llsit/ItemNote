@@ -1,5 +1,7 @@
 package com.example.itemnote.di
 
+import com.example.itemnote.data.repository.AuthRepository
+import com.example.itemnote.data.repository.AuthRepositoryImpl
 import com.example.itemnote.data.repository.ItemRepository
 import com.example.itemnote.data.repository.ItemRepositoryImpl
 import com.example.itemnote.data.repository.ShopRepository
@@ -18,4 +20,6 @@ internal interface DataModule {
     @Binds
     fun bindShopRepository(repository: ShopRepositoryImpl): ShopRepository
 
+    @Binds
+    fun bindAuthRepository(repository: AuthRepositoryImpl): AuthRepository
 }

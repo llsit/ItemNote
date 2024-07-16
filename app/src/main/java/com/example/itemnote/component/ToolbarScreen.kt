@@ -3,6 +3,7 @@ package com.example.itemnote.component
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -52,6 +53,6 @@ fun ToolbarScreen(title: String, isBack: Boolean, onBackClick: () -> Unit = {}) 
 @Composable
 fun GreetingPreview() {
     ItemNoteTheme {
-        ToolbarScreen("Home", true)
+        ToolbarScreen("Home", false)
     }
 }

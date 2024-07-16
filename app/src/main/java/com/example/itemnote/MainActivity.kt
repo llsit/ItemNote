@@ -14,6 +14,7 @@ import com.example.itemnote.screen.Authentication.RegisterScreen
 import com.example.itemnote.screen.ShopListScreen
 import com.example.itemnote.screen.authentication.LoginScreen
 import com.example.itemnote.ui.theme.ItemNoteTheme
+import com.example.itemnote.utils.NavigationItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,20 +26,26 @@ class MainActivity : ComponentActivity() {
         setContent {
             ItemNoteTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "mainScreen") {
-                    composable("loginScreen") {
+                NavHost(
+                    navController = navController,
+                    startDestination = NavigationItem.Register.route
+                ) {
+                    composable(NavigationItem.Login.route) {
                         LoginScreen(navController = navController)
                     }
-                    composable("registerScreen") {
+                    composable(NavigationItem.Register.route) {
                         RegisterScreen(navController = navController)
                     }
-                    composable("mainScreen") {
+                    composable(NavigationItem.Main.route) {
                         MainScreen(navController = navController)
                     }
-                    composable("shopList/{id}", arguments = listOf(navArgument("id") { type = NavType.StringType })) {
+                    composable(
+                        "shopList/{id}",
+                        arguments = listOf(navArgument("id") { type = NavType.StringType })
+                    ) {
                         ShopListScreen(navController = navController, it.arguments?.getString("id"))
                     }
-                    composable("addItem") {
+                    composable(NavigationItem.AddItem.route) {
                         AddItemScreen(navController = navController)
                     }
                 }
