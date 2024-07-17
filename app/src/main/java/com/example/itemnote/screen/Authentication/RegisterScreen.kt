@@ -1,12 +1,15 @@
 package com.example.itemnote.screen.Authentication
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -20,7 +23,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.itemnote.R
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.NavigationItem
@@ -64,7 +71,7 @@ fun RegisterScreen(
     }
     Scaffold(
         topBar = {
-            ToolbarScreen(title = "", false) {
+            ToolbarScreen(title = "Register", false) {
                 navController.popBackStack()
             }
         }
@@ -75,10 +82,13 @@ fun RegisterScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Text(
-                text = "Register",
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(16.dp)
+            Image(
+                painter = painterResource(R.drawable.welcome), contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .align(Alignment.CenterHorizontally)
             )
             OutlinedTextField(
                 value = viewModel.name.value,
