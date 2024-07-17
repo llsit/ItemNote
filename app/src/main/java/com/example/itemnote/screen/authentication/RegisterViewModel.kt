@@ -1,4 +1,4 @@
-package com.example.itemnote.screen.Authentication
+package com.example.itemnote.screen.authentication
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,23 +35,24 @@ class RegisterViewModel @Inject constructor(
         name.value = newName
     }
 
-    fun registerUser(email: String, password: String) = viewModelScope.launch {
-        registerUseCase.invoke(email = email, password = password).collectLatest { result ->
-            when (result) {
-                is UiState.Loading -> {
-                    _registerState.value = UiState.Loading
-                }
+    fun registerUser(name: String, email: String, password: String) = viewModelScope.launch {
+        registerUseCase.invoke(name = name, email = email, password = password)
+            .collect { result ->
+                when (result) {
+                    is UiState.Loading -> {
+                        _registerState.value = UiState.Loading
+                    }
 
-                is UiState.Success -> {
-                    _registerState.value = UiState.Success(Unit)
-                }
+                    is UiState.Success -> {
+                        _registerState.value = UiState.Success(Unit)
+                    }
 
-                is UiState.Error -> {
-                    _registerState.value = UiState.Error(result.message)
-                }
+                    is UiState.Error -> {
+                        _registerState.value = UiState.Error(result.message)
+                    }
 
-                UiState.Idle -> Unit
+                    UiState.Idle -> Unit
+                }
             }
-        }
     }
 }

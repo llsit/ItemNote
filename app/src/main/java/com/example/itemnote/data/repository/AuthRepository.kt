@@ -1,22 +1,28 @@
 package com.example.itemnote.data.repository
 
+import com.example.itemnote.data.model.UserModel
+import com.example.itemnote.utils.Constants.Companion.FIREBASE_USERS_COLLECTION
 import com.example.itemnote.utils.UiState
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 interface AuthRepository {
     fun loginUser(email: String, password: String): Flow<UiState<AuthResult>>
 
-    fun registerUser(email: String, password: String): Flow<UiState<AuthResult>>
+    fun registerUser(email: String, password: String): Flow<UiState<Unit>>
 
+    fun addUser(user: UserModel): Flow<UiState<Unit>>
 }
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : AuthRepository {
     override fun loginUser(email: String, password: String): Flow<UiState<AuthResult>> = flow {
         runCatching {
@@ -29,12 +35,26 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun registerUser(email: String, password: String): Flow<UiState<AuthResult>> = flow {
+    override fun registerUser(email: String, password: String): Flow<UiState<Unit>> = flow {
         runCatching {
-            emit(value = UiState.Loading)
+            Timber.tag("Test").d("registerUser: $email")
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
         }.onSuccess { result ->
-            emit(value = UiState.Success(data = result))
+            emit(value = UiState.Success(data = Unit))
+        }.onFailure {
+            emit(value = UiState.Error(it.message.toString()))
+        }
+    }
+
+    override fun addUser(user: UserModel): Flow<UiState<Unit>> = flow {
+        runCatching {
+            firebaseAuth.currentUser?.let {
+                firestore.collection(FIREBASE_USERS_COLLECTION).document(it.uid).set(user)
+            } ?: {
+//                emit(value = UiState.Error("User not found"))
+            }
+        }.onSuccess {
+            emit(value = UiState.Success(Unit))
         }.onFailure {
             emit(value = UiState.Error(it.message.toString()))
         }

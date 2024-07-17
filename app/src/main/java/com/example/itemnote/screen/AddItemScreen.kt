@@ -11,14 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,12 +42,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.itemnote.AddItemViewModel
 import com.example.itemnote.component.AlertDialogDefault
 import com.example.itemnote.component.Loading
+import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Composable
 fun AddItemScreen(
@@ -58,6 +60,7 @@ fun AddItemScreen(
     val errorState = addViewModel.uiStateEmptyName.collectAsState()
     val openAlertDialog = remember { mutableStateOf(false) }
     val isTextFieldError = remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
     Scaffold(
         topBar = {
             ToolbarScreen(title = "Add Item", true) {
@@ -109,7 +112,8 @@ fun AddItemScreen(
         }
         Column(
             Modifier
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Column(
@@ -142,11 +146,15 @@ fun AddItemScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                TextField(
+                TextFieldComponent(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Name") },
-                    isError = isTextFieldError.value
+                    label = "Name",
+                    isError = isTextFieldError.value,
+                    isLast = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),

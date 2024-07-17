@@ -9,26 +9,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,8 +32,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.itemnote.R
 import com.example.itemnote.component.Loading
+import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
-import com.example.itemnote.screen.Authentication.LoginViewModel
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
 
@@ -45,7 +41,6 @@ import com.example.itemnote.utils.UiState
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     viewModel: LoginViewModel = hiltViewModel(),
-    visibility: MutableState<Boolean> = remember { mutableStateOf(false) },
 ) {
     val state = viewModel.uiState.collectAsState()
     when (state.value) {
@@ -80,6 +75,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState()),
         ) {
             Image(
                 painter = painterResource(R.drawable.welcome), contentDescription = "",
@@ -89,22 +85,22 @@ fun LoginScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .align(Alignment.CenterHorizontally)
             )
-            OutlinedTextField(
+            TextFieldComponent(
                 value = viewModel.username.value,
                 onValueChange = viewModel::onUsernameChange,
-                label = { Text("Email") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-            OutlinedTextField(
-                value = viewModel.password.value,
-                onValueChange = viewModel::onPasswordChange,
-                label = { Text("Password") },
+                label = "Email",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                visualTransformation = if (visibility.value) VisualTransformation.None else PasswordVisualTransformation()
+            )
+            TextFieldComponent(
+                value = viewModel.password.value,
+                onValueChange = viewModel::onPasswordChange,
+                label = "Password",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                isLast = true
             )
             Row(
                 modifier = Modifier

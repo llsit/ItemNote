@@ -10,9 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.itemnote.screen.AddItemScreen
-import com.example.itemnote.screen.Authentication.RegisterScreen
 import com.example.itemnote.screen.ShopListScreen
 import com.example.itemnote.screen.authentication.LoginScreen
+import com.example.itemnote.screen.authentication.RegisterScreen
 import com.example.itemnote.ui.theme.ItemNoteTheme
 import com.example.itemnote.utils.NavigationItem
 import dagger.hilt.android.AndroidEntryPoint

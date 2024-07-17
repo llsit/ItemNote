@@ -1,4 +1,4 @@
-package com.example.itemnote.screen.Authentication
+package com.example.itemnote.screen.authentication
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
