@@ -24,6 +24,8 @@ interface AuthRepository {
     fun saveCurrentUserId(userId: String)
 
     fun logout(): Flow<UiState<Unit>>
+
+    fun getDataUser(): Flow<UiState<UserModel>>
 }
 
 class AuthRepositoryImpl @Inject constructor(
@@ -83,6 +85,23 @@ class AuthRepositoryImpl @Inject constructor(
             emit(UiState.Success(Unit))
         }.onFailure {
 
+        }
+    }
+
+    override fun getDataUser(): Flow<UiState<UserModel>> = flow {
+        runCatching {
+            firebaseAuth.currentUser?.let {
+                val data =
+                    firestore.collection(FIREBASE_USERS_COLLECTION).document(it.uid).get().await()
+                UserModel(
+                    name = data.getString("name") ?: "Name",
+                    email = data.getString("email") ?: "email"
+                )
+            }
+        }.onSuccess {
+            emit(value = UiState.Success(data = it))
+        }.onFailure {
+            emit(value = UiState.Error(it.message.toString()))
         }
     }
 

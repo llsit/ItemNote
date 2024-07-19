@@ -36,7 +36,7 @@ fun CardItem(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = R.drawable.placeholder_product),
                 contentDescription = "Image",
                 modifier = Modifier
                     .width(80.dp)
