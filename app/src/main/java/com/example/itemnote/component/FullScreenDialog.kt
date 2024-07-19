@@ -33,7 +33,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.itemnote.ShopListViewModel
+import com.example.itemnote.screen.shop.ShopListViewModel
 import com.example.itemnote.utils.UiState
 
 @Composable

@@ -9,7 +9,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import javax.inject.Inject
 
 interface AuthRepository {
@@ -18,6 +17,8 @@ interface AuthRepository {
     fun registerUser(email: String, password: String): Flow<UiState<Unit>>
 
     fun addUser(user: UserModel): Flow<UiState<Unit>>
+
+    fun checkUserLogin(): Boolean
 }
 
 class AuthRepositoryImpl @Inject constructor(
@@ -37,7 +38,6 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun registerUser(email: String, password: String): Flow<UiState<Unit>> = flow {
         runCatching {
-            Timber.tag("Test").d("registerUser: $email")
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
         }.onSuccess { result ->
             emit(value = UiState.Success(data = Unit))
@@ -58,6 +58,10 @@ class AuthRepositoryImpl @Inject constructor(
         }.onFailure {
             emit(value = UiState.Error(it.message.toString()))
         }
+    }
+
+    override fun checkUserLogin(): Boolean {
+        return firebaseAuth.currentUser != null
     }
 
 }

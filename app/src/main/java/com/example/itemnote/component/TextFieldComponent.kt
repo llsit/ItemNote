@@ -23,6 +23,7 @@ fun TextFieldComponent(
     onValueChange: (String) -> Unit,
     label: String = "",
     isLast: Boolean = false,
+    isPassword: Boolean = false,
     isError: Boolean = false,
     visibility: MutableState<Boolean> = remember { mutableStateOf(false) },
 ) {
@@ -36,7 +37,7 @@ fun TextFieldComponent(
                 modifier = modifier,
                 singleLine = true,
                 isError = isError,
-                visualTransformation = if (visibility.value) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus(true) }
@@ -50,6 +51,7 @@ fun TextFieldComponent(
                 modifier = modifier,
                 singleLine = true,
                 isError = isError,
+                visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }

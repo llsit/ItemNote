@@ -1,4 +1,4 @@
-package com.example.itemnote
+package com.example.itemnote.screen.main
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

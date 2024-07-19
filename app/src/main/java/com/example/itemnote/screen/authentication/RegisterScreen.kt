@@ -5,10 +5,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -77,7 +81,8 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .windowInsetsPadding(WindowInsets.ime),
         ) {
             Image(
                 painter = painterResource(R.drawable.welcome), contentDescription = "",
@@ -107,6 +112,7 @@ fun RegisterScreen(
                 value = viewModel.password.value,
                 onValueChange = viewModel::onPasswordChange,
                 label = "Password",
+                isPassword = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -115,9 +121,9 @@ fun RegisterScreen(
             Button(
                 onClick = {
                     viewModel.registerUser(
+                        viewModel.name.value,
                         viewModel.email.value,
-                        viewModel.password.value,
-                        viewModel.name.value
+                        viewModel.password.value
                     )
                 },
                 modifier = Modifier

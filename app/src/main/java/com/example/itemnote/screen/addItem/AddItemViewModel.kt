@@ -1,4 +1,4 @@
-package com.example.itemnote
+package com.example.itemnote.screen.addItem
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
