@@ -3,7 +3,6 @@ package com.example.itemnote.component
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,7 +20,12 @@ import com.example.itemnote.ui.theme.ItemNoteTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolbarScreen(title: String, isBack: Boolean, onBackClick: () -> Unit = {}) {
+fun ToolbarScreen(
+    title: String,
+    isBack: Boolean,
+    onManuClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
+) {
     TopAppBar(
         colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -41,6 +45,7 @@ fun ToolbarScreen(title: String, isBack: Boolean, onBackClick: () -> Unit = {}) 
                 }
             } else {
                 IconButton(onClick = {
+                    onManuClick()
                 }) {
                     Icon(Icons.Filled.Menu, "backIcon")
                 }

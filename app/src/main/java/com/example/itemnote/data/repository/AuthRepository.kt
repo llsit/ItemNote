@@ -22,6 +22,8 @@ interface AuthRepository {
     fun checkUserLogin(): Boolean
 
     fun saveCurrentUserId(userId: String)
+
+    fun logout(): Flow<UiState<Unit>>
 }
 
 class AuthRepositoryImpl @Inject constructor(
@@ -71,6 +73,17 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun saveCurrentUserId(userId: String) {
         preferenceManager.saveCurrentUserId(userId)
+    }
+
+    override fun logout(): Flow<UiState<Unit>> = flow {
+        runCatching {
+            firebaseAuth.signOut()
+        }.onSuccess {
+            preferenceManager.clearUserId()
+            emit(UiState.Success(Unit))
+        }.onFailure {
+
+        }
     }
 
 }
