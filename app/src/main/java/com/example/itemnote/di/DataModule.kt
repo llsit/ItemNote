@@ -6,6 +6,8 @@ import com.example.itemnote.data.repository.ItemRepository
 import com.example.itemnote.data.repository.ItemRepositoryImpl
 import com.example.itemnote.data.repository.ShopRepository
 import com.example.itemnote.data.repository.ShopRepositoryImpl
+import com.example.itemnote.utils.PreferenceManager
+import com.example.itemnote.utils.PreferenceManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,4 +24,7 @@ internal interface DataModule {
 
     @Binds
     fun bindAuthRepository(repository: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    fun bindPreferenceManager(manager: PreferenceManagerImpl): PreferenceManager
 }

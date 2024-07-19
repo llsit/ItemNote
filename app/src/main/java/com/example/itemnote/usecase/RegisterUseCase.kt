@@ -3,6 +3,7 @@ package com.example.itemnote.usecase
 import com.example.itemnote.data.model.UserModel
 import com.example.itemnote.data.repository.AuthRepository
 import com.example.itemnote.utils.UiState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -12,6 +13,7 @@ interface RegisterUseCase {
     operator fun invoke(email: String, password: String, name: String): Flow<UiState<Unit>>
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RegisterUseCaseImpl @Inject constructor(
     private val repository: AuthRepository
 ) : RegisterUseCase {

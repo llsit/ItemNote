@@ -2,6 +2,7 @@ package com.example.itemnote.data.repository
 
 import com.example.itemnote.data.model.UserModel
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_USERS_COLLECTION
+import com.example.itemnote.utils.PreferenceManager
 import com.example.itemnote.utils.UiState
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -19,11 +20,14 @@ interface AuthRepository {
     fun addUser(user: UserModel): Flow<UiState<Unit>>
 
     fun checkUserLogin(): Boolean
+
+    fun saveCurrentUserId(userId: String)
 }
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val preferenceManager: PreferenceManager
 ) : AuthRepository {
     override fun loginUser(email: String, password: String): Flow<UiState<AuthResult>> = flow {
         runCatching {
@@ -50,6 +54,7 @@ class AuthRepositoryImpl @Inject constructor(
         runCatching {
             firebaseAuth.currentUser?.let {
                 firestore.collection(FIREBASE_USERS_COLLECTION).document(it.uid).set(user)
+                saveCurrentUserId(it.uid)
             } ?: {
 //                emit(value = UiState.Error("User not found"))
             }
@@ -62,6 +67,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun checkUserLogin(): Boolean {
         return firebaseAuth.currentUser != null
+    }
+
+    override fun saveCurrentUserId(userId: String) {
+        preferenceManager.saveCurrentUserId(userId)
     }
 
 }
