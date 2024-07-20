@@ -35,6 +35,7 @@ import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ProfileMenuComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.data.model.ItemModel
+import com.example.itemnote.screen.user.UserViewModel
 import com.example.itemnote.utils.AuthState
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
@@ -45,9 +46,11 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val authState = mainViewModel.authState.collectAsState()
+
     when (authState.value) {
         AuthState.Authenticated -> Unit
         AuthState.Initial -> Unit
@@ -61,7 +64,10 @@ fun MainScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                ProfileMenuComponent()
+                ProfileMenuComponent(
+                    name = userViewModel.name.value,
+                    email = userViewModel.email.value
+                )
                 HorizontalDivider()
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
@@ -102,7 +108,7 @@ fun MainScreen(
             },
             floatingActionButton = {
                 FloatingButton {
-                    navController.navigate("addItem")
+                    navController.navigate(NavigationItem.AddItem.route)
                 }
             }
         )
@@ -119,7 +125,7 @@ fun MainScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                    text = "Hello Android!"
+                    text = "Hello ${userViewModel.name.value}!"
                 )
                 val state = mainViewModel.uiState.collectAsState()
                 when (state.value) {
@@ -142,7 +148,13 @@ fun MainScreen(
                         ) {
                             (state.value as UiState.Success<List<ItemModel>>).data?.let {
                                 items(it) {
-                                    CardItem(Modifier.padding(5.dp), text = it.name) {
+                                    CardItem(
+                                        Modifier.padding(5.dp),
+                                        name = it.name,
+                                        price = it.shop?.price.orEmpty(),
+                                        location = it.shop?.location.orEmpty(),
+                                        locationName = it.shop?.name.orEmpty()
+                                    ) {
                                         navController.navigate("shopList/${it.id}")
                                     }
                                 }

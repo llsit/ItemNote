@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class ItemModel(
     val id: String = "",
     val name: String = "",
-    val date: String = ""
+    val date: String = "",
+    val shop: ShopModel? = null
 )

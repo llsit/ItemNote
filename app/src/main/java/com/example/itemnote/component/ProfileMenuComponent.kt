@@ -18,13 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.itemnote.R
-import com.example.itemnote.screen.user.UserViewModel
 
 @Composable
 fun ProfileMenuComponent(
-    viewModel: UserViewModel = hiltViewModel()
+    name: String = "",
+    email: String = ""
 ) {
     Box(
         modifier = Modifier
@@ -42,11 +41,11 @@ fun ProfileMenuComponent(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = viewModel.name.value,
+                text = name,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = viewModel.email.value,
+                text = email,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
             )

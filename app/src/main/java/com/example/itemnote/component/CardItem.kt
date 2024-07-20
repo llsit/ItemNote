@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,11 +26,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.itemnote.R
 
 @Composable
-fun CardItem(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
+fun CardItem(
+    modifier: Modifier = Modifier,
+    name: String,
+    price: String,
+    location: String,
+    locationName: String,
+    onClick: () -> Unit,
+) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = modifier
@@ -58,7 +63,7 @@ fun CardItem(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = text,
+                    text = name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -73,13 +78,13 @@ fun CardItem(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "CBD",
+                        text = "${locationName} , ${location}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Text(
-                    text = "$100",
+                    text = "$${price}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -92,7 +97,13 @@ fun CardItem(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewCardItem() {
-    CardItem(text = "Item") {
+    CardItem(
+        name = "Item",
+        price = "100",
+        location = "location",
+        locationName = "location",
+        onClick = {
 
-    }
+        }
+    )
 }
