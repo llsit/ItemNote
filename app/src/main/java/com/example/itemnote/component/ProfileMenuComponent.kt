@@ -47,7 +47,8 @@ fun ProfileMenuComponent(
             )
             Text(
                 text = viewModel.email.value,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
             )
         }
     }

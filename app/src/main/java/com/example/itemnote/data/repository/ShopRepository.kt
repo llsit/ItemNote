@@ -4,7 +4,6 @@ import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEMS_COLLECTION
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEM_COLLECTION
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_SHOP_COLLECTION
-import com.example.itemnote.utils.PreferenceManager
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -20,13 +19,13 @@ interface ShopRepository {
 
 class ShopRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val preferenceManager: PreferenceManager
+    private val authRepository: AuthRepository
 ) : ShopRepository {
 
     override fun addShop(shop: ShopModel, idItem: String): Flow<UiState<Unit>> = flow {
         runCatching {
             firestore.collection(FIREBASE_ITEMS_COLLECTION)
-                .document(preferenceManager.getUserId() ?: "No User ID")
+                .document(authRepository.getUserID() ?: "No User ID")
                 .collection(FIREBASE_ITEM_COLLECTION)
                 .document(idItem)
                 .collection(FIREBASE_SHOP_COLLECTION)
@@ -42,7 +41,7 @@ class ShopRepositoryImpl @Inject constructor(
     override fun getShop(idItem: String): Flow<UiState<List<ShopModel>>> = flow {
         runCatching {
             firestore.collection(FIREBASE_ITEMS_COLLECTION)
-                .document(preferenceManager.getUserId() ?: "No User ID")
+                .document(authRepository.getUserID() ?: "No User ID")
                 .collection(FIREBASE_ITEM_COLLECTION)
                 .document(idItem)
                 .collection(FIREBASE_SHOP_COLLECTION)

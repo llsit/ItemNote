@@ -26,6 +26,8 @@ interface AuthRepository {
     fun logout(): Flow<UiState<Unit>>
 
     fun getDataUser(): Flow<UiState<UserModel>>
+
+    fun getUserID(): String?
 }
 
 class AuthRepositoryImpl @Inject constructor(
@@ -38,6 +40,7 @@ class AuthRepositoryImpl @Inject constructor(
             emit(value = UiState.Loading)
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
         }.onSuccess { result ->
+            saveCurrentUserId(result.user?.uid ?: "No User ID")
             emit(value = UiState.Success(data = result))
         }.onFailure {
             emit(value = UiState.Error(it.message.toString()))
@@ -57,7 +60,7 @@ class AuthRepositoryImpl @Inject constructor(
     override fun addUser(user: UserModel): Flow<UiState<Unit>> = flow {
         runCatching {
             firebaseAuth.currentUser?.let {
-                firestore.collection(FIREBASE_USERS_COLLECTION).document(it.uid).set(user)
+                firestore.collection(FIREBASE_USERS_COLLECTION).document(it.uid).set(user).await()
                 saveCurrentUserId(it.uid)
             } ?: {
 //                emit(value = UiState.Error("User not found"))
@@ -103,6 +106,10 @@ class AuthRepositoryImpl @Inject constructor(
         }.onFailure {
             emit(value = UiState.Error(it.message.toString()))
         }
+    }
+
+    override fun getUserID(): String? {
+        return preferenceManager.getUserId()
     }
 
 }

@@ -72,12 +72,15 @@ fun LoginScreen(
         }
     }
     val authState by viewModel.authState.collectAsState()
-
     LaunchedEffect(authState) {
         when (authState) {
-            is AuthState.Authenticated -> navController.navigate(NavigationItem.Main.route)
-            is AuthState.Unauthenticated -> navController.navigate(NavigationItem.Login.route)
-            else -> {} // Do nothing for Initial and Loading states
+            is AuthState.Authenticated -> {
+                navController.navigate(NavigationItem.Main.route)
+            }
+
+            is AuthState.Unauthenticated -> Unit
+
+            else -> Unit
         }
     }
     Scaffold(
