@@ -68,7 +68,7 @@ fun ShopCard(modifier: Modifier = Modifier, model: ShopModel) {
                 }
             }
             Text(
-                text = model.price,
+                text = model.price.toString(),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary

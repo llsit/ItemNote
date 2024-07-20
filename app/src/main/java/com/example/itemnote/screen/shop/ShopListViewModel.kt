@@ -1,5 +1,9 @@
 package com.example.itemnote.screen.shop
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.itemnote.data.model.ShopModel
@@ -24,6 +28,25 @@ class ShopListViewModel @Inject constructor(
 
     private val _uiStateGetShop = MutableStateFlow<UiState<List<ShopModel>>>(UiState.Idle)
     val uiStateGetShop: StateFlow<UiState<List<ShopModel>>> = _uiStateGetShop.asStateFlow()
+
+    var name by mutableStateOf("")
+        private set
+    var location by mutableStateOf("")
+        private set
+    var price by mutableIntStateOf(0)
+        private set
+
+    fun updateName(input: String) {
+        name = input
+    }
+
+    fun updateLocation(input: String) {
+        location = input
+    }
+
+    fun updatePrice(input: String) {
+        price = input.toInt()
+    }
 
     fun addShop(name: String, location: String, price: String, idItem: String) =
         viewModelScope.launch {

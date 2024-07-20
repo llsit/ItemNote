@@ -151,7 +151,7 @@ fun MainScreen(
                                     CardItem(
                                         Modifier.padding(5.dp),
                                         name = it.name,
-                                        price = it.shop?.price.orEmpty(),
+                                        price = it.shop?.price.toString(),
                                         location = it.shop?.location.orEmpty(),
                                         locationName = it.shop?.name.orEmpty()
                                     ) {

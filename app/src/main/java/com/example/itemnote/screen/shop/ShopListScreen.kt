@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,7 +29,6 @@ import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.UiState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShopListScreen(
     navController: NavHostController,
@@ -39,7 +37,6 @@ fun ShopListScreen(
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
     val state = shopListViewModel.uiStateGetShop.collectAsState()
     LaunchedEffect(Unit) {
         shopListViewModel.getShop(id ?: "")
@@ -83,7 +80,7 @@ fun ShopListScreen(
         }
 
         if (showBottomSheet) {
-            AddShopBottomSheet(scope = scope, sheetState = sheetState, idItem = id) {
+            AddShopBottomSheet(scope = scope, idItem = id) {
                 showBottomSheet = it
                 shopListViewModel.getShop(id ?: "")
             }

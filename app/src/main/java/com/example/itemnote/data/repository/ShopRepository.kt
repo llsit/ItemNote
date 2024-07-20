@@ -48,7 +48,7 @@ class ShopRepositoryImpl @Inject constructor(
                 .collection(FIREBASE_ITEM_COLLECTION)
                 .document(idItem)
                 .collection(FIREBASE_SHOP_COLLECTION)
-                .orderBy(FIREBASE_PRICE_FIELD, Query.Direction.DESCENDING)
+                .orderBy(FIREBASE_PRICE_FIELD, Query.Direction.ASCENDING)
                 .get()
                 .await().documents.mapNotNull { it.toObject<ShopModel>() }
         }.onSuccess {
@@ -65,7 +65,7 @@ class ShopRepositoryImpl @Inject constructor(
                 .collection(FIREBASE_ITEM_COLLECTION)
                 .document(idItem)
                 .collection(FIREBASE_SHOP_COLLECTION)
-                .orderBy(FIREBASE_PRICE_FIELD, Query.Direction.DESCENDING).limit(1)
+                .orderBy(FIREBASE_PRICE_FIELD, Query.Direction.ASCENDING).limit(1)
                 .get()
                 .await()
                 .documents.firstOrNull()

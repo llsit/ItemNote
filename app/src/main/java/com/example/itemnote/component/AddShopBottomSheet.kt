@@ -4,49 +4,40 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.itemnote.screen.shop.ShopListViewModel
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddShopBottomSheet(
-    scope: CoroutineScope,
-    sheetState: SheetState,
+    scope: CoroutineScope = rememberCoroutineScope(),
     idItem: String? = "",
     viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {}
 ) {
-    var name by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
 
+    val focusManager = LocalFocusManager.current
     val state = viewModel.uiStateAddShop.collectAsState()
     when (state.value) {
         is UiState.Error -> {
@@ -62,66 +53,64 @@ fun AddShopBottomSheet(
             onClick(false)
         }
     }
-    ModalBottomSheet(
-        modifier = Modifier.fillMaxWidth(),
-        windowInsets = WindowInsets.ime,
-        onDismissRequest = {
-            onClick(false)
-        },
-        sheetState = sheetState
+
+    Dialog(
+        onDismissRequest = { onClick(false) }
     ) {
-        // Sheet content
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+        Surface(
+            modifier = Modifier.wrapContentSize(),
+            shape = MaterialTheme.shapes.medium,
         ) {
-            TextFieldComponent(
-                value = name,
-                onValueChange = { name = it },
-                label = "Name",
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-            TextFieldComponent(
-                value = location,
-                onValueChange = { location = it },
-                label = "Location",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-            TextFieldComponent(
-                value = price,
-                onValueChange = { price = it },
-                label = "Price",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                isLast = true
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Button(onClick = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        if (!sheetState.isVisible) {
+                TextFieldComponent(
+                    value = viewModel.name,
+                    onValueChange = { name -> viewModel.updateName(name) },
+                    label = "Name",
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                TextFieldComponent(
+                    value = viewModel.location,
+                    onValueChange = { location -> viewModel.updateLocation(location) },
+                    label = "Location",
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                TextFieldComponent(
+                    value = viewModel.price.toString(),
+                    onValueChange = { price -> viewModel.updatePrice(price) },
+                    label = "Price",
+                    modifier = Modifier.fillMaxWidth(),
+                    isLast = true
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = {
+                        scope.launch { onClick(false) }.invokeOnCompletion {
                             onClick(false)
                         }
+                    }) {
+                        Icon(Icons.Filled.Close, "closeIcon")
                     }
-                }) {
-                    Icon(Icons.Filled.Close, "closeIcon")
-                }
-                Button(onClick = {
-                    viewModel.addShop(name, location, price, idItem ?: "")
-                }) {
-                    Text("Save")
+                    Button(onClick = {
+                        viewModel.addShop(
+                            viewModel.name,
+                            viewModel.location,
+                            viewModel.price.toString(),
+                            idItem ?: ""
+                        )
+                    }) {
+                        Text("Save")
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }
