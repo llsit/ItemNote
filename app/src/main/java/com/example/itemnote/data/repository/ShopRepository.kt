@@ -3,9 +3,11 @@ package com.example.itemnote.data.repository
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEMS_COLLECTION
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEM_COLLECTION
+import com.example.itemnote.utils.Constants.Companion.FIREBASE_PRICE_FIELD
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_SHOP_COLLECTION
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -45,6 +47,7 @@ class ShopRepositoryImpl @Inject constructor(
                 .collection(FIREBASE_ITEM_COLLECTION)
                 .document(idItem)
                 .collection(FIREBASE_SHOP_COLLECTION)
+                .orderBy(FIREBASE_PRICE_FIELD, Query.Direction.DESCENDING)
                 .get()
                 .await().documents.mapNotNull { it.toObject<ShopModel>() }
         }.onSuccess {

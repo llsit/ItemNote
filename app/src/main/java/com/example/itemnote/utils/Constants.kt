@@ -8,5 +8,7 @@ class Constants {
         const val FIREBASE_ITEM_COLLECTION = "item"
 
         const val FIREBASE_USERS_COLLECTION = "Users"
+
+        const val FIREBASE_PRICE_FIELD = "price"
     }
 }
