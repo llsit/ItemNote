@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.glide)
+    implementation(libs.gilde.compose)
+    implementation(libs.coil.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

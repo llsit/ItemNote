@@ -9,13 +9,13 @@ import java.util.UUID
 import javax.inject.Inject
 
 interface AddItemUseCase {
-    fun addItem(name: String): Flow<UiState<Unit>>
+    fun addItem(name: String, imageUri: String): Flow<UiState<Unit>>
 }
 
 class AddItemUseCaseImpl @Inject constructor(
     private val itemRepository: ItemRepository
 ) : AddItemUseCase {
-    override fun addItem(name: String): Flow<UiState<Unit>> {
+    override fun addItem(name: String, imageUri: String): Flow<UiState<Unit>> {
         val data = ItemModel(
             id = UUID.randomUUID().toString(),
             name = name,

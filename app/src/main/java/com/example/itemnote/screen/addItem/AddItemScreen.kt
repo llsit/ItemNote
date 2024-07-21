@@ -22,21 +22,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,10 +43,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,9 +52,12 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.itemnote.R
 import com.example.itemnote.component.AlertDialogDefault
 import com.example.itemnote.component.Loading
+import com.example.itemnote.component.MyModalBottomSheet
 import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.ImageUriUtils.getTempUri
@@ -86,7 +79,6 @@ fun AddItemScreen(
     val errorState = addViewModel.uiStateEmptyName.collectAsState()
     val openAlertDialog = remember { mutableStateOf(false) }
     val isTextFieldError = remember { mutableStateOf(false) }
-    val selectedImage = remember { mutableStateOf("") }
     val uri = remember { mutableStateOf<Uri?>(null) }
 
     val authority = stringResource(id = R.string.fileprovider)
@@ -96,7 +88,7 @@ fun AddItemScreen(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { isSaved ->
             uri.value?.let {
-                selectedImage.value = it.path.toString()
+                addViewModel.onImageUriChange(it.path.toString())
             }
         }
     )
@@ -106,6 +98,7 @@ fun AddItemScreen(
         onResult = { imageUri ->
             imageUri?.let {
                 uri.value = it
+                addViewModel.onImageUriChange(it.path.toString())
             }
         }
     )
@@ -115,8 +108,9 @@ fun AddItemScreen(
     ) { isGranted: Boolean ->
         if (isGranted) {
             // Permission is granted, proceed to step 2
-            val tmpUri = getTempUri(context, authority, file)
-            tmpUri?.let {
+            val tempUri = getTempUri(context, authority, file)
+            uri.value = tempUri
+            uri.value?.let {
                 takePhotoLauncher.launch(it)
             }
         } else {
@@ -186,8 +180,9 @@ fun AddItemScreen(
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
                     // Permission is already granted, proceed to step 2
-                    val tmpUri = getTempUri(context, authority, file)
-                    tmpUri?.let {
+                    val tempUri = getTempUri(context, authority, file)
+                    uri.value = tempUri
+                    uri.value?.let {
                         takePhotoLauncher.launch(it)
                     }
                 } else {
@@ -213,12 +208,12 @@ fun AddItemComponent(
     addViewModel: AddItemViewModel,
     isTextFieldError: MutableState<Boolean>,
     onTakePhotoClick: () -> Unit,
-    onPhotoGalleryClick: () -> Unit
+    onPhotoGalleryClick: () -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
+
     Column(
         modifier.verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Column(
             Modifier
@@ -233,20 +228,32 @@ fun AddItemComponent(
                 text = "Image"
             )
             Box(
-                modifier = modifier
-                    .wrapContentSize()
+                modifier = Modifier
                     .clickable(onClick = { showBottomSheet = true })
                     .align(Alignment.CenterHorizontally),
             ) {
-                Image(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Image",
-                    modifier = Modifier
-                        .size(160.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.LightGray)
-                        .wrapContentHeight(),
-                )
+                val imageModifier = Modifier
+                    .size(160.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.LightGray)
+                    .wrapContentHeight()
+                if (addViewModel.imageUri.isNotEmpty()) {
+                    val request = ImageRequest.Builder(LocalContext.current)
+                        .data(File(addViewModel.imageUri))
+                        .crossfade(true)
+                        .build()
+                    AsyncImage(
+                        model = request,
+                        contentDescription = null,
+                        modifier = imageModifier,
+                    )
+                } else {
+                    Image(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Image",
+                        modifier = imageModifier,
+                    )
+                }
             }
         }
 
@@ -297,71 +304,6 @@ fun AddItemComponent(
                     showBottomSheet = false
                     onPhotoGalleryClick()
                 }
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyModalBottomSheet(
-    header: String,
-    onDismiss: () -> Unit,
-    onTakePhotoClick: () -> Unit,
-    onPhotoGalleryClick: () -> Unit
-) {
-    ModalBottomSheet(
-        shape = MaterialTheme.shapes.medium.copy(
-            bottomStart = CornerSize(0),
-            bottomEnd = CornerSize(0)
-        ),
-        onDismissRequest = { onDismiss.invoke() },
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                text = header,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-            ItemListComponent(
-                title = "Take Photo",
-                icon = Icons.Default.AccountBox,
-                onClick = onTakePhotoClick
-            )
-            ItemListComponent(
-                title = "Photo Gallery",
-                icon = Icons.Default.Place,
-                onClick = onPhotoGalleryClick
-            )
-        }
-    }
-}
-
-@Composable
-fun ItemListComponent(
-    title: String,
-    icon: ImageVector,
-    onClick: () -> Unit
-) {
-    Box(modifier = Modifier.clickable { onClick() }) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                modifier = Modifier.padding(end = 16.dp)
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium
             )
         }
     }

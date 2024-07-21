@@ -28,12 +28,19 @@ class AddItemViewModel @Inject constructor(
     var name by mutableStateOf("")
         private set
 
+    var imageUri by mutableStateOf("")
+        private set
+
     fun onNameChange(newName: String) {
         name = newName
     }
 
+    fun onImageUriChange(newImageUri: String) {
+        imageUri = newImageUri
+    }
+
     fun addItem() = viewModelScope.launch {
-        addItemUseCase.addItem(name).collect {
+        addItemUseCase.addItem(name, imageUri).collect {
             if (name.isNotEmpty()) {
                 when (it) {
                     is UiState.Error -> {
