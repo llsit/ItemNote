@@ -1,7 +1,12 @@
 package com.example.itemnote.screen.addItem
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,58 +53,76 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.itemnote.R
 import com.example.itemnote.component.AlertDialogDefault
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
+import com.example.itemnote.utils.ImageUriUtils.getTempUri
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun AddItemScreen(
     navController: NavHostController = rememberNavController(),
     addViewModel: AddItemViewModel = hiltViewModel(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current
 ) {
 
     val state = addViewModel.uiStateAddShop.collectAsState()
     val errorState = addViewModel.uiStateEmptyName.collectAsState()
     val openAlertDialog = remember { mutableStateOf(false) }
     val isTextFieldError = remember { mutableStateOf(false) }
+    val selectedImage = remember { mutableStateOf("") }
+    val uri = remember { mutableStateOf<Uri?>(null) }
 
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permission is granted, proceed to step 2
-
-        } else {
-            // Permission is denied, handle it accordingly
-        }
-    }
+    val authority = stringResource(id = R.string.fileprovider)
+    val file = File(context.cacheDir, "images")
 
     val takePhotoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { isSaved ->
-
+            uri.value?.let {
+                selectedImage.value = it.path.toString()
+            }
         }
     )
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { imageUri ->
-
+            imageUri?.let {
+                uri.value = it
+            }
         }
     )
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted, proceed to step 2
+            val tmpUri = getTempUri(context, authority, file)
+            tmpUri?.let {
+                takePhotoLauncher.launch(it)
+            }
+        } else {
+            // Permission is denied, handle it accordingly
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -155,6 +178,30 @@ fun AddItemScreen(
             navController = navController,
             addViewModel = addViewModel,
             isTextFieldError = isTextFieldError,
+            onTakePhotoClick = {
+                val permission = Manifest.permission.CAMERA
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    // Permission is already granted, proceed to step 2
+                    val tmpUri = getTempUri(context, authority, file)
+                    tmpUri?.let {
+                        takePhotoLauncher.launch(it)
+                    }
+                } else {
+                    // Permission is not granted, request it
+                    cameraPermissionLauncher.launch(permission)
+                }
+            },
+            onPhotoGalleryClick = {
+                imagePicker.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
         )
     }
 }
@@ -165,6 +212,8 @@ fun AddItemComponent(
     navController: NavHostController,
     addViewModel: AddItemViewModel,
     isTextFieldError: MutableState<Boolean>,
+    onTakePhotoClick: () -> Unit,
+    onPhotoGalleryClick: () -> Unit
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     Column(
@@ -240,8 +289,14 @@ fun AddItemComponent(
             MyModalBottomSheet(
                 header = "Choose Option",
                 onDismiss = { showBottomSheet = false },
-                onTakePhotoClick = { },
-                onPhotoGalleryClick = { }
+                onTakePhotoClick = {
+                    showBottomSheet = false
+                    onTakePhotoClick()
+                },
+                onPhotoGalleryClick = {
+                    showBottomSheet = false
+                    onPhotoGalleryClick()
+                }
             )
         }
     }
