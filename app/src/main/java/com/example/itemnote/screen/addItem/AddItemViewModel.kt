@@ -1,5 +1,8 @@
 package com.example.itemnote.screen.addItem
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.itemnote.usecase.AddItemUseCase
@@ -22,7 +25,14 @@ class AddItemViewModel @Inject constructor(
     private val _uiStateEmptyName = MutableStateFlow(false)
     val uiStateEmptyName: StateFlow<Boolean> = _uiStateEmptyName
 
-    fun addItem(name: String) = viewModelScope.launch {
+    var name by mutableStateOf("")
+        private set
+
+    fun onNameChange(newName: String) {
+        name = newName
+    }
+
+    fun addItem() = viewModelScope.launch {
         addItemUseCase.addItem(name).collect {
             if (name.isNotEmpty()) {
                 when (it) {
