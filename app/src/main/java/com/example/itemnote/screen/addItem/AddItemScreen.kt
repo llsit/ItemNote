@@ -27,11 +27,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,9 +58,9 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.itemnote.R
-import com.example.itemnote.component.AlertDialogDefault
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.MyModalBottomSheet
+import com.example.itemnote.component.MySnackBarComponent
 import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.ImageUriUtils.getTempUri
@@ -72,14 +75,14 @@ fun AddItemScreen(
     navController: NavHostController = rememberNavController(),
     addViewModel: AddItemViewModel = hiltViewModel(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) {
 
     val state = addViewModel.uiStateAddShop.collectAsState()
     val errorState = addViewModel.uiStateEmptyName.collectAsState()
-    val openAlertDialog = remember { mutableStateOf(false) }
     val isTextFieldError = remember { mutableStateOf(false) }
     val uri = remember { mutableStateOf<Uri?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val authority = stringResource(id = R.string.fileprovider)
     val file = File(context.cacheDir, "images")
@@ -124,6 +127,17 @@ fun AddItemScreen(
                 navController.popBackStack()
             }
         },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                MySnackBarComponent(data.visuals.message)
+                LaunchedEffect(Unit) {
+                    coroutineScope.launch {
+                        delay(1000)
+                        navController.popBackStack()
+                    }
+                }
+            }
+        }
     )
     { innerPadding ->
         when (errorState.value) {
@@ -148,19 +162,11 @@ fun AddItemScreen(
 
             is UiState.Success -> {
                 Loading(isLoading = false)
-                Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
-                AlertDialogDefault(
-                    onDismissRequest = {
-                        openAlertDialog.value = false
-                        coroutineScope.launch {
-                            delay(1000)
-                            navController.popBackStack()
-                        }
-                    },
-                    onConfirmation = null,
-                    dialogTitle = "Add Item Success",
-                    icon = Icons.Default.Info
-                )
+                LaunchedEffect(key1 = Unit) {
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar("Add Item Success!")
+                    }
+                }
             }
 
             else -> {
@@ -211,7 +217,7 @@ fun AddItemComponent(
     onPhotoGalleryClick: () -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
-
+    val focusManager = LocalFocusManager.current
     Column(
         modifier.verticalScroll(rememberScrollState()),
     ) {
@@ -285,6 +291,7 @@ fun AddItemComponent(
                     Text("Back")
                 }
                 Button(onClick = {
+                    focusManager.clearFocus()
                     addViewModel.addItem()
                 }) {
                     Text("Save")
