@@ -7,5 +7,6 @@ data class ItemModel(
     val id: String = "",
     val name: String = "",
     val date: String = "",
+    val imageUrl: String = "",
     val shop: ShopModel? = null
 )

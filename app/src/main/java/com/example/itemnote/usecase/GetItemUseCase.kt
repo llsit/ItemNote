@@ -1,6 +1,7 @@
 package com.example.itemnote.usecase
 
 import com.example.itemnote.data.model.ItemModel
+import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.data.repository.ItemRepository
 import com.example.itemnote.data.repository.ShopRepository
 import com.example.itemnote.utils.UiState
@@ -28,10 +29,10 @@ class GetItemUseCaseImpl @Inject constructor(
                         try {
                             val itemsWithShops = itemList?.map { item ->
                                 (shopRepository.getMinShop(item.id)
-                                    .first() as UiState.Success).data?.let {
-                                    item.copy(shop = it)
+                                    .first() as UiState.Success).data.let {
+                                    item.copy(shop = it ?: ShopModel())
                                 }
-                            }?.filterNotNull()
+                            }
                             emit(UiState.Success(itemsWithShops))
                         } catch (e: Exception) {
                             emit(UiState.Error(e.message.toString()))

@@ -153,7 +153,8 @@ fun MainScreen(
                                         name = it.name,
                                         price = it.shop?.price.toString(),
                                         location = it.shop?.location.orEmpty(),
-                                        locationName = it.shop?.name.orEmpty()
+                                        locationName = it.shop?.name.orEmpty(),
+                                        imageUrl = it.imageUrl
                                     ) {
                                         navController.navigate("shopList/${it.id}")
                                     }

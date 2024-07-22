@@ -88,7 +88,7 @@ fun AddItemScreen(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { isSaved ->
             uri.value?.let {
-                addViewModel.onImageUriChange(it.path.toString())
+                addViewModel.onImageUriChange(it.toString())
             }
         }
     )
@@ -98,7 +98,7 @@ fun AddItemScreen(
         onResult = { imageUri ->
             imageUri?.let {
                 uri.value = it
-                addViewModel.onImageUriChange(it.path.toString())
+                addViewModel.onImageUriChange(it.toString())
             }
         }
     )

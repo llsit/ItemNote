@@ -11,11 +11,7 @@ class ItemNoteApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
-            // Plant a debug tree in debug builds
             Timber.plant(Timber.DebugTree())
-        } else {
-            // Plant a production tree in release builds
-
         }
     }
 }

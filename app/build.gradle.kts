@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.firebase.analytic)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.glide)

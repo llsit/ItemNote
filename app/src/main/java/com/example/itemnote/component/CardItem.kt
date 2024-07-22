@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.itemnote.R
 
 @Composable
@@ -35,7 +36,8 @@ fun CardItem(
     price: String,
     location: String,
     locationName: String,
-    onClick: () -> Unit,
+    imageUrl: String = "",
+    onClick: () -> Unit
 ) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
@@ -49,14 +51,25 @@ fun CardItem(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.placeholder_product),
-                contentDescription = "Product Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+            if (imageUrl.isEmpty()) {
+                Image(
+                    painter = painterResource(id = R.drawable.placeholder_product),
+                    contentDescription = "Product Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            } else {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Product Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
             Spacer(modifier = Modifier.width(16.dp))
             Column(
                 modifier = Modifier.weight(1f),
@@ -104,6 +117,7 @@ fun PreviewCardItem() {
         locationName = "location",
         onClick = {
 
-        }
+        },
+        imageUrl = ""
     )
 }
