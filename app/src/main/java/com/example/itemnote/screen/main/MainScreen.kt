@@ -156,6 +156,7 @@ fun MainScreen(
                                         locationName = it.shop?.name.orEmpty(),
                                         imageUrl = it.imageUrl
                                     ) {
+                                        mainViewModel.updateSelectedItemModel(it)
                                         navController.navigate("shopList/${it.id}")
                                     }
                                 }

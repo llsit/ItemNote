@@ -4,8 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.itemnote.SharedViewModel
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.GetShopUseCase
@@ -20,10 +22,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShopListViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val addShopUseCase: AddShopUseCase,
     private val getShopUseCase: GetShopUseCase
-) : ViewModel() {
+) : SharedViewModel() {
 
+    private val idItem = savedStateHandle.get<String>("id") ?: ""
     private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop.asStateFlow()
 
@@ -58,7 +62,7 @@ class ShopListViewModel @Inject constructor(
         price = input.ifEmpty { "0" }.toInt()
     }
 
-    fun addShop(idItem: String) {
+    fun addShop() {
         if (name.isEmpty()) {
             _nameState.value = "Name cannot be empty"
         } else {
@@ -75,11 +79,11 @@ class ShopListViewModel @Inject constructor(
             _priceState.value = ""
         }
         if (name.isNotEmpty() && location.isNotEmpty() && price > 0) {
-            submitShopData(idItem)
+            submitShopData()
         }
     }
 
-    private fun submitShopData(idItem: String) {
+    private fun submitShopData() {
         viewModelScope.launch {
             addShopUseCase.addShop(name, location, price.toString(), idItem)
                 .onStart { _uiStateAddShop.value = UiState.Loading }
@@ -99,7 +103,7 @@ class ShopListViewModel @Inject constructor(
         }
     }
 
-    fun getShop(idItem: String) = viewModelScope.launch {
+    fun getShop() = viewModelScope.launch {
         getShopUseCase.getShop(idItem).collect {
             when (it) {
                 is UiState.Error -> {

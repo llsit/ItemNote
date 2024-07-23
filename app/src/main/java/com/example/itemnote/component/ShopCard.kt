@@ -44,7 +44,11 @@ fun ShopCard(modifier: Modifier = Modifier, model: ShopModel, index: Int) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = if (index == 0) {
+            CardDefaults.cardColors(Color.Green.copy(alpha = 0.1f))
+        } else {
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        }
     ) {
         Row(
             modifier = Modifier
@@ -57,11 +61,7 @@ fun ShopCard(modifier: Modifier = Modifier, model: ShopModel, index: Int) {
                 Text(
                     text = model.name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (index == 0) {
-                        Color.Green
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    }
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -128,6 +128,6 @@ fun ShopCard(modifier: Modifier = Modifier, model: ShopModel, index: Int) {
 fun PreviewShopCard() {
     ShopCard(
         model = ShopModel(name = "name", location = "location", price = 10000),
-        index = 0
+        index = 1
     )
 }

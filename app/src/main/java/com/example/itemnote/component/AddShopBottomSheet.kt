@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddShopBottomSheet(
     scope: CoroutineScope = rememberCoroutineScope(),
-    idItem: String? = "",
     viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {}
 ) {
@@ -112,7 +111,7 @@ fun AddShopBottomSheet(
                     }
                     Button(onClick = {
                         focusManager.clearFocus()
-                        viewModel.addShop(idItem ?: "")
+                        viewModel.addShop()
                     }) {
                         Text("Save")
                     }

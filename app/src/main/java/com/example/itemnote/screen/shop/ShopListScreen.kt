@@ -23,26 +23,26 @@ import androidx.navigation.NavHostController
 import com.example.itemnote.component.AddShopBottomSheet
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.Loading
+import com.example.itemnote.component.MediumToolbarComponent
 import com.example.itemnote.component.ShopCard
-import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.UiState
 
 @Composable
 fun ShopListScreen(
     navController: NavHostController,
-    id: String?,
     shopListViewModel: ShopListViewModel = hiltViewModel()
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val state = shopListViewModel.uiStateGetShop.collectAsState()
+    val selectedShopModel by shopListViewModel.selectedItem.collectAsState()
     LaunchedEffect(Unit) {
-        shopListViewModel.getShop(id ?: "")
+        shopListViewModel.getShop()
     }
     Scaffold(
         topBar = {
-            ToolbarScreen(title = "Shop List", true) {
+            MediumToolbarComponent(title = "Shop List", true) {
                 navController.popBackStack()
             }
         },
@@ -79,16 +79,10 @@ fun ShopListScreen(
         }
 
         if (showBottomSheet) {
-            AddShopBottomSheet(scope = scope, idItem = id) {
+            AddShopBottomSheet(scope = scope) {
                 showBottomSheet = it
-                shopListViewModel.getShop(id ?: "")
+                shopListViewModel.getShop()
             }
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun PreviewShopListScreen() {
-//    ShopListScreen(navController)
-//}

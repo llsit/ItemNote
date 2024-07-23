@@ -38,7 +38,6 @@ import com.example.itemnote.utils.UiState
 
 @Composable
 fun FullScreenDialog(
-    idItem: String? = "",
     viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {}
 ) {
@@ -112,7 +111,7 @@ fun FullScreenDialog(
                         Icon(Icons.Filled.Close, "closeIcon")
                     }
                     Button(onClick = {
-                        viewModel.addShop(idItem ?: "")
+                        viewModel.addShop()
                     }) {
                         Text("Save")
                     }
