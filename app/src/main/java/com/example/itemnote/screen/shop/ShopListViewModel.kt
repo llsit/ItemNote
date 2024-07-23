@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.itemnote.SharedViewModel
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.GetShopUseCase
@@ -24,8 +23,8 @@ import javax.inject.Inject
 class ShopListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val addShopUseCase: AddShopUseCase,
-    private val getShopUseCase: GetShopUseCase
-) : SharedViewModel() {
+    private val getShopUseCase: GetShopUseCase,
+) : ViewModel() {
 
     private val idItem = savedStateHandle.get<String>("id") ?: ""
     private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)

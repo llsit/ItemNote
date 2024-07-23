@@ -1,7 +1,7 @@
 package com.example.itemnote.screen.main
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.itemnote.SharedViewModel
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.repository.AuthRepository
 import com.example.itemnote.usecase.GetItemUseCase
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getItemUseCase: GetItemUseCase,
     private val authRepository: AuthRepository
-) : SharedViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<ItemModel>>>(UiState.Loading)
     val uiState = _uiState.asStateFlow()

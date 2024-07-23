@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.itemnote.SharedViewModel
 import com.example.itemnote.component.CardItem
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.Loading
@@ -47,6 +48,7 @@ fun MainScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
+    sharedViewModel: SharedViewModel,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val authState = mainViewModel.authState.collectAsState()
@@ -156,7 +158,7 @@ fun MainScreen(
                                         locationName = it.shop?.name.orEmpty(),
                                         imageUrl = it.imageUrl
                                     ) {
-                                        mainViewModel.updateSelectedItemModel(it)
+                                        sharedViewModel.updateSelectedItemModel(it)
                                         navController.navigate("shopList/${it.id}")
                                     }
                                 }

@@ -42,7 +42,7 @@ fun CardItem(
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         onClick = onClick
@@ -65,6 +65,7 @@ fun CardItem(
                     model = imageUrl,
                     contentDescription = "Product Image",
                     contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.placeholder_product),
                     modifier = Modifier
                         .size(100.dp)
                         .clip(RoundedCornerShape(8.dp))
