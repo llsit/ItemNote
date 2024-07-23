@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +29,15 @@ class ShopListViewModel @Inject constructor(
 
     private val _uiStateGetShop = MutableStateFlow<UiState<List<ShopModel>>>(UiState.Idle)
     val uiStateGetShop: StateFlow<UiState<List<ShopModel>>> = _uiStateGetShop.asStateFlow()
+
+    private val _nameState = MutableStateFlow("")
+    val nameState: StateFlow<String> = _nameState.asStateFlow()
+
+    private val _locationState = MutableStateFlow("")
+    val locationState: StateFlow<String> = _locationState.asStateFlow()
+
+    private val _priceState = MutableStateFlow("")
+    val priceState: StateFlow<String> = _priceState.asStateFlow()
 
     var name by mutableStateOf("")
         private set
@@ -45,25 +55,49 @@ class ShopListViewModel @Inject constructor(
     }
 
     fun updatePrice(input: String) {
-        price = input.toInt()
+        price = input.ifEmpty { "0" }.toInt()
     }
 
-    fun addShop(name: String, location: String, price: String, idItem: String) =
-        viewModelScope.launch {
-            addShopUseCase.addShop(name, location, price, idItem).collect {
-                when (it) {
-                    is UiState.Error -> {
-                        _uiStateAddShop.value = UiState.Error(it.message)
-                    }
+    fun addShop(idItem: String) {
+        if (name.isEmpty()) {
+            _nameState.value = "Name cannot be empty"
+        } else {
+            _nameState.value = ""
+        }
+        if (location.isEmpty()) {
+            _locationState.value = "Location cannot be empty"
+        } else {
+            _locationState.value = ""
+        }
+        if (price <= 0) {
+            _priceState.value = "Price cannot be lower than 0"
+        } else {
+            _priceState.value = ""
+        }
+        if (name.isNotEmpty() && location.isNotEmpty() && price > 0) {
+            submitShopData(idItem)
+        }
+    }
 
-                    UiState.Idle -> Unit
-                    UiState.Loading -> _uiStateAddShop.value = UiState.Loading
-                    is UiState.Success -> {
-                        _uiStateAddShop.value = UiState.Success(it.data)
+    private fun submitShopData(idItem: String) {
+        viewModelScope.launch {
+            addShopUseCase.addShop(name, location, price.toString(), idItem)
+                .onStart { _uiStateAddShop.value = UiState.Loading }
+                .collect {
+                    when (it) {
+                        is UiState.Error -> {
+                            _uiStateAddShop.value = UiState.Error(it.message)
+                        }
+
+                        UiState.Idle -> Unit
+                        UiState.Loading -> _uiStateAddShop.value = UiState.Loading
+                        is UiState.Success -> {
+                            _uiStateAddShop.value = UiState.Success(it.data)
+                        }
                     }
                 }
-            }
         }
+    }
 
     fun getShop(idItem: String) = viewModelScope.launch {
         getShopUseCase.getShop(idItem).collect {

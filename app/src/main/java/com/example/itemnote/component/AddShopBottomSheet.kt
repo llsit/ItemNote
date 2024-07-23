@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,10 @@ fun AddShopBottomSheet(
 
     val focusManager = LocalFocusManager.current
     val state = viewModel.uiStateAddShop.collectAsState()
+    val errorName by viewModel.nameState.collectAsState()
+    val errorLocation by viewModel.locationState.collectAsState()
+    val errorPrice by viewModel.priceState.collectAsState()
+
     when (state.value) {
         is UiState.Error -> {
             Loading(isLoading = false)
@@ -70,22 +75,28 @@ fun AddShopBottomSheet(
             ) {
                 TextFieldComponent(
                     value = viewModel.name,
-                    onValueChange = { name -> viewModel.updateName(name) },
+                    onValueChange = viewModel::updateName,
                     label = "Name",
                     modifier = Modifier.fillMaxWidth(),
+                    isError = errorName.isNotEmpty(),
+                    errorMessage = errorName.ifEmpty { "Name cannot be empty" }
                 )
                 TextFieldComponent(
                     value = viewModel.location,
                     onValueChange = { location -> viewModel.updateLocation(location) },
                     label = "Location",
                     modifier = Modifier.fillMaxWidth(),
+                    isError = errorLocation.isNotEmpty(),
+                    errorMessage = errorLocation.ifEmpty { "Location cannot be empty" }
                 )
                 TextFieldComponent(
                     value = viewModel.price.toString(),
                     onValueChange = { price -> viewModel.updatePrice(price) },
                     label = "Price",
                     modifier = Modifier.fillMaxWidth(),
-                    isLast = true
+                    isLast = true,
+                    isError = errorPrice.isNotEmpty(),
+                    errorMessage = errorPrice.ifEmpty { "Price cannot be lower than 0" }
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -100,12 +111,8 @@ fun AddShopBottomSheet(
                         Icon(Icons.Filled.Close, "closeIcon")
                     }
                     Button(onClick = {
-                        viewModel.addShop(
-                            viewModel.name,
-                            viewModel.location,
-                            viewModel.price.toString(),
-                            idItem ?: ""
-                        )
+                        focusManager.clearFocus()
+                        viewModel.addShop(idItem ?: "")
                     }) {
                         Text("Save")
                     }

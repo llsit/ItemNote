@@ -112,7 +112,7 @@ fun FullScreenDialog(
                         Icon(Icons.Filled.Close, "closeIcon")
                     }
                     Button(onClick = {
-                        viewModel.addShop(name, location, price, idItem ?: "")
+                        viewModel.addShop(idItem ?: "")
                     }) {
                         Text("Save")
                     }
