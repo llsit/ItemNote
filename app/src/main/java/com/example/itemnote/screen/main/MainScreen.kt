@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
@@ -30,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.itemnote.SharedViewModel
-import com.example.itemnote.component.CardItem
 import com.example.itemnote.component.FloatingButton
+import com.example.itemnote.component.ItemComponent
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ProfileMenuComponent
 import com.example.itemnote.component.ToolbarScreen
@@ -145,13 +146,14 @@ fun MainScreen(
 
                     is UiState.Success -> {
                         Loading(isLoading = false)
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                        LazyVerticalGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            columns = GridCells.Adaptive(minSize = 128.dp)
                         ) {
                             (state.value as UiState.Success<List<ItemModel>>).data?.let {
                                 items(it) {
-                                    CardItem(
-                                        Modifier.padding(5.dp),
+                                    ItemComponent(
+                                        Modifier,
                                         name = it.name,
                                         price = it.shop?.price.toString(),
                                         location = it.shop?.location.orEmpty(),
