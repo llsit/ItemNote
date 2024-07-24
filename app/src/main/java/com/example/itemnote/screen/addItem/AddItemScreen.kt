@@ -62,6 +62,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.itemnote.R
 import com.example.itemnote.component.AddCategoryDialog
+import com.example.itemnote.component.ChipGroupList
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.MyModalBottomSheet
 import com.example.itemnote.component.MySnackBarComponent
@@ -140,6 +141,7 @@ fun AddItemScreen(
         UiState.Loading -> Loading(isLoading = true)
         is UiState.Success -> {
             Loading(isLoading = true)
+            addViewModel.getCategory()
             Toast.makeText(
                 LocalContext.current,
                 "Add Category Success!",
@@ -246,6 +248,7 @@ fun AddItemComponent(
     var showBottomSheet by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf(false) }
+    val category = addViewModel.uiStateCategory.collectAsState()
     Column(
         modifier.verticalScroll(rememberScrollState()),
     ) {
@@ -325,7 +328,30 @@ fun AddItemComponent(
                     )
                 }
             }
-            Spacer(modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.size(4.dp))
+            when (category.value) {
+                is UiState.Error -> {
+                    Loading(isLoading = false)
+                    Toast.makeText(
+                        LocalContext.current,
+                        "Error : Get Category Unsuccessful",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                UiState.Idle -> Unit
+                UiState.Loading -> Loading(isLoading = true)
+                is UiState.Success -> {
+                    Loading(isLoading = false)
+                    (category.value as UiState.Success).data.let {
+                        ChipGroupList(
+                            categoryList = it,
+                            onSelected = { }
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(16.dp))
+                }
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,

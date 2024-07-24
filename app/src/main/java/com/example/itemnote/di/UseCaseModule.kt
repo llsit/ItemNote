@@ -8,6 +8,8 @@ import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.AddShopUseCaseImpl
 import com.example.itemnote.usecase.CheckUserLoginUseCase
 import com.example.itemnote.usecase.CheckUserLoginUseCaseImpl
+import com.example.itemnote.usecase.GetCategoryUseCase
+import com.example.itemnote.usecase.GetCategoryUseCaseImpl
 import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemUseCaseImpl
 import com.example.itemnote.usecase.GetShopUseCase
@@ -61,7 +63,13 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideLogoutUseCase(useCase: AddCategoryUseCaseImpl): AddCategoryUseCase {
+    fun provideAddCategoryUseCase(useCase: AddCategoryUseCaseImpl): AddCategoryUseCase {
         return useCase
     }
+
+    @Provides
+    fun provideGetCategoryUseCase(useCase: GetCategoryUseCaseImpl): GetCategoryUseCase {
+        return useCase
+    }
+
 }
