@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
@@ -28,6 +29,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -48,7 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -58,6 +61,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.itemnote.R
+import com.example.itemnote.component.AddCategoryDialog
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.MyModalBottomSheet
 import com.example.itemnote.component.MySnackBarComponent
@@ -83,6 +87,7 @@ fun AddItemScreen(
     val isTextFieldError = remember { mutableStateOf(false) }
     val uri = remember { mutableStateOf<Uri?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
+    val uiStateAddCategory = addViewModel.uiStateAddCategory.collectAsState()
 
     val authority = stringResource(id = R.string.fileprovider)
     val file = File(context.cacheDir, "images")
@@ -118,6 +123,28 @@ fun AddItemScreen(
             }
         } else {
             // Permission is denied, handle it accordingly
+        }
+    }
+
+    when (uiStateAddCategory.value) {
+        is UiState.Error -> {
+            Loading(isLoading = false)
+            Toast.makeText(
+                LocalContext.current,
+                "Error : Add Category Unsuccessful",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        UiState.Idle -> Unit
+        UiState.Loading -> Loading(isLoading = true)
+        is UiState.Success -> {
+            Loading(isLoading = true)
+            Toast.makeText(
+                LocalContext.current,
+                "Add Category Success!",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -218,6 +245,7 @@ fun AddItemComponent(
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    var showDialog by remember { mutableStateOf(false) }
     Column(
         modifier.verticalScroll(rememberScrollState()),
     ) {
@@ -266,9 +294,9 @@ fun AddItemComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.ime),
+                .windowInsetsPadding(WindowInsets.ime)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TextFieldComponent(
                 value = addViewModel.name,
@@ -277,9 +305,27 @@ fun AddItemComponent(
                 isError = isTextFieldError.value,
                 isLast = true,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .fillMaxWidth(),
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier
+                        .weight(1f),
+                    text = "Category",
+                )
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "add category",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -313,11 +359,14 @@ fun AddItemComponent(
                 }
             )
         }
+
+        AddCategoryDialog(
+            showDialog = showDialog,
+            onDismiss = { showDialog = false },
+            onAddCategory = { newCategory ->
+                addViewModel.addCategory(newCategory)
+            }
+        )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewAddItem() {
-    AddItemScreen()
-}

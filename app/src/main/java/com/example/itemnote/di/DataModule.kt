@@ -2,6 +2,8 @@ package com.example.itemnote.di
 
 import com.example.itemnote.data.repository.AuthRepository
 import com.example.itemnote.data.repository.AuthRepositoryImpl
+import com.example.itemnote.data.repository.CategoryRepository
+import com.example.itemnote.data.repository.CategoryRepositoryImpl
 import com.example.itemnote.data.repository.ItemRepository
 import com.example.itemnote.data.repository.ItemRepositoryImpl
 import com.example.itemnote.data.repository.ShopRepository
@@ -27,4 +29,7 @@ internal interface DataModule {
 
     @Binds
     fun bindPreferenceManager(manager: PreferenceManagerImpl): PreferenceManager
+
+    @Binds
+    fun bindCategoryRepository(repository: CategoryRepositoryImpl): CategoryRepository
 }

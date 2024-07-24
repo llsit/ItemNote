@@ -1,5 +1,7 @@
 package com.example.itemnote.di
 
+import com.example.itemnote.usecase.AddCategoryUseCase
+import com.example.itemnote.usecase.AddCategoryUseCaseImpl
 import com.example.itemnote.usecase.AddItemUseCase
 import com.example.itemnote.usecase.AddItemUseCaseImpl
 import com.example.itemnote.usecase.AddShopUseCase
@@ -55,6 +57,11 @@ object UseCaseModule {
 
     @Provides
     fun provideCheckUserLoginUseCase(useCase: CheckUserLoginUseCaseImpl): CheckUserLoginUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideLogoutUseCase(useCase: AddCategoryUseCaseImpl): AddCategoryUseCase {
         return useCase
     }
 }
