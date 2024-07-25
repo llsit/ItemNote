@@ -29,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +39,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +62,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.itemnote.R
 import com.example.itemnote.component.AddCategoryDialog
+import com.example.itemnote.component.BasicAlertDialogComponent
 import com.example.itemnote.component.ChipGroupList
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.MyModalBottomSheet
@@ -84,8 +85,7 @@ fun AddItemScreen(
 ) {
 
     val state = addViewModel.uiStateAddShop.collectAsState()
-    val errorState = addViewModel.uiStateEmptyName.collectAsState()
-    val isTextFieldError = remember { mutableStateOf(false) }
+    val errorState by addViewModel.uiStateEmptyName.collectAsState()
     val uri = remember { mutableStateOf<Uri?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val uiStateAddCategory = addViewModel.uiStateAddCategory.collectAsState()
@@ -169,16 +169,6 @@ fun AddItemScreen(
         }
     )
     { innerPadding ->
-        when (errorState.value) {
-            true -> {
-                isTextFieldError.value = true
-                Toast.makeText(LocalContext.current, "Name is Empty", Toast.LENGTH_LONG).show()
-            }
-
-            false -> {
-
-            }
-        }
         when (state.value) {
             is UiState.Error -> {
                 Loading(isLoading = false)
@@ -206,7 +196,7 @@ fun AddItemScreen(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
             addViewModel = addViewModel,
-            isTextFieldError = isTextFieldError,
+            isTextFieldError = errorState,
             onTakePhotoClick = {
                 val permission = Manifest.permission.CAMERA
                 if (ContextCompat.checkSelfPermission(
@@ -236,19 +226,22 @@ fun AddItemScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemComponent(
     modifier: Modifier,
     navController: NavHostController,
     addViewModel: AddItemViewModel,
-    isTextFieldError: MutableState<Boolean>,
+    isTextFieldError: Boolean,
     onTakePhotoClick: () -> Unit,
     onPhotoGalleryClick: () -> Unit,
 ) {
-    var showBottomSheet by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
+    val showCategoryDialog by addViewModel.uiStateErrorCategory.collectAsState()
     val category = addViewModel.uiStateCategory.collectAsState()
+
     Column(
         modifier.verticalScroll(rememberScrollState()),
     ) {
@@ -303,9 +296,10 @@ fun AddItemComponent(
         ) {
             TextFieldComponent(
                 value = addViewModel.name,
-                onValueChange = addViewModel::onNameChange,
+                onValueChange = { name -> addViewModel.onNameChange(name) },
                 label = "Name",
-                isError = isTextFieldError.value,
+                isError = isTextFieldError,
+                errorMessage = "Name is Empty",
                 isLast = true,
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -346,7 +340,7 @@ fun AddItemComponent(
                     (category.value as UiState.Success).data.let {
                         ChipGroupList(
                             categoryList = it,
-                            onSelected = { }
+                            onSelected = { addViewModel.onCategoryChange(it) }
                         )
                     }
                     Spacer(modifier = Modifier.size(16.dp))
@@ -364,7 +358,7 @@ fun AddItemComponent(
                 }
                 Button(onClick = {
                     focusManager.clearFocus()
-                    addViewModel.addItem()
+                    addViewModel.checkAddItem()
                 }) {
                     Text("Save")
                 }
@@ -383,6 +377,12 @@ fun AddItemComponent(
                     showBottomSheet = false
                     onPhotoGalleryClick()
                 }
+            )
+        }
+        if (showCategoryDialog) {
+            BasicAlertDialogComponent(
+                title = "Please select a Category",
+                onClickDismiss = { addViewModel.resetUiStateErrorCategory() },
             )
         }
 

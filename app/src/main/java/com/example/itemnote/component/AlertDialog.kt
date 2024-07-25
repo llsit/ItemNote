@@ -1,11 +1,14 @@
 package com.example.itemnote.component
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AlertDialogDefault(
@@ -52,5 +55,17 @@ fun AlertDialogDefault(
                 }
             }
         }
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+fun AlertDialogDefaultPreview() {
+    AlertDialogDefault(
+        onDismissRequest = { /* Handle dismiss request */ },
+        onConfirmation = { /* Handle confirmation */ },
+        dialogTitle = "Example Title",
+        dialogText = "Example Text",
+        icon = Icons.Default.Info
     )
 }

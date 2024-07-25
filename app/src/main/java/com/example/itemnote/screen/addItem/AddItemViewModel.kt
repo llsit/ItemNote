@@ -31,6 +31,9 @@ class AddItemViewModel @Inject constructor(
     private val _uiStateEmptyName = MutableStateFlow(false)
     val uiStateEmptyName: StateFlow<Boolean> = _uiStateEmptyName
 
+    private val _uiStateErrorCategory = MutableStateFlow(false)
+    var uiStateErrorCategory: StateFlow<Boolean> = _uiStateErrorCategory
+
     private val _uiStateAddCategory = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiStateAddCategory: StateFlow<UiState<Unit>> = _uiStateAddCategory.asStateFlow()
 
@@ -43,38 +46,53 @@ class AddItemViewModel @Inject constructor(
     var imageUri by mutableStateOf("")
         private set
 
+    private var category by mutableStateOf<CategoryModel?>(null)
+
     init {
         getCategory()
     }
 
     fun onNameChange(newName: String) {
         name = newName
+        _uiStateEmptyName.value = newName.isEmpty()
     }
 
     fun onImageUriChange(newImageUri: String) {
         imageUri = newImageUri
     }
 
-    fun addItem() = viewModelScope.launch {
-        addItemUseCase.addItem(name, imageUri).collect {
-            if (name.isNotEmpty()) {
-                when (it) {
-                    is UiState.Error -> {
-                        _uiStateAddShop.value = UiState.Error(it.message)
-                    }
+    fun onCategoryChange(newCategory: CategoryModel?) {
+        category = newCategory
+    }
 
-                    UiState.Loading -> {
-                        _uiStateAddShop.value = UiState.Loading
-                    }
+    fun resetUiStateErrorCategory() {
+        _uiStateErrorCategory.value = false
+    }
 
-                    is UiState.Success -> {
-                        _uiStateAddShop.value = UiState.Success(it.data)
-                    }
+    fun checkAddItem() {
+        _uiStateEmptyName.value = name.isEmpty()
+        _uiStateErrorCategory.value = category == null
+        if (name.isNotEmpty() && category != null) {
+            addItem()
+        }
+    }
 
-                    else -> Unit
+    private fun addItem() = viewModelScope.launch {
+        addItemUseCase.addItem(name, imageUri, category!!).collect {
+            when (it) {
+                is UiState.Error -> {
+                    _uiStateAddShop.value = UiState.Error(it.message)
                 }
-            } else {
-                _uiStateEmptyName.value = true
+
+                UiState.Loading -> {
+                    _uiStateAddShop.value = UiState.Loading
+                }
+
+                is UiState.Success -> {
+                    _uiStateAddShop.value = UiState.Success(it.data)
+                }
+
+                else -> Unit
             }
         }
     }
