@@ -66,17 +66,36 @@ fun ShopListScreen(
     sharedViewModel: SharedViewModel
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val state = shopListViewModel.uiStateGetShop.collectAsState()
     val selectedItemModel by sharedViewModel.selectedItem.collectAsState()
+    val deleteItemState = shopListViewModel.deleteItemState.collectAsState()
+    val deleteItemId = remember { mutableStateOf("") }
+
+    when (deleteItemState.value) {
+        is UiState.Error -> {
+            Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
+        }
+
+        UiState.Idle -> Unit
+        UiState.Loading -> Unit
+        is UiState.Success -> {
+            navController.popBackStack()
+        }
+    }
     LaunchedEffect(Unit) {
         shopListViewModel.getShop()
     }
     Scaffold(
         topBar = {
-            MediumToolbarComponent(title = "${selectedItemModel?.name}", true) {
-                navController.popBackStack()
-            }
+            MediumToolbarComponent(
+                title = "${selectedItemModel?.name}",
+                isBack = true,
+                onDeleteClick = {
+                    showDialog = true
+                },
+                onBackClick = { navController.popBackStack() })
         },
         floatingActionButton = {
             FloatingButton {
@@ -113,6 +132,19 @@ fun ShopListScreen(
                 showBottomSheet = it
                 shopListViewModel.getShop()
             }
+        }
+
+        if (showDialog) {
+            ConfirmDialog(
+                icon = Icons.Default.Info,
+                dialogTitle = "Delete",
+                dialogText = "Are you sure you want to delete this item?",
+                onDismissRequest = { showDialog = false },
+                onConfirmation = {
+                    if (selectedItemModel?.id?.isNotEmpty() == true)
+                        shopListViewModel.deleteItem(selectedItemModel?.id.orEmpty())
+                    showDialog = false
+                })
         }
     }
 }

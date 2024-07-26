@@ -8,6 +8,8 @@ import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.AddShopUseCaseImpl
 import com.example.itemnote.usecase.CheckUserLoginUseCase
 import com.example.itemnote.usecase.CheckUserLoginUseCaseImpl
+import com.example.itemnote.usecase.DeleteItemUseCase
+import com.example.itemnote.usecase.DeleteItemUseCaseImpl
 import com.example.itemnote.usecase.DeleteShopUseCase
 import com.example.itemnote.usecase.DeleteShopUseCaseImpl
 import com.example.itemnote.usecase.GetCategoryUseCase
@@ -86,4 +88,8 @@ object UseCaseModule {
         return useCase
     }
 
+    @Provides
+    fun provideDeleteItemUseCase(useCase: DeleteItemUseCaseImpl): DeleteItemUseCase {
+        return useCase
+    }
 }

@@ -19,6 +19,7 @@ interface ItemRepository {
     fun getItem(): Flow<UiState<List<ItemModel>>>
     fun uploadImage(path: String): Flow<String>
     fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>>
+    fun deleteItem(itemId: String): Flow<UiState<Unit>>
 }
 
 class ItemRepositoryImpl @Inject constructor(
@@ -80,6 +81,20 @@ class ItemRepositoryImpl @Inject constructor(
             emit(UiState.Success(it))
         }.onFailure {
             error("getItemByCategory Error")
+        }
+    }
+
+    override fun deleteItem(itemId: String): Flow<UiState<Unit>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(preferenceManager.getUserId() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(itemId)
+                .delete()
+        }.onSuccess {
+            emit(UiState.Success(Unit))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
         }
     }
 }

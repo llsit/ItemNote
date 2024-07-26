@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.usecase.AddShopUseCase
+import com.example.itemnote.usecase.DeleteItemUseCase
 import com.example.itemnote.usecase.DeleteShopUseCase
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.utils.UiState
@@ -25,7 +26,8 @@ class ShopListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val addShopUseCase: AddShopUseCase,
     private val getShopUseCase: GetShopUseCase,
-    private val deleteShopUseCase: DeleteShopUseCase
+    private val deleteShopUseCase: DeleteShopUseCase,
+    private val deleteItemUseCase: DeleteItemUseCase
 ) : ViewModel() {
 
     private val idItem = savedStateHandle.get<String>("id") ?: ""
@@ -43,6 +45,9 @@ class ShopListViewModel @Inject constructor(
 
     private val _priceState = MutableStateFlow("")
     val priceState: StateFlow<String> = _priceState.asStateFlow()
+
+    private val _deleteItemState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val deleteItemState: StateFlow<UiState<Unit>> = _deleteItemState.asStateFlow()
 
     var name by mutableStateOf("")
         private set
@@ -129,5 +134,14 @@ class ShopListViewModel @Inject constructor(
                     else -> Unit
                 }
             }
+    }
+
+    fun deleteItem(itemId: String) = viewModelScope.launch {
+        deleteItemUseCase.deleteItem(itemId).collect {
+            when (it) {
+                is UiState.Success -> _deleteItemState.value = UiState.Success(it.data)
+                else -> Unit
+            }
+        }
     }
 }
