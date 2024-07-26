@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -127,8 +128,9 @@ fun MainScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                    text = "Hello ${userViewModel.name.value}!"
+                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                    text = "Hello ${userViewModel.name.value}!",
+                    style = MaterialTheme.typography.titleLarge
                 )
                 when (category) {
                     is UiState.Success -> {

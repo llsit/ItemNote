@@ -17,7 +17,8 @@ import javax.inject.Inject
 interface ShopRepository {
     fun addShop(shop: ShopModel, idItem: String): Flow<UiState<Unit>>
     fun getShop(idItem: String): Flow<UiState<List<ShopModel>>>
-    fun getMinShop(idItem: String): Flow<UiState<ShopModel>>
+    fun getMinShop(itemId: String): Flow<UiState<ShopModel>>
+    fun deleteShop(itemId: String, shopId: String): Flow<UiState<Unit>>
 }
 
 class ShopRepositoryImpl @Inject constructor(
@@ -58,12 +59,12 @@ class ShopRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getMinShop(idItem: String): Flow<UiState<ShopModel>> = flow {
+    override fun getMinShop(itemId: String): Flow<UiState<ShopModel>> = flow {
         runCatching {
             firestore.collection(FIREBASE_ITEMS_COLLECTION)
                 .document(authRepository.getUserID() ?: "No User ID")
                 .collection(FIREBASE_ITEM_COLLECTION)
-                .document(idItem)
+                .document(itemId)
                 .collection(FIREBASE_SHOP_COLLECTION)
                 .orderBy(FIREBASE_PRICE_FIELD, Query.Direction.ASCENDING).limit(1)
                 .get()
@@ -71,6 +72,22 @@ class ShopRepositoryImpl @Inject constructor(
                 .documents.firstOrNull()
         }.onSuccess {
             emit(UiState.Success(it?.toObject<ShopModel>()))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
+        }
+    }
+
+    override fun deleteShop(itemId: String, shopId: String): Flow<UiState<Unit>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(authRepository.getUserID() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(itemId)
+                .collection(FIREBASE_SHOP_COLLECTION)
+                .document(shopId)
+                .delete()
+        }.onSuccess {
+            emit(UiState.Success(Unit))
         }.onFailure {
             emit(UiState.Error(it.message.toString()))
         }

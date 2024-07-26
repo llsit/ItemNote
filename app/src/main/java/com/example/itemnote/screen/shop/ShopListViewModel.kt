@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.usecase.AddShopUseCase
+import com.example.itemnote.usecase.DeleteShopUseCase
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ class ShopListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val addShopUseCase: AddShopUseCase,
     private val getShopUseCase: GetShopUseCase,
+    private val deleteShopUseCase: DeleteShopUseCase
 ) : ViewModel() {
 
     private val idItem = savedStateHandle.get<String>("id") ?: ""
@@ -116,5 +118,16 @@ class ShopListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun deleteShop(shopId: String, itemId: String) = viewModelScope.launch {
+        deleteShopUseCase.deleteShop(itemId, shopId)
+            .onStart { _uiStateGetShop.value = UiState.Loading }
+            .collect {
+                when (it) {
+                    is UiState.Success -> getShop()
+                    else -> Unit
+                }
+            }
     }
 }

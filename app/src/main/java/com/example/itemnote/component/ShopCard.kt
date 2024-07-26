@@ -36,7 +36,11 @@ import androidx.compose.ui.unit.dp
 import com.example.itemnote.data.model.ShopModel
 
 @Composable
-fun ShopCard(model: ShopModel, index: Int) {
+fun ShopCard(
+    model: ShopModel, index: Int,
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: (String) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,18 +117,18 @@ fun ShopCard(model: ShopModel, index: Int) {
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    DropdownMenuItem(
-                        text = { Text("Edit") },
-                        onClick = {
-                            // Handle edit action
-                            expanded = false
-                        }
-                    )
+//                    DropdownMenuItem(
+//                        text = { Text("Edit") },
+//                        onClick = {
+//                            expanded = false
+//                            onEditClick(model.id)
+//                        }
+//                    )
                     DropdownMenuItem(
                         text = { Text("Delete") },
                         onClick = {
-                            // Handle delete action
                             expanded = false
+                            onDeleteClick(model.id)
                         }
                     )
                 }

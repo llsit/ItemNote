@@ -3,7 +3,6 @@ package com.example.itemnote.screen.shop
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +47,7 @@ import coil.compose.AsyncImage
 import com.example.itemnote.R
 import com.example.itemnote.SharedViewModel
 import com.example.itemnote.component.AddShopBottomSheet
+import com.example.itemnote.component.ConfirmDialog
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.Loading
 import com.example.itemnote.component.MediumToolbarComponent
@@ -95,7 +94,17 @@ fun ShopListScreen(
             UiState.Idle -> Unit
             UiState.Loading -> Loading(isLoading = true)
             is UiState.Success -> {
-                ShopList(innerPadding, selectedItemModel, state)
+                ShopList(
+                    innerPadding = innerPadding,
+                    selectedItemModel = selectedItemModel,
+                    shopList = (state.value as UiState.Success<List<ShopModel>>).data,
+                    onDeleteShop = {
+                        shopListViewModel.deleteShop(
+                            shopId = it,
+                            itemId = selectedItemModel?.id.orEmpty()
+                        )
+                    }
+                )
             }
         }
 
@@ -112,8 +121,11 @@ fun ShopListScreen(
 fun ShopList(
     innerPadding: PaddingValues,
     selectedItemModel: ItemModel?,
-    state: State<UiState<List<ShopModel>>>
+    shopList: List<ShopModel>?,
+    onDeleteShop: (String) -> Unit
 ) {
+    val showDialog = remember { mutableStateOf(false) }
+    val deleteShopId = remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .padding(innerPadding)
@@ -158,10 +170,7 @@ fun ShopList(
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Date with icon
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Default.DateRange,
@@ -179,12 +188,28 @@ fun ShopList(
         Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         LazyColumn {
-            (state.value as UiState.Success<List<ShopModel>>).data?.let {
+            shopList?.let {
                 itemsIndexed(it) { index, item ->
-                    ShopCard(item, index)
+                    ShopCard(model = item, index = index, onEditClick = {}, onDeleteClick = {
+                        deleteShopId.value = item.id
+                        showDialog.value = true
+                    })
                 }
             }
         }
+    }
+
+    if (showDialog.value) {
+        ConfirmDialog(
+            icon = Icons.Default.Info,
+            dialogTitle = "Delete",
+            dialogText = "Are you sure you want to delete this item?",
+            onDismissRequest = { showDialog.value = false },
+            onConfirmation = {
+                if (deleteShopId.value.isNotEmpty())
+                    onDeleteShop(deleteShopId.value)
+                showDialog.value = false
+            })
     }
 }
 
@@ -199,17 +224,11 @@ fun PreviewShopList() {
             imageUrl = "",
             shop = ShopModel(name = "name", location = "location", price = 10000)
         ),
-        state = remember {
-            mutableStateOf<UiState<List<ShopModel>>>(UiState.Idle)
-                .apply {
-                    value = UiState.Success(
-                        listOf(
-                            ShopModel(name = "name", location = "location", price = 10000),
-                            ShopModel(name = "name", location = "location", price = 10000)
-                        )
-                    )
-                }
-        }
+        shopList = listOf(
+            ShopModel(name = "name", location = "location", price = 10000),
+            ShopModel(name = "name", location = "location", price = 10000)
+        ),
+        onDeleteShop = {}
     )
 }
 
