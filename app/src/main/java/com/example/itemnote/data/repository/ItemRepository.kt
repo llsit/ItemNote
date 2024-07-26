@@ -18,6 +18,7 @@ interface ItemRepository {
     fun addItem(data: ItemModel): Flow<UiState<Unit>>
     fun getItem(): Flow<UiState<List<ItemModel>>>
     fun uploadImage(path: String): Flow<String>
+    fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>>
 }
 
 class ItemRepositoryImpl @Inject constructor(
@@ -64,6 +65,21 @@ class ItemRepositoryImpl @Inject constructor(
             emit(it)
         }.onFailure {
             error("Upload Image Error")
+        }
+    }
+
+    override fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(preferenceManager.getUserId() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .whereEqualTo("categoryModel.id", categoryId)
+                .get()
+                .await().documents.mapNotNull { it.toObject<ItemModel>() }
+        }.onSuccess {
+            emit(UiState.Success(it))
+        }.onFailure {
+            error("getItemByCategory Error")
         }
     }
 }

@@ -21,8 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.itemnote.SharedViewModel
+import com.example.itemnote.component.ChipGroupHorizontalList
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.ItemComponent
 import com.example.itemnote.component.Loading
@@ -38,6 +39,7 @@ import com.example.itemnote.component.ProfileMenuComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.screen.user.UserViewModel
+import com.example.itemnote.usecase.CategoryModel
 import com.example.itemnote.utils.AuthState
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
@@ -53,6 +55,7 @@ fun MainScreen(
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val authState = mainViewModel.authState.collectAsState()
+    val category by mainViewModel.uiStateCategory.collectAsState()
 
     when (authState.value) {
         AuthState.Authenticated -> Unit
@@ -116,9 +119,6 @@ fun MainScreen(
             }
         )
         { innerPadding ->
-            LaunchedEffect(Unit) {
-                mainViewModel.getItems()
-            }
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -130,6 +130,23 @@ fun MainScreen(
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                     text = "Hello ${userViewModel.name.value}!"
                 )
+                when (category) {
+                    is UiState.Success -> {
+                        Loading(isLoading = false)
+                        (category as UiState.Success<List<CategoryModel>>).data?.let { categoryList ->
+                            val list = listOf(
+                                CategoryModel("home", "Home")
+                            ).plus(categoryList)
+                            ChipGroupHorizontalList(list) { selectedCategory ->
+                                mainViewModel.getItemsByCategory(selectedCategory?.id.orEmpty())
+                            }
+                        }
+                    }
+
+                    is UiState.Loading -> Loading(isLoading = true)
+                    is UiState.Error -> Loading(isLoading = false)
+                    is UiState.Idle -> Unit
+                }
                 val state = mainViewModel.uiState.collectAsState()
                 when (state.value) {
                     is UiState.Error -> {
@@ -147,7 +164,9 @@ fun MainScreen(
                     is UiState.Success -> {
                         Loading(isLoading = false)
                         LazyVerticalGrid(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp),
                             columns = GridCells.Adaptive(minSize = 128.dp)
                         ) {
                             (state.value as UiState.Success<List<ItemModel>>).data?.let {

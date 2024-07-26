@@ -12,6 +12,8 @@ import com.example.itemnote.usecase.GetCategoryUseCase
 import com.example.itemnote.usecase.GetCategoryUseCaseImpl
 import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemUseCaseImpl
+import com.example.itemnote.usecase.GetItemsByCategory
+import com.example.itemnote.usecase.GetItemsByCategoryImpl
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.usecase.GetShopUseCaseImpl
 import com.example.itemnote.usecase.LoginUseCase
@@ -69,6 +71,11 @@ object UseCaseModule {
 
     @Provides
     fun provideGetCategoryUseCase(useCase: GetCategoryUseCaseImpl): GetCategoryUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideGetItemsByCategoryUseCase(useCase: GetItemsByCategoryImpl): GetItemsByCategory {
         return useCase
     }
 

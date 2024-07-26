@@ -1,44 +1,79 @@
 package com.example.itemnote.screen.main
 
-import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.repository.AuthRepository
+import com.example.itemnote.usecase.GetCategoryUseCase
 import com.example.itemnote.usecase.GetItemUseCase
+import com.example.itemnote.usecase.GetItemsByCategory
 import com.example.itemnote.utils.AuthState
 import com.example.itemnote.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getItemUseCase: GetItemUseCase,
-    private val authRepository: AuthRepository
-) : ViewModel() {
+    private val authRepository: AuthRepository,
+    getCategoryUseCase: GetCategoryUseCase,
+    private val getItemsByCategory: GetItemsByCategory
+) : BaseViewModel(getCategoryUseCase) {
 
     private val _uiState = MutableStateFlow<UiState<List<ItemModel>>>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
+    init {
+        getCategory()
+    }
+
     fun getItems() = viewModelScope.launch {
-        getItemUseCase.getItems().collect {
-            when (it) {
-                is UiState.Error -> {
-                    _uiState.value = UiState.Error(it.message)
-                }
+        getItemUseCase.getItems()
+//            .onStart { _uiState.value = UiState.Loading }
+            .collect {
+                when (it) {
+                    is UiState.Error -> {
+                        _uiState.value = UiState.Error(it.message)
+                    }
 
-                UiState.Idle -> Unit
-                UiState.Loading -> _uiState.value = UiState.Loading
-                is UiState.Success -> {
-                    _uiState.value = UiState.Success(it.data)
+                    UiState.Idle -> Unit
+                    UiState.Loading -> _uiState.value = UiState.Loading
+                    is UiState.Success -> {
+                        _uiState.value = UiState.Success(it.data)
 
+                    }
                 }
             }
+    }
+
+    fun getItemsByCategory(categoryId: String) = viewModelScope.launch {
+        if (categoryId == "home") {
+            getItems()
+        } else {
+            getItemsByCategory.getItemsByCategory(categoryId)
+//                .onStart { _uiState.value = UiState.Loading }
+                .collect {
+                    when (it) {
+                        is UiState.Error -> {
+                            _uiState.value = UiState.Error(it.message)
+                        }
+
+                        UiState.Idle -> Unit
+                        UiState.Loading -> _uiState.value = UiState.Loading
+                        is UiState.Success -> {
+                            Log.d("getItemsByCategory", "getItemsByCategory : ${it.data}")
+
+                            _uiState.value = UiState.Success(it.data)
+                        }
+                    }
+                }
         }
     }
 
