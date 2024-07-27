@@ -8,5 +8,5 @@ data class ShopModel(
     val name: String = "",
     val date: String = "",
     val location: String = "",
-    val price: Int = 0
+    val price: Double = 0.0
 )

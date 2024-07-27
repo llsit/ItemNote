@@ -104,7 +104,7 @@ fun ShopCard(
 @Preview(showBackground = true)
 fun PreviewShopCard() {
     ShopCard(
-        model = ShopModel(name = "name", location = "location", price = 10000, date = "24/12/24"),
+        model = ShopModel(name = "name", location = "location", price = 10000.0, date = "24/12/24"),
         index = 1
     )
 }

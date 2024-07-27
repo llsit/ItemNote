@@ -26,7 +26,7 @@ class AddShopUseCaseImpl @Inject constructor(
             name = name,
             date = Date().toString(),
             location = location,
-            price = price.ifEmpty { "0" }.toInt()
+            price = price.ifEmpty { "0.0" }.toDouble()
         )
         return shopRepository.addShop(shop, idItem)
     }

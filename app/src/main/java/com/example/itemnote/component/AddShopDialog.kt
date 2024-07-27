@@ -32,7 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddShopBottomSheet(
+fun AddShopDialog(
     scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {}

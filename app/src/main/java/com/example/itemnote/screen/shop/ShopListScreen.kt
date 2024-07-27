@@ -46,7 +46,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.itemnote.R
 import com.example.itemnote.SharedViewModel
-import com.example.itemnote.component.AddShopBottomSheet
+import com.example.itemnote.component.AddShopDialog
 import com.example.itemnote.component.ConfirmDialog
 import com.example.itemnote.component.FloatingButton
 import com.example.itemnote.component.Loading
@@ -128,7 +128,7 @@ fun ShopListScreen(
         }
 
         if (showBottomSheet) {
-            AddShopBottomSheet(scope = scope) {
+            AddShopDialog(scope = scope) {
                 showBottomSheet = it
                 shopListViewModel.getShop()
             }
@@ -254,11 +254,11 @@ fun PreviewShopList() {
             name = "name",
             date = "date",
             imageUrl = "",
-            shop = ShopModel(name = "name", location = "location", price = 10000)
+            shop = ShopModel(name = "name", location = "location", price = 10000.0)
         ),
         shopList = listOf(
-            ShopModel(name = "name", location = "location", price = 10000),
-            ShopModel(name = "name", location = "location", price = 10000)
+            ShopModel(name = "name", location = "location", price = 10000.0),
+            ShopModel(name = "name", location = "location", price = 10000.0)
         ),
         onDeleteShop = {}
     )
