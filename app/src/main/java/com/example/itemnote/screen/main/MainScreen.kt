@@ -174,7 +174,7 @@ fun MainScreen(
                             (state.value as UiState.Success<List<ItemModel>>).data?.let {
                                 items(it) {
                                     ItemComponent(
-                                        Modifier,
+                                        modifier = Modifier,
                                         name = it.name,
                                         price = it.shop?.price.toString(),
                                         location = it.shop?.location.orEmpty(),

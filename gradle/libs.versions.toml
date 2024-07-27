@@ -20,6 +20,7 @@ material3 = "1.1.0"
 glide = "4.16.0"
 gildeCompose = "1.0.0-beta01"
 coil = "2.7.0"
+firebaseCrashlytics = "3.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ firebase-analytic = { group = "com.google.firebase", name = "firebase-analytics"
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
@@ -59,3 +61,4 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-service = { id = "com.google.gms.google-services", version.ref = "googleService" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics"}
