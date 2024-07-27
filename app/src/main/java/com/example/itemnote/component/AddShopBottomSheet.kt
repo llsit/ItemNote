@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,7 +60,10 @@ fun AddShopBottomSheet(
     }
 
     Dialog(
-        onDismissRequest = { onClick(false) }
+        onDismissRequest = {
+            onClick(false)
+            viewModel.clearState()
+        }
     ) {
         Surface(
             modifier = Modifier.wrapContentSize(),
@@ -82,20 +86,23 @@ fun AddShopBottomSheet(
                 )
                 TextFieldComponent(
                     value = viewModel.location,
-                    onValueChange = { location -> viewModel.updateLocation(location) },
+                    onValueChange = viewModel::updateLocation,
                     label = "Location",
                     modifier = Modifier.fillMaxWidth(),
                     isError = errorLocation.isNotEmpty(),
                     errorMessage = errorLocation.ifEmpty { "Location cannot be empty" }
                 )
                 TextFieldComponent(
-                    value = viewModel.price.toString(),
-                    onValueChange = { price -> viewModel.updatePrice(price) },
+                    value = viewModel.price,
+                    onValueChange = { price ->
+                        price.toDoubleOrNull()?.let { viewModel.updatePrice(price) }
+                    },
                     label = "Price",
                     modifier = Modifier.fillMaxWidth(),
                     isLast = true,
                     isError = errorPrice.isNotEmpty(),
-                    errorMessage = errorPrice.ifEmpty { "Price cannot be lower than 0" }
+                    errorMessage = errorPrice.ifEmpty { "Price cannot be lower than 0" },
+                    keyboardType = KeyboardType.Decimal
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -105,6 +112,7 @@ fun AddShopBottomSheet(
                     Button(onClick = {
                         scope.launch { onClick(false) }.invokeOnCompletion {
                             onClick(false)
+                            viewModel.clearState()
                         }
                     }) {
                         Icon(Icons.Filled.Close, "closeIcon")

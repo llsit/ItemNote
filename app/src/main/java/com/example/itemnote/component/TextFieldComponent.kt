@@ -16,6 +16,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 
@@ -29,6 +30,7 @@ fun TextFieldComponent(
     isPassword: Boolean = false,
     isError: Boolean = false,
     errorMessage: String = "",
+    keyboardType: KeyboardType = KeyboardType.Text,
     visibility: MutableState<Boolean> = remember { mutableStateOf(false) },
 ) {
     val focusManager = LocalFocusManager.current
@@ -38,6 +40,7 @@ fun TextFieldComponent(
                 value = value,
                 onValueChange = onValueChange,
                 label = { Text(text = label) },
+                placeholder = { Text(text = label) },
                 modifier = modifier,
                 singleLine = true,
                 isError = isError,
@@ -48,7 +51,10 @@ fun TextFieldComponent(
                     }
                 },
                 visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = keyboardType
+                ),
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus(true) }
                 )
@@ -58,6 +64,7 @@ fun TextFieldComponent(
                 value = value,
                 onValueChange = onValueChange,
                 label = { Text(text = label) },
+                placeholder = { Text(text = label) },
                 modifier = modifier,
                 singleLine = true,
                 isError = isError,
@@ -68,7 +75,10 @@ fun TextFieldComponent(
                     }
                 },
                 visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = keyboardType
+                ),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) }
                 )

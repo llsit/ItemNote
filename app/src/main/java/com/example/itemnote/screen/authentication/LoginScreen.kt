@@ -5,9 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +45,7 @@ import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.AuthState
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
+import com.google.firebase.ktx.BuildConfig
 
 @Composable
 fun LoginScreen(
@@ -111,6 +115,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
+                keyboardType = KeyboardType.Email
             )
             TextFieldComponent(
                 value = viewModel.password.value,
@@ -120,7 +125,8 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                isLast = true
+                isLast = true,
+                keyboardType = KeyboardType.Password
             )
             Row(
                 modifier = Modifier
@@ -162,6 +168,14 @@ fun LoginScreen(
                     Text(text = "Register Now", color = MaterialTheme.colorScheme.primary)
                 }
             }
+            Spacer(modifier = Modifier.height(50.dp))
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = "Version : ${BuildConfig.VERSION_NAME}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                maxLines = 1,
+            )
         }
     }
 }

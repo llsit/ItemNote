@@ -1,7 +1,6 @@
 package com.example.itemnote.screen.shop
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
@@ -53,7 +52,7 @@ class ShopListViewModel @Inject constructor(
         private set
     var location by mutableStateOf("")
         private set
-    var price by mutableIntStateOf(0)
+    var price by mutableStateOf("")
         private set
 
     fun updateName(input: String) {
@@ -65,7 +64,7 @@ class ShopListViewModel @Inject constructor(
     }
 
     fun updatePrice(input: String) {
-        price = input.ifEmpty { "0" }.toInt()
+        price = input
     }
 
     fun addShop() {
@@ -79,19 +78,19 @@ class ShopListViewModel @Inject constructor(
         } else {
             _locationState.value = ""
         }
-        if (price <= 0) {
+        if (price.isEmpty() || price.toDouble() < 0) {
             _priceState.value = "Price cannot be lower than 0"
         } else {
             _priceState.value = ""
         }
-        if (name.isNotEmpty() && location.isNotEmpty() && price > 0) {
+        if (name.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty() && price.toDouble() >= 0) {
             submitShopData()
         }
     }
 
     private fun submitShopData() {
         viewModelScope.launch {
-            addShopUseCase.addShop(name, location, price.toString(), idItem)
+            addShopUseCase.addShop(name, location, price, idItem)
                 .onStart { _uiStateAddShop.value = UiState.Loading }
                 .collect {
                     when (it) {
@@ -143,5 +142,16 @@ class ShopListViewModel @Inject constructor(
                 else -> Unit
             }
         }
+    }
+
+    fun clearState() {
+        _uiStateAddShop.value = UiState.Idle
+        _uiStateGetShop.value = UiState.Idle
+        _nameState.value = ""
+        _locationState.value = ""
+        _priceState.value = ""
+        name = ""
+        location = ""
+        price = ""
     }
 }

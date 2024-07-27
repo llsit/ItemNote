@@ -71,7 +71,6 @@ fun ShopListScreen(
     val state = shopListViewModel.uiStateGetShop.collectAsState()
     val selectedItemModel by sharedViewModel.selectedItem.collectAsState()
     val deleteItemState = shopListViewModel.deleteItemState.collectAsState()
-    val deleteItemId = remember { mutableStateOf("") }
 
     when (deleteItemState.value) {
         is UiState.Error -> {
@@ -99,6 +98,7 @@ fun ShopListScreen(
         },
         floatingActionButton = {
             FloatingButton {
+                shopListViewModel.clearState()
                 showBottomSheet = true
             }
         }
