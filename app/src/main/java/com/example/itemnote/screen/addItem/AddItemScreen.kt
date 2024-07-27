@@ -226,7 +226,6 @@ fun AddItemScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemComponent(
     modifier: Modifier,
@@ -269,7 +268,7 @@ fun AddItemComponent(
                     .wrapContentHeight()
                 if (addViewModel.imageUri.isNotEmpty()) {
                     val request = ImageRequest.Builder(LocalContext.current)
-                        .data(File(addViewModel.imageUri))
+                        .data(Uri.parse(addViewModel.imageUri))
                         .crossfade(true)
                         .build()
                     AsyncImage(
