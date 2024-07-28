@@ -6,15 +6,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,22 +26,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.screen.shop.ShopListViewModel
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddShopDialog(
+    model: ShopModel? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: ShopListViewModel = hiltViewModel(),
-    onClick: (Boolean) -> Unit = {}
+    onClick: (Boolean) -> Unit = {},
+    onUpdate: (Boolean) -> Unit = {},
+    onDismiss: (Boolean) -> Unit = {}
 ) {
 
     val focusManager = LocalFocusManager.current
-    val state = viewModel.uiStateAddShop.collectAsState()
+    val state = viewModel.uiStateShop.collectAsState()
     val errorName by viewModel.nameState.collectAsState()
     val errorLocation by viewModel.locationState.collectAsState()
     val errorPrice by viewModel.priceState.collectAsState()
@@ -59,15 +65,16 @@ fun AddShopDialog(
         }
     }
 
-    Dialog(
-        onDismissRequest = {
-            onClick(false)
-            viewModel.clearState()
-        }
+    LaunchedEffect(Unit) {
+        model?.let { viewModel.setUpdate(it) }
+    }
+
+    BasicAlertDialog(
+        onDismissRequest = {}
     ) {
         Surface(
-            modifier = Modifier.wrapContentSize(),
-            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier,
+            color = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier
@@ -110,8 +117,8 @@ fun AddShopDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(onClick = {
-                        scope.launch { onClick(false) }.invokeOnCompletion {
-                            onClick(false)
+                        scope.launch { onDismiss(false) }.invokeOnCompletion {
+                            onDismiss(false)
                             viewModel.clearState()
                         }
                     }) {
@@ -119,7 +126,17 @@ fun AddShopDialog(
                     }
                     Button(onClick = {
                         focusManager.clearFocus()
-                        viewModel.addShop()
+                        if (model == null) {
+                            scope.launch { onClick(false) }.invokeOnCompletion {
+                                onClick(false)
+                                viewModel.addShop()
+                            }
+                        } else {
+                            scope.launch { onUpdate(false) }.invokeOnCompletion {
+                                onUpdate(false)
+                                viewModel.updateShop(model)
+                            }
+                        }
                     }) {
                         Text("Save")
                     }

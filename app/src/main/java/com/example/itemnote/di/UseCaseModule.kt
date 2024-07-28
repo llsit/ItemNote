@@ -24,6 +24,8 @@ import com.example.itemnote.usecase.LoginUseCase
 import com.example.itemnote.usecase.LoginUseCaseImpl
 import com.example.itemnote.usecase.RegisterUseCase
 import com.example.itemnote.usecase.RegisterUseCaseImpl
+import com.example.itemnote.usecase.UpdateShopUseCase
+import com.example.itemnote.usecase.UpdateShopUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -92,4 +94,10 @@ object UseCaseModule {
     fun provideDeleteItemUseCase(useCase: DeleteItemUseCaseImpl): DeleteItemUseCase {
         return useCase
     }
+
+    @Provides
+    fun provideUpdateShopUseCase(useCase: UpdateShopUseCaseImpl): UpdateShopUseCase {
+        return useCase
+    }
+
 }

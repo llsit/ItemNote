@@ -29,7 +29,7 @@ import com.example.itemnote.data.model.ShopModel
 @Composable
 fun ShopCard(
     model: ShopModel, index: Int,
-    onEditClick: (String) -> Unit = {},
+    onEditClick: (ShopModel) -> Unit = {},
     onDeleteClick: (String) -> Unit = {}
 ) {
     Column(
@@ -93,7 +93,9 @@ fun ShopCard(
                 modifier = Modifier.padding(end = 16.dp)
             )
 
-            MoreMenuComponent(onDeleteClick = { onDeleteClick(model.id) })
+            MoreMenuComponent(
+                onDeleteClick = { onDeleteClick(model.id) },
+                onEditClick = { onEditClick(model) })
         }
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider()

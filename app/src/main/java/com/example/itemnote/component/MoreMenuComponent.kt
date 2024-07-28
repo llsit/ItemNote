@@ -35,13 +35,13 @@ fun MoreMenuComponent(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-//                    DropdownMenuItem(
-//                        text = { Text("Edit") },
-//                        onClick = {
-//                            expanded = false
-//                            onEditClick()
-//                        }
-//                    )
+            DropdownMenuItem(
+                text = { Text("Edit") },
+                onClick = {
+                    expanded = false
+                    onEditClick()
+                }
+            )
             DropdownMenuItem(
                 text = { Text("Delete") },
                 onClick = {

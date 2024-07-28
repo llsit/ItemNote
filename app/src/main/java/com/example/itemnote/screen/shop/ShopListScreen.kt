@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +54,7 @@ import com.example.itemnote.component.ShopCard
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.UiState
+import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,6 +67,8 @@ fun ShopListScreen(
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
+    val showUpdateDialog = remember { mutableStateOf(false) }
+    var shopModel by remember { mutableStateOf<ShopModel?>(null) }
     val scope = rememberCoroutineScope()
     val state = shopListViewModel.uiStateGetShop.collectAsState()
     val selectedItemModel by sharedViewModel.selectedItem.collectAsState()
@@ -83,9 +85,7 @@ fun ShopListScreen(
             navController.popBackStack()
         }
     }
-    LaunchedEffect(Unit) {
-        shopListViewModel.getShop()
-    }
+
     Scaffold(
         topBar = {
             MediumToolbarComponent(
@@ -120,18 +120,28 @@ fun ShopListScreen(
                     onDeleteShop = {
                         shopListViewModel.deleteShop(
                             shopId = it,
-                            itemId = selectedItemModel?.id.orEmpty()
+                            itemId = selectedItemModel?.id.orEmpty(),
                         )
+                    },
+                    onEditShop = {
+                        shopModel = it
+                        showUpdateDialog.value = true
                     }
                 )
             }
         }
 
         if (showBottomSheet) {
-            AddShopDialog(scope = scope) {
-                showBottomSheet = it
-                shopListViewModel.getShop()
-            }
+            AddShopDialog(
+                scope = scope,
+                onClick = {
+                    showBottomSheet = it
+                    shopListViewModel.getShop()
+                },
+                onDismiss = {
+                    showBottomSheet = false
+                }
+            )
         }
 
         if (showDialog) {
@@ -146,6 +156,18 @@ fun ShopListScreen(
                     showDialog = false
                 })
         }
+
+        if (showUpdateDialog.value) {
+            AddShopDialog(
+                model = shopModel,
+                scope = scope,
+                onUpdate = {
+                    showUpdateDialog.value = it
+                    shopListViewModel.getShop()
+                },
+                onDismiss = { showUpdateDialog.value = false }
+            )
+        }
     }
 }
 
@@ -154,7 +176,9 @@ fun ShopList(
     innerPadding: PaddingValues,
     selectedItemModel: ItemModel?,
     shopList: List<ShopModel>?,
-    onDeleteShop: (String) -> Unit
+    onDeleteShop: (String) -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    onEditShop: (ShopModel) -> Unit = {}
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val deleteShopId = remember { mutableStateOf("") }
@@ -222,10 +246,15 @@ fun ShopList(
         LazyColumn {
             shopList?.let {
                 itemsIndexed(it) { index, item ->
-                    ShopCard(model = item, index = index, onEditClick = {}, onDeleteClick = {
-                        deleteShopId.value = item.id
-                        showDialog.value = true
-                    })
+                    ShopCard(
+                        model = item,
+                        index = index,
+                        onEditClick = {
+                            onEditShop(it)
+                        }, onDeleteClick = {
+                            deleteShopId.value = item.id
+                            showDialog.value = true
+                        })
                 }
             }
         }

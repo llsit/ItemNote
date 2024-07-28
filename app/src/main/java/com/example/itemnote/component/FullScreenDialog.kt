@@ -44,7 +44,7 @@ fun FullScreenDialog(
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
-    val state = viewModel.uiStateAddShop.collectAsState()
+    val state = viewModel.uiStateShop.collectAsState()
     when (state.value) {
         is UiState.Error -> {
             Loading(isLoading = false)

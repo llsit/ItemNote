@@ -11,6 +11,7 @@ import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.DeleteItemUseCase
 import com.example.itemnote.usecase.DeleteShopUseCase
 import com.example.itemnote.usecase.GetShopUseCase
+import com.example.itemnote.usecase.UpdateShopUseCase
 import com.example.itemnote.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,12 +27,13 @@ class ShopListViewModel @Inject constructor(
     private val addShopUseCase: AddShopUseCase,
     private val getShopUseCase: GetShopUseCase,
     private val deleteShopUseCase: DeleteShopUseCase,
-    private val deleteItemUseCase: DeleteItemUseCase
+    private val deleteItemUseCase: DeleteItemUseCase,
+    private val updateShopUseCase: UpdateShopUseCase
 ) : ViewModel() {
 
-    private val idItem = savedStateHandle.get<String>("id") ?: ""
-    private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop.asStateFlow()
+    private val itemId = savedStateHandle.get<String>("id") ?: ""
+    private val _uiStateShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val uiStateShop: StateFlow<UiState<Unit>> = _uiStateShop.asStateFlow()
 
     private val _uiStateGetShop = MutableStateFlow<UiState<List<ShopModel>>>(UiState.Idle)
     val uiStateGetShop: StateFlow<UiState<List<ShopModel>>> = _uiStateGetShop.asStateFlow()
@@ -55,6 +57,11 @@ class ShopListViewModel @Inject constructor(
     var price by mutableStateOf("")
         private set
 
+
+    init {
+        getShop()
+    }
+
     fun updateName(input: String) {
         name = input
     }
@@ -68,40 +75,57 @@ class ShopListViewModel @Inject constructor(
     }
 
     fun addShop() {
-        if (name.isEmpty()) {
-            _nameState.value = "Name cannot be empty"
-        } else {
-            _nameState.value = ""
-        }
-        if (location.isEmpty()) {
-            _locationState.value = "Location cannot be empty"
-        } else {
-            _locationState.value = ""
-        }
-        if (price.isEmpty() || price.toDouble() < 0) {
-            _priceState.value = "Price cannot be lower than 0"
-        } else {
-            _priceState.value = ""
-        }
+        checkError()
         if (name.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty() && price.toDouble() >= 0) {
             submitShopData()
         }
     }
 
+    fun updateShop(shopModel: ShopModel?) {
+        checkError()
+        if (name.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty() && price.toDouble() >= 0 && shopModel != null) {
+            updateShopData(shopModel)
+        }
+    }
+
+    private fun updateShopData(shopModel: ShopModel) = viewModelScope.launch {
+        val newModel = shopModel.copy(
+            name = name,
+            location = location,
+            price = price.ifEmpty { "0.0" }.toDouble()
+        )
+        updateShopUseCase.updateShop(itemId, newModel)
+            .onStart { _uiStateShop.value = UiState.Loading }
+            .collect {
+                when (it) {
+                    is UiState.Error -> {
+                        _uiStateShop.value = UiState.Error(it.message)
+                    }
+
+                    UiState.Idle -> Unit
+                    UiState.Loading -> _uiStateShop.value = UiState.Loading
+                    is UiState.Success -> {
+                        _uiStateShop.value = UiState.Success(it.data)
+                    }
+                }
+            }
+
+    }
+
     private fun submitShopData() {
         viewModelScope.launch {
-            addShopUseCase.addShop(name, location, price, idItem)
-                .onStart { _uiStateAddShop.value = UiState.Loading }
+            addShopUseCase.addShop(name, location, price, itemId)
+                .onStart { _uiStateShop.value = UiState.Loading }
                 .collect {
                     when (it) {
                         is UiState.Error -> {
-                            _uiStateAddShop.value = UiState.Error(it.message)
+                            _uiStateShop.value = UiState.Error(it.message)
                         }
 
                         UiState.Idle -> Unit
-                        UiState.Loading -> _uiStateAddShop.value = UiState.Loading
+                        UiState.Loading -> _uiStateShop.value = UiState.Loading
                         is UiState.Success -> {
-                            _uiStateAddShop.value = UiState.Success(it.data)
+                            _uiStateShop.value = UiState.Success(it.data)
                         }
                     }
                 }
@@ -109,7 +133,7 @@ class ShopListViewModel @Inject constructor(
     }
 
     fun getShop() = viewModelScope.launch {
-        getShopUseCase.getShop(idItem).collect {
+        getShopUseCase.getShop(itemId).collect {
             when (it) {
                 is UiState.Error -> {
                     _uiStateGetShop.value = UiState.Error(it.message)
@@ -145,13 +169,36 @@ class ShopListViewModel @Inject constructor(
     }
 
     fun clearState() {
-        _uiStateAddShop.value = UiState.Idle
-        _uiStateGetShop.value = UiState.Idle
+        _uiStateShop.value = UiState.Idle
         _nameState.value = ""
         _locationState.value = ""
         _priceState.value = ""
         name = ""
         location = ""
         price = ""
+    }
+
+    fun setUpdate(model: ShopModel) {
+        name = model.name
+        location = model.location
+        price = model.price.toString()
+    }
+
+    private fun checkError() {
+        if (name.isEmpty()) {
+            _nameState.value = "Name cannot be empty"
+        } else {
+            _nameState.value = ""
+        }
+        if (location.isEmpty()) {
+            _locationState.value = "Location cannot be empty"
+        } else {
+            _locationState.value = ""
+        }
+        if (price.isEmpty() || price.toDouble() < 0) {
+            _priceState.value = "Price cannot be lower than 0"
+        } else {
+            _priceState.value = ""
+        }
     }
 }

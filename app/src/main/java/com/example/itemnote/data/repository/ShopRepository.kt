@@ -1,6 +1,8 @@
 package com.example.itemnote.data.repository
 
+import android.util.Log
 import com.example.itemnote.data.model.ShopModel
+import com.example.itemnote.data.model.toMap
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEMS_COLLECTION
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEM_COLLECTION
 import com.example.itemnote.utils.Constants.Companion.FIREBASE_PRICE_FIELD
@@ -19,6 +21,7 @@ interface ShopRepository {
     fun getShop(idItem: String): Flow<UiState<List<ShopModel>>>
     fun getMinShop(itemId: String): Flow<UiState<ShopModel>>
     fun deleteShop(itemId: String, shopId: String): Flow<UiState<Unit>>
+    fun updateShop(itemId: String, shopModel: ShopModel): Flow<UiState<Unit>>
 }
 
 class ShopRepositoryImpl @Inject constructor(
@@ -92,4 +95,21 @@ class ShopRepositoryImpl @Inject constructor(
             emit(UiState.Error(it.message.toString()))
         }
     }
+
+    override fun updateShop(itemId: String, shopModel: ShopModel): Flow<UiState<Unit>> =
+        flow {
+            runCatching {
+                firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                    .document(authRepository.getUserID() ?: "No User ID")
+                    .collection(FIREBASE_ITEM_COLLECTION)
+                    .document(itemId)
+                    .collection(FIREBASE_SHOP_COLLECTION)
+                    .document(shopModel.id)
+                    .update(shopModel.toMap()).await()
+            }.onSuccess {
+                emit(UiState.Success(Unit))
+            }.onFailure {
+                emit(UiState.Error(it.message.toString()))
+            }
+        }
 }
