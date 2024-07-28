@@ -3,6 +3,7 @@ package com.example.itemnote.screen.shop
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,9 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
@@ -54,7 +55,6 @@ import com.example.itemnote.component.ShopCard
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.utils.UiState
-import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -177,7 +177,6 @@ fun ShopList(
     selectedItemModel: ItemModel?,
     shopList: List<ShopModel>?,
     onDeleteShop: (String) -> Unit,
-    scope: CoroutineScope = rememberCoroutineScope(),
     onEditShop: (ShopModel) -> Unit = {}
 ) {
     val showDialog = remember { mutableStateOf(false) }
@@ -187,7 +186,8 @@ fun ShopList(
             .padding(innerPadding)
             .padding(16.dp)
             .background(Color.White)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
     ) {
         Loading(isLoading = false)
         val modifier = Modifier
@@ -243,21 +243,19 @@ fun ShopList(
         }
         Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        LazyColumn {
-            shopList?.let {
-                itemsIndexed(it) { index, item ->
-                    ShopCard(
-                        model = item,
-                        index = index,
-                        onEditClick = {
-                            onEditShop(it)
-                        }, onDeleteClick = {
-                            deleteShopId.value = item.id
-                            showDialog.value = true
-                        })
+        shopList?.forEachIndexed { index, shopModel ->
+            ShopCard(
+                model = shopModel,
+                index = index,
+                onEditClick = {
+                    onEditShop(it)
+                }, onDeleteClick = {
+                    deleteShopId.value = shopModel.id
+                    showDialog.value = true
                 }
-            }
+            )
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 
     if (showDialog.value) {
