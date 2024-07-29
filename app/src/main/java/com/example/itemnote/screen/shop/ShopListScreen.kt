@@ -3,7 +3,6 @@ package com.example.itemnote.screen.shop
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -54,6 +53,7 @@ import com.example.itemnote.component.MediumToolbarComponent
 import com.example.itemnote.component.ShopCard
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.model.ShopModel
+import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -94,6 +94,7 @@ fun ShopListScreen(
                 onDeleteClick = {
                     showDialog = true
                 },
+                onEditClick = { navController.navigate(NavigationItem.AddItem.route) },
                 onBackClick = { navController.popBackStack() })
         },
         floatingActionButton = {

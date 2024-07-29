@@ -19,23 +19,26 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -194,7 +197,6 @@ fun AddItemScreen(
         }
         AddItemComponent(
             modifier = Modifier.padding(innerPadding),
-            navController = navController,
             addViewModel = addViewModel,
             isTextFieldError = errorState,
             onTakePhotoClick = {
@@ -221,6 +223,9 @@ fun AddItemScreen(
                         ActivityResultContracts.PickVisualMedia.ImageOnly
                     )
                 )
+            },
+            onDismiss = {
+                navController.popBackStack()
             }
         )
     }
@@ -229,11 +234,11 @@ fun AddItemScreen(
 @Composable
 fun AddItemComponent(
     modifier: Modifier,
-    navController: NavHostController,
     addViewModel: AddItemViewModel,
     isTextFieldError: Boolean,
     onTakePhotoClick: () -> Unit,
     onPhotoGalleryClick: () -> Unit,
+    onDismiss: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -244,47 +249,10 @@ fun AddItemComponent(
     Column(
         modifier.verticalScroll(rememberScrollState()),
     ) {
-        Column(
-            Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(vertical = 8.dp),
-                fontSize = 16.sp,
-                text = "Image"
-            )
-            Box(
-                modifier = Modifier
-                    .clickable(onClick = { showBottomSheet = true })
-                    .align(Alignment.CenterHorizontally),
-            ) {
-                val imageModifier = Modifier
-                    .size(160.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.LightGray)
-                    .wrapContentHeight()
-                if (addViewModel.imageUri.isNotEmpty()) {
-                    val request = ImageRequest.Builder(LocalContext.current)
-                        .data(Uri.parse(addViewModel.imageUri))
-                        .crossfade(true)
-                        .build()
-                    AsyncImage(
-                        model = request,
-                        contentDescription = null,
-                        modifier = imageModifier,
-                    )
-                } else {
-                    Image(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Image",
-                        modifier = imageModifier,
-                    )
-                }
-            }
-        }
+        ImageSection(
+            onClickImage = { showBottomSheet = it },
+            imageUri = addViewModel.imageUri,
+        )
 
         Column(
             modifier = Modifier
@@ -322,36 +290,18 @@ fun AddItemComponent(
                 }
             }
             Spacer(modifier = Modifier.size(4.dp))
-            when (category.value) {
-                is UiState.Error -> {
-                    Loading(isLoading = false)
-                    Toast.makeText(
-                        LocalContext.current,
-                        "Error : Get Category Unsuccessful",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-                UiState.Idle -> Unit
-                UiState.Loading -> Loading(isLoading = true)
-                is UiState.Success -> {
-                    Loading(isLoading = false)
-                    (category.value as UiState.Success).data.let {
-                        ChipGroupList(
-                            categoryList = it,
-                            onSelected = { addViewModel.onCategoryChange(it) }
-                        )
-                    }
-                    Spacer(modifier = Modifier.size(16.dp))
-                }
-            }
+            ChipGroupList(
+                categoryList = (category.value as UiState.Success).data,
+                onSelected = { addViewModel.onCategoryChange(it) }
+            )
+            Spacer(modifier = Modifier.size(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    navController.popBackStack()
+                    onDismiss()
                 }) {
                     Text("Back")
                 }
@@ -392,6 +342,76 @@ fun AddItemComponent(
                 addViewModel.addCategory(newCategory)
             }
         )
+    }
+}
+
+@Composable
+fun ImageSection(
+    onClickImage: (Boolean) -> Unit,
+    imageUri: String,
+) {
+    Column(
+        Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(vertical = 8.dp),
+            fontSize = 16.sp,
+            text = "Image"
+        )
+        Box(
+            modifier = Modifier
+                .clickable(onClick = { onClickImage(true) })
+                .align(Alignment.CenterHorizontally),
+        ) {
+            val imageModifier = Modifier
+                .size(160.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.LightGray)
+                .wrapContentHeight()
+            if (imageUri.isNotEmpty()) {
+                Box {
+                    val request = ImageRequest.Builder(LocalContext.current)
+                        .data(Uri.parse(imageUri))
+                        .crossfade(true)
+                        .build()
+                    AsyncImage(
+                        model = request,
+                        contentDescription = null,
+                        modifier = imageModifier,
+                    )
+
+                    Surface(
+                        color = Color.White,
+                        shape = CircleShape,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 12.dp, y = -12.dp)
+                            .size(24.dp)
+                    ) {
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color.Red
+                            )
+                        }
+                    }
+                }
+            } else {
+                Image(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Image",
+                    modifier = imageModifier,
+                )
+            }
+        }
     }
 }
 
