@@ -18,6 +18,8 @@ import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemUseCaseImpl
 import com.example.itemnote.usecase.GetItemsByCategory
 import com.example.itemnote.usecase.GetItemsByCategoryImpl
+import com.example.itemnote.usecase.GetMinShopUseCase
+import com.example.itemnote.usecase.GetMinShopUseCaseImpl
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.usecase.GetShopUseCaseImpl
 import com.example.itemnote.usecase.LoginUseCase
@@ -99,5 +101,11 @@ object UseCaseModule {
     fun provideUpdateShopUseCase(useCase: UpdateShopUseCaseImpl): UpdateShopUseCase {
         return useCase
     }
+
+    @Provides
+    fun provideGetMinShopUseCase(useCase: GetMinShopUseCaseImpl): GetMinShopUseCase {
+        return useCase
+    }
+
 
 }
