@@ -64,6 +64,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.itemnote.R
+import com.example.itemnote.SharedViewModel
 import com.example.itemnote.component.AddCategoryDialog
 import com.example.itemnote.component.BasicAlertDialogComponent
 import com.example.itemnote.component.ChipGroupList
@@ -72,6 +73,7 @@ import com.example.itemnote.component.MyModalBottomSheet
 import com.example.itemnote.component.MySnackBarComponent
 import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
+import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.utils.ImageUriUtils.getTempUri
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
@@ -81,17 +83,28 @@ import java.io.File
 
 @Composable
 fun AddItemScreen(
+    itemModel: ItemModel? = null,
     navController: NavHostController = rememberNavController(),
     addViewModel: AddItemViewModel = hiltViewModel(),
+    sharedViewModel: SharedViewModel,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
 ) {
 
     val state = addViewModel.uiStateAddShop.collectAsState()
-    val errorState by addViewModel.uiStateEmptyName.collectAsState()
+    val errorState by addViewModel.uiErrorState.collectAsState()
     val uri = remember { mutableStateOf<Uri?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val uiStateAddCategory = addViewModel.uiStateAddCategory.collectAsState()
+    val selectedItem = sharedViewModel.selectedItem.collectAsState()
+
+    LaunchedEffect(Unit) {
+        selectedItem.value?.let {
+            addViewModel.onNameChange(it.name)
+            addViewModel.onCategoryChange(it.categoryModel)
+            addViewModel.onImageUriChange(it.imageUrl)
+        }
+    }
 
     val authority = stringResource(id = R.string.fileprovider)
     val file = File(context.cacheDir, "images")
@@ -134,7 +147,7 @@ fun AddItemScreen(
         is UiState.Error -> {
             Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
+                context,
                 "Error : Add Category Unsuccessful",
                 Toast.LENGTH_LONG
             ).show()
@@ -146,7 +159,7 @@ fun AddItemScreen(
             Loading(isLoading = true)
             addViewModel.getCategory()
             Toast.makeText(
-                LocalContext.current,
+                context,
                 "Add Category Success!",
                 Toast.LENGTH_LONG
             ).show()
@@ -155,7 +168,7 @@ fun AddItemScreen(
 
     Scaffold(
         topBar = {
-            ToolbarScreen(title = "Add Item", true) {
+            ToolbarScreen(title = if (itemModel == null) "Add Item" else "Edit Item", true) {
                 navController.popBackStack()
             }
         },
@@ -175,7 +188,7 @@ fun AddItemScreen(
         when (state.value) {
             is UiState.Error -> {
                 Loading(isLoading = false)
-                Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
             }
 
             UiState.Loading -> {
@@ -198,7 +211,8 @@ fun AddItemScreen(
         AddItemComponent(
             modifier = Modifier.padding(innerPadding),
             addViewModel = addViewModel,
-            isTextFieldError = errorState,
+            isTextFieldError = errorState.contains(AddItemErrorState.EmptyName),
+            showErrorCategory = errorState.contains(AddItemErrorState.EmptyCategory),
             onTakePhotoClick = {
                 val permission = Manifest.permission.CAMERA
                 if (ContextCompat.checkSelfPermission(
@@ -236,6 +250,7 @@ fun AddItemComponent(
     modifier: Modifier,
     addViewModel: AddItemViewModel,
     isTextFieldError: Boolean,
+    showErrorCategory: Boolean,
     onTakePhotoClick: () -> Unit,
     onPhotoGalleryClick: () -> Unit,
     onDismiss: () -> Unit = {}
@@ -243,7 +258,6 @@ fun AddItemComponent(
     val focusManager = LocalFocusManager.current
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    val showCategoryDialog by addViewModel.uiStateErrorCategory.collectAsState()
     val category = addViewModel.uiStateCategory.collectAsState()
 
     Column(
@@ -252,6 +266,7 @@ fun AddItemComponent(
         ImageSection(
             onClickImage = { showBottomSheet = it },
             imageUri = addViewModel.imageUri,
+            onClickClearImage = { addViewModel.onImageUriChange("") }
         )
 
         Column(
@@ -290,10 +305,18 @@ fun AddItemComponent(
                 }
             }
             Spacer(modifier = Modifier.size(4.dp))
-            ChipGroupList(
-                categoryList = (category.value as UiState.Success).data,
-                onSelected = { addViewModel.onCategoryChange(it) }
-            )
+            when (category.value) {
+                UiState.Loading -> Loading(isLoading = true)
+                is UiState.Success -> {
+                    Loading(isLoading = false)
+                    ChipGroupList(
+                        categoryList = (category.value as UiState.Success).data,
+                        onSelected = { addViewModel.onCategoryChange(it) }
+                    )
+                }
+
+                else -> Loading(isLoading = false)
+            }
             Spacer(modifier = Modifier.size(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -328,7 +351,7 @@ fun AddItemComponent(
                 }
             )
         }
-        if (showCategoryDialog) {
+        if (showErrorCategory) {
             BasicAlertDialogComponent(
                 title = "Please select a Category",
                 onClickDismiss = { addViewModel.resetUiStateErrorCategory() },
@@ -349,6 +372,7 @@ fun AddItemComponent(
 fun ImageSection(
     onClickImage: (Boolean) -> Unit,
     imageUri: String,
+    onClickClearImage: () -> Unit = {}
 ) {
     Column(
         Modifier
@@ -393,7 +417,7 @@ fun ImageSection(
                             .size(24.dp)
                     ) {
                         IconButton(
-                            onClick = {},
+                            onClick = { onClickClearImage() },
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(

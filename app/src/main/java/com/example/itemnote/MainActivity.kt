@@ -57,7 +57,7 @@ fun MyApp() {
                 ShopListScreen(navController = navController, sharedViewModel = sharedViewModel)
             }
             composable(NavigationItem.AddItem.route) {
-                AddItemScreen(navController = navController)
+                AddItemScreen(navController = navController, sharedViewModel = sharedViewModel)
             }
         }
     }

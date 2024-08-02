@@ -94,7 +94,9 @@ fun ShopListScreen(
                 onDeleteClick = {
                     showDialog = true
                 },
-                onEditClick = { navController.navigate(NavigationItem.AddItem.route) },
+                onEditClick = {
+                    navController.navigate(NavigationItem.AddItem.route)
+                },
                 onBackClick = { navController.popBackStack() })
         },
         floatingActionButton = {

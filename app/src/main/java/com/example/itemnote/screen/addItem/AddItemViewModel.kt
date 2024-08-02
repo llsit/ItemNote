@@ -1,5 +1,6 @@
 package com.example.itemnote.screen.addItem
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,23 +23,17 @@ import javax.inject.Inject
 class AddItemViewModel @Inject constructor(
     private val addItemUseCase: AddItemUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
-    getCategoryUseCase: GetCategoryUseCase
+    getCategoryUseCase: GetCategoryUseCase,
 ) : BaseViewModel(getCategoryUseCase) {
 
     private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop.asStateFlow()
 
-    private val _uiStateEmptyName = MutableStateFlow(false)
-    val uiStateEmptyName: StateFlow<Boolean> = _uiStateEmptyName
-
-    private val _uiStateErrorCategory = MutableStateFlow(false)
-    var uiStateErrorCategory: StateFlow<Boolean> = _uiStateErrorCategory
+    private val _uiErrorState = MutableStateFlow<List<AddItemErrorState>>(emptyList())
+    val uiErrorState: StateFlow<List<AddItemErrorState>> = _uiErrorState.asStateFlow()
 
     private val _uiStateAddCategory = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiStateAddCategory: StateFlow<UiState<Unit>> = _uiStateAddCategory.asStateFlow()
-
-//    private val _uiStateCategory = MutableStateFlow<UiState<List<CategoryModel>>>(UiState.Idle)
-//    val uiStateCategory: StateFlow<UiState<List<CategoryModel>>> = _uiStateCategory.asStateFlow()
 
     var name by mutableStateOf("")
         private set
@@ -53,7 +49,17 @@ class AddItemViewModel @Inject constructor(
 
     fun onNameChange(newName: String) {
         name = newName
-        _uiStateEmptyName.value = newName.isEmpty()
+        _uiErrorState.update { currentErrors ->
+            if (newName.isEmpty()) {
+                if (!currentErrors.contains(AddItemErrorState.EmptyName)) {
+                    currentErrors + AddItemErrorState.EmptyName
+                } else {
+                    currentErrors
+                }
+            } else {
+                currentErrors.filter { it != AddItemErrorState.EmptyName }
+            }
+        }
     }
 
     fun onImageUriChange(newImageUri: String) {
@@ -65,12 +71,13 @@ class AddItemViewModel @Inject constructor(
     }
 
     fun resetUiStateErrorCategory() {
-        _uiStateErrorCategory.value = false
+        _uiErrorState.update { currentErrors ->
+            currentErrors.filter { it != AddItemErrorState.EmptyCategory }
+        }
     }
 
     fun checkAddItem() {
-        _uiStateEmptyName.value = name.isEmpty()
-        _uiStateErrorCategory.value = category == null
+        checkErrorState()
         if (name.isNotEmpty() && category != null) {
             addItem()
         }
@@ -112,19 +119,18 @@ class AddItemViewModel @Inject constructor(
         }
     }
 
-//    fun getCategory() = viewModelScope.launch {
-//        getCategoryUseCase.getCategory()
-//            .onStart { _uiStateCategory.value = UiState.Loading }
-//            .collect {
-//                when (it) {
-//                    is UiState.Error -> _uiStateCategory.value = UiState.Error(it.message)
-//                    UiState.Idle -> Unit
-//                    UiState.Loading -> _uiStateCategory.value = UiState.Loading
-//                    is UiState.Success -> {
-//                        _uiStateCategory.value = UiState.Success(it.data)
-//                    }
-//                }
-//            }
-//    }
+    private fun checkErrorState() {
+        val errorList = mutableListOf<AddItemErrorState>()
+
+        if (name.isEmpty()) {
+            errorList.add(AddItemErrorState.EmptyName)
+        }
+
+        if (category == null) {
+            errorList.add(AddItemErrorState.EmptyCategory)
+        }
+
+        _uiErrorState.value = errorList
+    }
 
 }

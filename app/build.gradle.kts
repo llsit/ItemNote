@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.gilde.compose)
     implementation(libs.coil.compose)
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
