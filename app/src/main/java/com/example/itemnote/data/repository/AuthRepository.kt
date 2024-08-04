@@ -1,7 +1,7 @@
 package com.example.itemnote.data.repository
 
 import com.example.itemnote.data.model.UserModel
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_USERS_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_USERS_COLLECTION
 import com.example.itemnote.utils.PreferenceManager
 import com.example.itemnote.utils.UiState
 import com.google.firebase.auth.AuthResult

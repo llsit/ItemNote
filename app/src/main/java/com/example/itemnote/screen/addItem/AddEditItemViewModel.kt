@@ -1,14 +1,15 @@
 package com.example.itemnote.screen.addItem
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.screen.main.BaseViewModel
 import com.example.itemnote.usecase.AddCategoryUseCase
 import com.example.itemnote.usecase.AddItemUseCase
 import com.example.itemnote.usecase.CategoryModel
+import com.example.itemnote.usecase.EditItemUseCase
 import com.example.itemnote.usecase.GetCategoryUseCase
 import com.example.itemnote.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,20 +21,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddItemViewModel @Inject constructor(
+class AddEditItemViewModel @Inject constructor(
     private val addItemUseCase: AddItemUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
+    private val editItemUseCase: EditItemUseCase,
     getCategoryUseCase: GetCategoryUseCase,
 ) : BaseViewModel(getCategoryUseCase) {
 
-    private val _uiStateAddShop = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val uiStateAddShop: StateFlow<UiState<Unit>> = _uiStateAddShop.asStateFlow()
+    private val _uiStateAddItem = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val uiStateAddItem: StateFlow<UiState<Unit>> = _uiStateAddItem.asStateFlow()
 
-    private val _uiErrorState = MutableStateFlow<List<AddItemErrorState>>(emptyList())
-    val uiErrorState: StateFlow<List<AddItemErrorState>> = _uiErrorState.asStateFlow()
+    private val _uiStateEditItem = MutableStateFlow<UiState<Unit>>(UiState.Idle)
+    val uiStateEditItem: StateFlow<UiState<Unit>> = _uiStateEditItem.asStateFlow()
+
+    private val _uiErrorState = MutableStateFlow<List<AddEditItemErrorState>>(emptyList())
+    val uiErrorState: StateFlow<List<AddEditItemErrorState>> = _uiErrorState.asStateFlow()
 
     private val _uiStateAddCategory = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val uiStateAddCategory: StateFlow<UiState<Unit>> = _uiStateAddCategory.asStateFlow()
+
+    private val _screenMode = MutableStateFlow<AddEditItemMode>(AddEditItemMode.Add)
+    val screenMode: StateFlow<AddEditItemMode> = _screenMode.asStateFlow()
 
     var name by mutableStateOf("")
         private set
@@ -41,23 +49,38 @@ class AddItemViewModel @Inject constructor(
     var imageUri by mutableStateOf("")
         private set
 
-    private var category by mutableStateOf<CategoryModel?>(null)
+    var category by mutableStateOf<CategoryModel?>(null)
+        private set
+
+    private var itemModel: ItemModel? = null
 
     init {
         getCategory()
+    }
+
+    fun setScreenMode(mode: AddEditItemMode, itemModel: ItemModel?) {
+        _screenMode.value = mode
+        this.itemModel = itemModel
+        if (mode is AddEditItemMode.Edit) {
+            this.itemModel?.let {
+                onNameChange(it.name)
+                onCategoryChange(it.categoryModel)
+                onImageUriChange(it.imageUrl)
+            }
+        }
     }
 
     fun onNameChange(newName: String) {
         name = newName
         _uiErrorState.update { currentErrors ->
             if (newName.isEmpty()) {
-                if (!currentErrors.contains(AddItemErrorState.EmptyName)) {
-                    currentErrors + AddItemErrorState.EmptyName
+                if (!currentErrors.contains(AddEditItemErrorState.EmptyName)) {
+                    currentErrors + AddEditItemErrorState.EmptyName
                 } else {
                     currentErrors
                 }
             } else {
-                currentErrors.filter { it != AddItemErrorState.EmptyName }
+                currentErrors.filter { it != AddEditItemErrorState.EmptyName }
             }
         }
     }
@@ -72,14 +95,38 @@ class AddItemViewModel @Inject constructor(
 
     fun resetUiStateErrorCategory() {
         _uiErrorState.update { currentErrors ->
-            currentErrors.filter { it != AddItemErrorState.EmptyCategory }
+            currentErrors.filter { it != AddEditItemErrorState.EmptyCategory }
         }
     }
 
-    fun checkAddItem() {
+    fun checkAddEditItem() {
         checkErrorState()
         if (name.isNotEmpty() && category != null) {
-            addItem()
+            if (screenMode.value is AddEditItemMode.Add) {
+                addItem()
+            } else {
+                editItem()
+            }
+        }
+    }
+
+    private fun editItem() = viewModelScope.launch {
+        editItemUseCase.editItem(name, imageUri, category!!, itemModel!!).collect {
+            when (it) {
+                is UiState.Error -> {
+                    _uiStateEditItem.value = UiState.Error(it.message)
+                }
+
+                UiState.Loading -> {
+                    _uiStateEditItem.value = UiState.Loading
+                }
+
+                is UiState.Success -> {
+                    _uiStateEditItem.value = UiState.Success(it.data)
+                }
+
+                else -> Unit
+            }
         }
     }
 
@@ -87,15 +134,15 @@ class AddItemViewModel @Inject constructor(
         addItemUseCase.addItem(name, imageUri, category!!).collect {
             when (it) {
                 is UiState.Error -> {
-                    _uiStateAddShop.value = UiState.Error(it.message)
+                    _uiStateAddItem.value = UiState.Error(it.message)
                 }
 
                 UiState.Loading -> {
-                    _uiStateAddShop.value = UiState.Loading
+                    _uiStateAddItem.value = UiState.Loading
                 }
 
                 is UiState.Success -> {
-                    _uiStateAddShop.value = UiState.Success(it.data)
+                    _uiStateAddItem.value = UiState.Success(it.data)
                 }
 
                 else -> Unit
@@ -120,14 +167,14 @@ class AddItemViewModel @Inject constructor(
     }
 
     private fun checkErrorState() {
-        val errorList = mutableListOf<AddItemErrorState>()
+        val errorList = mutableListOf<AddEditItemErrorState>()
 
         if (name.isEmpty()) {
-            errorList.add(AddItemErrorState.EmptyName)
+            errorList.add(AddEditItemErrorState.EmptyName)
         }
 
         if (category == null) {
-            errorList.add(AddItemErrorState.EmptyCategory)
+            errorList.add(AddEditItemErrorState.EmptyCategory)
         }
 
         _uiErrorState.value = errorList

@@ -41,6 +41,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -73,7 +74,6 @@ import com.example.itemnote.component.MyModalBottomSheet
 import com.example.itemnote.component.MySnackBarComponent
 import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
-import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.utils.ImageUriUtils.getTempUri
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
@@ -82,68 +82,27 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
-fun AddItemScreen(
-    itemModel: ItemModel? = null,
+fun AddEditItemScreen(
+    mode: AddEditItemMode,
     navController: NavHostController = rememberNavController(),
-    addViewModel: AddItemViewModel = hiltViewModel(),
+    viewModel: AddEditItemViewModel = hiltViewModel(),
     sharedViewModel: SharedViewModel,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
 ) {
 
-    val state = addViewModel.uiStateAddShop.collectAsState()
-    val errorState by addViewModel.uiErrorState.collectAsState()
-    val uri = remember { mutableStateOf<Uri?>(null) }
+    val state by viewModel.uiStateAddItem.collectAsState()
+    val errorState by viewModel.uiErrorState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val uiStateAddCategory = addViewModel.uiStateAddCategory.collectAsState()
-    val selectedItem = sharedViewModel.selectedItem.collectAsState()
+    val uiStateAddCategory by viewModel.uiStateAddCategory.collectAsState()
+    val editItemState by viewModel.uiStateEditItem.collectAsState()
+    val itemModel by sharedViewModel.selectedItem.collectAsState()
 
     LaunchedEffect(Unit) {
-        selectedItem.value?.let {
-            addViewModel.onNameChange(it.name)
-            addViewModel.onCategoryChange(it.categoryModel)
-            addViewModel.onImageUriChange(it.imageUrl)
-        }
+        viewModel.setScreenMode(mode, itemModel)
     }
 
-    val authority = stringResource(id = R.string.fileprovider)
-    val file = File(context.cacheDir, "images")
-
-    val takePhotoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { isSaved ->
-            uri.value?.let {
-                addViewModel.onImageUriChange(it.toString())
-            }
-        }
-    )
-
-    val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { imageUri ->
-            imageUri?.let {
-                uri.value = it
-                addViewModel.onImageUriChange(it.toString())
-            }
-        }
-    )
-
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // Permission is granted, proceed to step 2
-            val tempUri = getTempUri(context, authority, file)
-            uri.value = tempUri
-            uri.value?.let {
-                takePhotoLauncher.launch(it)
-            }
-        } else {
-            // Permission is denied, handle it accordingly
-        }
-    }
-
-    when (uiStateAddCategory.value) {
+    when (uiStateAddCategory) {
         is UiState.Error -> {
             Loading(isLoading = false)
             Toast.makeText(
@@ -157,18 +116,65 @@ fun AddItemScreen(
         UiState.Loading -> Loading(isLoading = true)
         is UiState.Success -> {
             Loading(isLoading = true)
-            addViewModel.getCategory()
-            Toast.makeText(
-                context,
-                "Add Category Success!",
-                Toast.LENGTH_LONG
-            ).show()
+            viewModel.getCategory()
+            Toast.makeText(context, "Add Category Success!", Toast.LENGTH_LONG).show()
+        }
+    }
+    when (state) {
+        is UiState.Error -> {
+            Loading(isLoading = false)
+            Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+        }
+
+        UiState.Loading -> {
+            Loading(isLoading = true)
+        }
+
+        is UiState.Success -> {
+            Loading(isLoading = false)
+            LaunchedEffect(key1 = Unit) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("Add Item Success!")
+                }
+            }
+        }
+
+        else -> {
+            Loading(isLoading = false)
+        }
+    }
+    when (editItemState) {
+        is UiState.Error -> {
+            Loading(isLoading = false)
+            Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
+        }
+
+        UiState.Loading -> {
+            Loading(isLoading = true)
+        }
+
+        is UiState.Success -> {
+            Loading(isLoading = false)
+            LaunchedEffect(key1 = Unit) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("Edit Item Success!")
+                }
+            }
+        }
+
+        else -> {
+            Loading(isLoading = false)
         }
     }
 
+
     Scaffold(
         topBar = {
-            ToolbarScreen(title = if (itemModel == null) "Add Item" else "Edit Item", true) {
+            ToolbarScreen(
+                title = if (mode is AddEditItemMode.Add) "Add Item" else "Edit Item",
+                true
+            ) {
+                sharedViewModel.clearSelectedItem()
                 navController.popBackStack()
             }
         },
@@ -185,88 +191,50 @@ fun AddItemScreen(
         }
     )
     { innerPadding ->
-        when (state.value) {
-            is UiState.Error -> {
-                Loading(isLoading = false)
-                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
-            }
-
-            UiState.Loading -> {
-                Loading(isLoading = true)
-            }
-
-            is UiState.Success -> {
-                Loading(isLoading = false)
-                LaunchedEffect(key1 = Unit) {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar("Add Item Success!")
-                    }
-                }
-            }
-
-            else -> {
-                Loading(isLoading = false)
-            }
-        }
         AddItemComponent(
+            context = context,
             modifier = Modifier.padding(innerPadding),
-            addViewModel = addViewModel,
-            isTextFieldError = errorState.contains(AddItemErrorState.EmptyName),
-            showErrorCategory = errorState.contains(AddItemErrorState.EmptyCategory),
-            onTakePhotoClick = {
-                val permission = Manifest.permission.CAMERA
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        permission
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    // Permission is already granted, proceed to step 2
-                    val tempUri = getTempUri(context, authority, file)
-                    uri.value = tempUri
-                    uri.value?.let {
-                        takePhotoLauncher.launch(it)
-                    }
-                } else {
-                    // Permission is not granted, request it
-                    cameraPermissionLauncher.launch(permission)
-                }
-            },
-            onPhotoGalleryClick = {
-                imagePicker.launch(
-                    PickVisualMediaRequest(
-                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                    )
-                )
+            viewModel = viewModel,
+            isTextFieldError = errorState.contains(AddEditItemErrorState.EmptyName),
+            showErrorCategory = errorState.contains(AddEditItemErrorState.EmptyCategory),
+            onSelectImage = {
+                viewModel.onImageUriChange(it.toString())
             },
             onDismiss = {
                 navController.popBackStack()
             }
         )
     }
+
+    DisposableEffect(key1 = Unit) {
+        onDispose {
+            sharedViewModel.clearSelectedItem()
+        }
+    }
 }
 
 @Composable
 fun AddItemComponent(
+    context: Context,
     modifier: Modifier,
-    addViewModel: AddItemViewModel,
+    viewModel: AddEditItemViewModel,
     isTextFieldError: Boolean,
     showErrorCategory: Boolean,
-    onTakePhotoClick: () -> Unit,
-    onPhotoGalleryClick: () -> Unit,
+    onSelectImage: (Uri) -> Unit,
     onDismiss: () -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
-    var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    val category = addViewModel.uiStateCategory.collectAsState()
+    val category = viewModel.uiStateCategory.collectAsState()
 
     Column(
         modifier.verticalScroll(rememberScrollState()),
     ) {
         ImageSection(
-            onClickImage = { showBottomSheet = it },
-            imageUri = addViewModel.imageUri,
-            onClickClearImage = { addViewModel.onImageUriChange("") }
+            onSelectImage = { onSelectImage(it) },
+            imageUri = viewModel.imageUri,
+            onClickClearImage = { viewModel.onImageUriChange("") },
+            context = context
         )
 
         Column(
@@ -277,8 +245,8 @@ fun AddItemComponent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TextFieldComponent(
-                value = addViewModel.name,
-                onValueChange = { name -> addViewModel.onNameChange(name) },
+                value = viewModel.name,
+                onValueChange = { name -> viewModel.onNameChange(name) },
                 label = "Name",
                 isError = isTextFieldError,
                 errorMessage = "Name is Empty",
@@ -311,7 +279,8 @@ fun AddItemComponent(
                     Loading(isLoading = false)
                     ChipGroupList(
                         categoryList = (category.value as UiState.Success).data,
-                        onSelected = { addViewModel.onCategoryChange(it) }
+                        onSelected = { viewModel.onCategoryChange(it) },
+                        selectedId = viewModel.category?.id.orEmpty()
                     )
                 }
 
@@ -330,31 +299,17 @@ fun AddItemComponent(
                 }
                 Button(onClick = {
                     focusManager.clearFocus()
-                    addViewModel.checkAddItem()
+                    viewModel.checkAddEditItem()
                 }) {
                     Text("Save")
                 }
             }
         }
 
-        if (showBottomSheet) {
-            MyModalBottomSheet(
-                header = "Choose Option",
-                onDismiss = { showBottomSheet = false },
-                onTakePhotoClick = {
-                    showBottomSheet = false
-                    onTakePhotoClick()
-                },
-                onPhotoGalleryClick = {
-                    showBottomSheet = false
-                    onPhotoGalleryClick()
-                }
-            )
-        }
         if (showErrorCategory) {
             BasicAlertDialogComponent(
                 title = "Please select a Category",
-                onClickDismiss = { addViewModel.resetUiStateErrorCategory() },
+                onClickDismiss = { viewModel.resetUiStateErrorCategory() },
             )
         }
 
@@ -362,7 +317,7 @@ fun AddItemComponent(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onAddCategory = { newCategory ->
-                addViewModel.addCategory(newCategory)
+                viewModel.addCategory(newCategory)
             }
         )
     }
@@ -370,10 +325,52 @@ fun AddItemComponent(
 
 @Composable
 fun ImageSection(
-    onClickImage: (Boolean) -> Unit,
+    onSelectImage: (Uri) -> Unit,
     imageUri: String,
-    onClickClearImage: () -> Unit = {}
+    onClickClearImage: () -> Unit = {},
+    context: Context
 ) {
+    val uri = remember { mutableStateOf<Uri?>(null) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    val authority = stringResource(id = R.string.fileprovider)
+    val file = File(context.cacheDir, "images")
+
+    val takePhotoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { isSaved ->
+            if (isSaved) {
+                uri.value?.let {
+                    onSelectImage.invoke(it)
+                }
+            }
+        }
+    )
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { imageUri ->
+            imageUri?.let {
+                onSelectImage.invoke(it)
+            }
+        }
+    )
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted, proceed to step 2
+            val tempUri = getTempUri(context, authority, file)
+            uri.value = tempUri
+            uri.value?.let {
+                takePhotoLauncher.launch(it)
+            }
+        } else {
+            // Permission is denied, handle it accordingly
+        }
+    }
+
     Column(
         Modifier
             .padding(8.dp)
@@ -388,7 +385,7 @@ fun ImageSection(
         )
         Box(
             modifier = Modifier
-                .clickable(onClick = { onClickImage(true) })
+                .clickable(onClick = { showBottomSheet = true })
                 .align(Alignment.CenterHorizontally),
         ) {
             val imageModifier = Modifier
@@ -436,6 +433,40 @@ fun ImageSection(
                 )
             }
         }
+    }
+
+    if (showBottomSheet) {
+        MyModalBottomSheet(
+            header = "Choose Option",
+            onDismiss = { showBottomSheet = false },
+            onTakePhotoClick = {
+                showBottomSheet = false
+                val permission = Manifest.permission.CAMERA
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    // Permission is already granted, proceed to step 2
+                    val tempUri = getTempUri(context, authority, file)
+                    uri.value = tempUri
+                    uri.value?.let {
+                        takePhotoLauncher.launch(it)
+                    }
+                } else {
+                    // Permission is not granted, request it
+                    cameraPermissionLauncher.launch(permission)
+                }
+            },
+            onPhotoGalleryClick = {
+                showBottomSheet = false
+                imagePicker.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
+                )
+            }
+        )
     }
 }
 
