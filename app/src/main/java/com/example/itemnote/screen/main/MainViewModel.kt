@@ -1,6 +1,5 @@
 package com.example.itemnote.screen.main
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.repository.AuthRepository
@@ -8,12 +7,12 @@ import com.example.itemnote.usecase.GetCategoryUseCase
 import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemsByCategory
 import com.example.itemnote.utils.AuthState
+import com.example.itemnote.utils.Constants.Category.HOME
 import com.example.itemnote.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,9 +33,8 @@ class MainViewModel @Inject constructor(
         getCategory()
     }
 
-    fun getItems() = viewModelScope.launch {
+    private fun getItems() = viewModelScope.launch {
         getItemUseCase.getItems()
-//            .onStart { _uiState.value = UiState.Loading }
             .collect {
                 when (it) {
                     is UiState.Error -> {
@@ -54,11 +52,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun getItemsByCategory(categoryId: String) = viewModelScope.launch {
-        if (categoryId == "home") {
+        if (categoryId == HOME) {
             getItems()
         } else {
             getItemsByCategory.getItemsByCategory(categoryId)
-//                .onStart { _uiState.value = UiState.Loading }
                 .collect {
                     when (it) {
                         is UiState.Error -> {
@@ -68,8 +65,6 @@ class MainViewModel @Inject constructor(
                         UiState.Idle -> Unit
                         UiState.Loading -> _uiState.value = UiState.Loading
                         is UiState.Success -> {
-                            Log.d("getItemsByCategory", "getItemsByCategory : ${it.data}")
-
                             _uiState.value = UiState.Success(it.data)
                         }
                     }

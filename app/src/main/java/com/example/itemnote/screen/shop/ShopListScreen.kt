@@ -95,9 +95,13 @@ fun ShopListScreen(
                     showDialog = true
                 },
                 onEditClick = {
-                    navController.navigate(NavigationItem.AddItem.route)
+                    navController.navigate(NavigationItem.EditItem.route)
                 },
-                onBackClick = { navController.popBackStack() })
+                onBackClick = {
+                    sharedViewModel.clearSelectedItem()
+                    navController.popBackStack()
+                }
+            )
         },
         floatingActionButton = {
             FloatingButton {

@@ -12,6 +12,8 @@ import com.example.itemnote.usecase.DeleteItemUseCase
 import com.example.itemnote.usecase.DeleteItemUseCaseImpl
 import com.example.itemnote.usecase.DeleteShopUseCase
 import com.example.itemnote.usecase.DeleteShopUseCaseImpl
+import com.example.itemnote.usecase.EditItemUseCase
+import com.example.itemnote.usecase.EditItemUseCaseImpl
 import com.example.itemnote.usecase.GetCategoryUseCase
 import com.example.itemnote.usecase.GetCategoryUseCaseImpl
 import com.example.itemnote.usecase.GetItemUseCase
@@ -107,5 +109,9 @@ object UseCaseModule {
         return useCase
     }
 
+    @Provides
+    fun provideEditItemUseCase(useCase: EditItemUseCaseImpl): EditItemUseCase {
+        return useCase
+    }
 
 }

@@ -12,7 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.compose.ItemNoteTheme
-import com.example.itemnote.screen.addItem.AddItemScreen
+import com.example.itemnote.screen.addItem.AddEditItemMode
+import com.example.itemnote.screen.addItem.AddEditItemScreen
 import com.example.itemnote.screen.authentication.LoginScreen
 import com.example.itemnote.screen.authentication.RegisterScreen
 import com.example.itemnote.screen.main.MainScreen
@@ -57,7 +58,18 @@ fun MyApp() {
                 ShopListScreen(navController = navController, sharedViewModel = sharedViewModel)
             }
             composable(NavigationItem.AddItem.route) {
-                AddItemScreen(navController = navController, sharedViewModel = sharedViewModel)
+                AddEditItemScreen(
+                    mode = AddEditItemMode.Add,
+                    navController = navController,
+                    sharedViewModel = sharedViewModel
+                )
+            }
+            composable(NavigationItem.EditItem.route) {
+                AddEditItemScreen(
+                    mode = AddEditItemMode.Edit,
+                    navController = navController,
+                    sharedViewModel = sharedViewModel
+                )
             }
         }
     }

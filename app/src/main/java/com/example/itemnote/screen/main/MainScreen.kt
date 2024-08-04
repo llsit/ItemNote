@@ -42,6 +42,7 @@ import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.screen.user.UserViewModel
 import com.example.itemnote.usecase.CategoryModel
 import com.example.itemnote.utils.AuthState
+import com.example.itemnote.utils.Constants.Category.HOME
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
@@ -137,7 +138,7 @@ fun MainScreen(
                         Loading(isLoading = false)
                         (category as UiState.Success<List<CategoryModel>>).data?.let { categoryList ->
                             val list = listOf(
-                                CategoryModel("home", "Home")
+                                CategoryModel("home", HOME)
                             ).plus(categoryList)
                             ChipGroupHorizontalList(list) { selectedCategory ->
                                 mainViewModel.getItemsByCategory(selectedCategory?.id.orEmpty())

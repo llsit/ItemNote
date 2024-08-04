@@ -12,3 +12,9 @@ data class ItemModel(
     val shop: ShopModel? = null,
     val categoryModel: CategoryModel? = null
 )
+
+fun ItemModel.toMap() = mapOf(
+    "name" to name,
+    "imageUrl" to imageUrl,
+    "categoryModel" to categoryModel
+)

@@ -1,12 +1,11 @@
 package com.example.itemnote.data.repository
 
-import android.util.Log
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.data.model.toMap
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEMS_COLLECTION
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEM_COLLECTION
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_PRICE_FIELD
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_SHOP_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_PRICE_FIELD
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_SHOP_COLLECTION
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
