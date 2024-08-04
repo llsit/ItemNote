@@ -98,8 +98,8 @@ fun ShopListScreen(
                     navController.navigate(NavigationItem.EditItem.route)
                 },
                 onBackClick = {
-                    sharedViewModel.clearSelectedItem()
                     navController.popBackStack()
+                    sharedViewModel.clearSelectedItem()
                 }
             )
         },

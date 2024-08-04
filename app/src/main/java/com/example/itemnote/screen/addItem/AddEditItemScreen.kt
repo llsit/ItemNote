@@ -41,7 +41,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -174,7 +173,6 @@ fun AddEditItemScreen(
                 title = if (mode is AddEditItemMode.Add) "Add Item" else "Edit Item",
                 true
             ) {
-                sharedViewModel.clearSelectedItem()
                 navController.popBackStack()
             }
         },
@@ -204,12 +202,6 @@ fun AddEditItemScreen(
                 navController.popBackStack()
             }
         )
-    }
-
-    DisposableEffect(key1 = Unit) {
-        onDispose {
-            sharedViewModel.clearSelectedItem()
-        }
     }
 }
 
