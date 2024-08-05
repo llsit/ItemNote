@@ -35,8 +35,8 @@ class RegisterViewModel @Inject constructor(
         name.value = newName
     }
 
-    fun registerUser(name: String, email: String, password: String) = viewModelScope.launch {
-        registerUseCase.invoke(name = name, email = email, password = password)
+    fun registerUser() = viewModelScope.launch {
+        registerUseCase.invoke(name = name.value, email = email.value, password = password.value)
             .collect { result ->
                 when (result) {
                     is UiState.Loading -> {
