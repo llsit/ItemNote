@@ -182,6 +182,10 @@ fun AddEditItemScreen(
                 LaunchedEffect(Unit) {
                     coroutineScope.launch {
                         delay(1000)
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            "result", EditResult.SUCCESS
+                        )
                         navController.popBackStack()
                     }
                 }

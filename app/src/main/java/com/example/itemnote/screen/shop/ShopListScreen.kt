@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +55,7 @@ import com.example.itemnote.component.MediumToolbarComponent
 import com.example.itemnote.component.ShopCard
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.model.ShopModel
+import com.example.itemnote.screen.addItem.EditResult
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
 import java.text.SimpleDateFormat
@@ -63,7 +66,7 @@ import java.util.Locale
 fun ShopListScreen(
     navController: NavHostController,
     shopListViewModel: ShopListViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -71,8 +74,18 @@ fun ShopListScreen(
     var shopModel by remember { mutableStateOf<ShopModel?>(null) }
     val scope = rememberCoroutineScope()
     val state = shopListViewModel.uiStateGetShop.collectAsState()
-    val selectedItemModel by sharedViewModel.selectedItem.collectAsState()
+    val selectedItemModel by shopListViewModel.selectedItem.collectAsState()
     val deleteItemState = shopListViewModel.deleteItemState.collectAsState()
+    val result = navController.currentBackStackEntry?.savedStateHandle?.get<EditResult>("result")
+
+    LaunchedEffect(key1 = result) {
+        result?.let {
+            if (it == EditResult.SUCCESS) {
+                shopListViewModel.getItemById()
+                navController.currentBackStackEntry?.savedStateHandle?.remove<EditResult>("result")
+            }
+        }
+    }
 
     when (deleteItemState.value) {
         is UiState.Error -> {
@@ -154,8 +167,8 @@ fun ShopListScreen(
         if (showDialog) {
             ConfirmDialog(
                 icon = Icons.Default.Info,
-                dialogTitle = "Delete",
-                dialogText = "Are you sure you want to delete this item?",
+                dialogTitle = stringResource(id = R.string.dialog_confirm_title),
+                dialogText = stringResource(id = R.string.dialog_confirm_delete),
                 onDismissRequest = { showDialog = false },
                 onConfirmation = {
                     if (selectedItemModel?.id?.isNotEmpty() == true)
@@ -268,8 +281,8 @@ fun ShopList(
     if (showDialog.value) {
         ConfirmDialog(
             icon = Icons.Default.Info,
-            dialogTitle = "Delete",
-            dialogText = "Are you sure you want to delete this item?",
+            dialogTitle = stringResource(id = R.string.dialog_confirm_title),
+            dialogText = stringResource(id = R.string.dialog_confirm_delete),
             onDismissRequest = { showDialog.value = false },
             onConfirmation = {
                 if (deleteShopId.value.isNotEmpty())

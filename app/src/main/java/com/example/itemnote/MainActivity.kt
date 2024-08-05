@@ -55,7 +55,10 @@ fun MyApp() {
                 "shopList/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.StringType })
             ) {
-                ShopListScreen(navController = navController, sharedViewModel = sharedViewModel)
+                ShopListScreen(
+                    navController = navController,
+                    sharedViewModel = sharedViewModel
+                )
             }
             composable(NavigationItem.AddItem.route) {
                 AddEditItemScreen(

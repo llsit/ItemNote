@@ -4,3 +4,7 @@ sealed class AddEditItemMode {
     object Add : AddEditItemMode()
     object Edit : AddEditItemMode()
 }
+
+enum class EditResult {
+    SUCCESS
+}

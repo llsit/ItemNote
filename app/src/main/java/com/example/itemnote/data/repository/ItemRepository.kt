@@ -18,6 +18,7 @@ import javax.inject.Inject
 interface ItemRepository {
     fun addItem(data: ItemModel): Flow<UiState<Unit>>
     fun getItem(): Flow<UiState<List<ItemModel>>>
+    fun getItemById(itemId: String): Flow<UiState<ItemModel>>
     fun uploadImage(path: String): Flow<String>
     fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>>
     fun deleteItem(itemId: String): Flow<UiState<Unit>>
@@ -54,6 +55,20 @@ class ItemRepositoryImpl @Inject constructor(
             emit(UiState.Success(it))
         }.onFailure { e ->
             emit(UiState.Error(e.message.toString()))
+        }
+    }
+
+    override fun getItemById(itemId: String): Flow<UiState<ItemModel>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(preferenceManager.getUserId() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(itemId)
+                .get().await()
+        }.onSuccess {
+            emit(UiState.Success(it.toObject<ItemModel>()!!))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
         }
     }
 

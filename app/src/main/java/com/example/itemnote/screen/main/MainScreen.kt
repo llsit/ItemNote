@@ -172,8 +172,8 @@ fun MainScreen(
                                 .padding(8.dp),
                             columns = GridCells.Adaptive(minSize = 128.dp)
                         ) {
-                            (state.value as UiState.Success<List<ItemModel>>).data?.let {
-                                items(it) {
+                            (state.value as UiState.Success<List<ItemModel>>).data?.let { item ->
+                                items(item) {
                                     ItemComponent(
                                         modifier = Modifier,
                                         name = it.name,
