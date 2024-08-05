@@ -173,6 +173,7 @@ fun AddEditItemScreen(
                 title = if (mode is AddEditItemMode.Add) "Add Item" else "Edit Item",
                 true
             ) {
+                sharedViewModel.clearSelectedItem()
                 navController.popBackStack()
             }
         },
@@ -183,6 +184,7 @@ fun AddEditItemScreen(
                     coroutineScope.launch {
                         delay(1000)
                         snackbarHostState.currentSnackbarData?.dismiss()
+                        sharedViewModel.clearSelectedItem()
                         navController.previousBackStackEntry?.savedStateHandle?.set(
                             "result", EditResult.SUCCESS
                         )

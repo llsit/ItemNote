@@ -108,6 +108,9 @@ fun ShopListScreen(
                     showDialog = true
                 },
                 onEditClick = {
+                    selectedItemModel?.let {
+                        sharedViewModel.updateSelectedItemModel(it)
+                    }
                     navController.navigate(NavigationItem.EditItem.route)
                 },
                 onBackClick = {
