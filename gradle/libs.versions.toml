@@ -50,7 +50,7 @@ firebase-analytic = { group = "com.google.firebase", name = "firebase-analytics"
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+#firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
