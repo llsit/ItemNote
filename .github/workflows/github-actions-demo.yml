@@ -34,11 +34,14 @@ jobs:
     - name: Build debug APK
       run: ./gradlew assembleDebug
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
+    - name: Upload to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
       with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        appId: ${{ secrets.FIREBASE_APP_ID }}
+        token: ${{ secrets.FIREBASE_TOKEN } }
+    file: app/build/outputs/apk/debug/app-debug.apk
+    groups: 'testers'
+    continue-on-error: true
 
     # Optional: Add a step for running instrumented tests on an emulator
     # - name: Run instrumented tests
