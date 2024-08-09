@@ -2,16 +2,18 @@ name: Android CI/CD
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ develop ]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: Run a command
+      run: echo "This job is running on branch ${{ github.ref }}"
 
     - name: Set up JDK
       uses: actions/setup-java@v2
@@ -35,6 +37,7 @@ jobs:
       run: ./gradlew assembleDebug
 
     - name: Upload to Firebase App Distribution
+      if: github.ref == 'refs/heads/main'
       uses: wzieba/Firebase-Distribution-Github-Action@v1
       with:
         appId: ${{ secrets.FIREBASE_APP_ID }}

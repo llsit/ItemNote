@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.google.service)
     alias(libs.plugins.kotlin.serialization)
 //    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.klint)
 }
 
 android {
@@ -97,4 +98,15 @@ dependencies {
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
+}
+
+ktlint {
+    android = true
+    version = "0.43.2" // Replace with the desired KtLint version
+    verbose = true
+    debug = true
+    outputToConsole = true
+    outputColorName = "RED"
+    ignoreFailures = false
+    enableExperimentalRules = true
 }
