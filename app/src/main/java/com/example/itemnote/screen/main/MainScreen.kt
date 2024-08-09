@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -39,6 +40,7 @@ import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ProfileMenuComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.data.model.ItemModel
+import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.screen.user.UserViewModel
 import com.example.itemnote.usecase.CategoryModel
 import com.example.itemnote.utils.AuthState
@@ -166,28 +168,13 @@ fun MainScreen(
 
                     is UiState.Success -> {
                         Loading(isLoading = false)
-                        LazyVerticalGrid(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            columns = GridCells.Adaptive(minSize = 128.dp)
-                        ) {
-                            (state.value as UiState.Success<List<ItemModel>>).data?.let { item ->
-                                items(item) {
-                                    ItemComponent(
-                                        modifier = Modifier,
-                                        name = it.name,
-                                        price = it.shop?.price.toString(),
-                                        location = it.shop?.location.orEmpty(),
-                                        locationName = it.shop?.name.orEmpty(),
-                                        imageUrl = it.imageUrl
-                                    ) {
-                                        sharedViewModel.updateSelectedItemModel(it)
-                                        navController.navigate("shopList/${it.id}")
-                                    }
-                                }
+                        ItemListSection(
+                            itemList = (state.value as UiState.Success<List<ItemModel>>).data,
+                            onClickListener = {
+                                sharedViewModel.updateSelectedItemModel(it)
+                                navController.navigate("shopList/${it.id}")
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -195,5 +182,66 @@ fun MainScreen(
     }
 }
 
+@Composable
+fun ItemListSection(
+    itemList: List<ItemModel>?,
+    onClickListener: (ItemModel) -> Unit,
+) {
+    LazyVerticalGrid(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        columns = GridCells.Adaptive(minSize = 128.dp)
+    ) {
+        itemList?.let { item ->
+            items(item) {
+                ItemComponent(
+                    modifier = Modifier,
+                    name = it.name,
+                    price = it.shop?.price.toString(),
+                    location = it.shop?.location.orEmpty(),
+                    locationName = it.shop?.name.orEmpty(),
+                    imageUrl = it.imageUrl
+                ) {
+                    onClickListener(it)
+                }
+            }
+        }
+    }
+}
 
+@Composable
+@Preview(showBackground = true)
+fun ItemListSectionPreview() {
+    ItemListSection(
+        itemList = listOf(
+            ItemModel(
+                id = "1",
+                name = "Item 1",
+                imageUrl = "",
+                shop = ShopModel(
+                    id = "1",
+                    name = "Shop 1",
+                    location = "Location 1",
+                    price = 10.0
+                ),
+                categoryModel = CategoryModel(
+                    id = "1",
+                    name = "Category 1"
+                )
+            ),
+            ItemModel(
+                id = "2",
+                name = "Item 2",
+                imageUrl = "",
+                shop = null,
+                categoryModel = CategoryModel(
+                    id = "2",
+                    name = "Category 2"
+                )
+            )
+        ),
+        onClickListener = {}
+    )
+}
 

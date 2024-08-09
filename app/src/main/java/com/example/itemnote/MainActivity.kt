@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -56,11 +58,27 @@ fun MyApp() {
             composable(
                 "shopList/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                // defines how the screen enters when navigating forward
                 enterTransition = {
-                    slideInHorizontally { it }
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(300)
+                    )
                 },
+                // defines how the screen exits when navigating forward
                 exitTransition = {
-                    slideOutHorizontally { it }
+                    fadeOut(animationSpec = tween(durationMillis = 500))
+                },
+                // defines how the screen enters when navigating backward
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(durationMillis = 500))
+                },
+                // defines how the screen exits when navigating backward
+                popExitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(300)
+                    )
                 }
             ) {
                 ShopListScreen(
@@ -68,7 +86,20 @@ fun MyApp() {
                     sharedViewModel = sharedViewModel
                 )
             }
-            composable(NavigationItem.AddItem.route) {
+            composable(NavigationItem.AddItem.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(300)
+                    )
+                }
+            ) {
                 AddEditItemScreen(
                     mode = AddEditItemMode.Add,
                     navController = navController,
@@ -77,10 +108,16 @@ fun MyApp() {
             }
             composable(NavigationItem.EditItem.route,
                 enterTransition = {
-                    slideInHorizontally { it }
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(300)
+                    )
                 },
                 exitTransition = {
-                    slideOutHorizontally { it }
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(300)
+                    )
                 }
             ) {
                 AddEditItemScreen(
