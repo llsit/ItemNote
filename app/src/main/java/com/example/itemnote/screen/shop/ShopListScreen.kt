@@ -73,9 +73,9 @@ fun ShopListScreen(
     val showUpdateDialog = remember { mutableStateOf(false) }
     var shopModel by remember { mutableStateOf<ShopModel?>(null) }
     val scope = rememberCoroutineScope()
-    val state = shopListViewModel.uiStateGetShop.collectAsState()
+    val state by shopListViewModel.uiStateGetShop.collectAsState()
     val selectedItemModel by shopListViewModel.selectedItem.collectAsState()
-    val deleteItemState = shopListViewModel.deleteItemState.collectAsState()
+    val deleteItemState by shopListViewModel.deleteItemState.collectAsState()
     val result = navController.currentBackStackEntry?.savedStateHandle?.get<EditResult>("result")
 
     LaunchedEffect(key1 = result) {
@@ -87,16 +87,16 @@ fun ShopListScreen(
         }
     }
 
-    when (deleteItemState.value) {
+    when (deleteItemState) {
         is UiState.Error -> {
             Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
         }
 
-        UiState.Idle -> Unit
-        UiState.Loading -> Unit
         is UiState.Success -> {
             navController.popBackStack()
         }
+
+        else -> Unit
     }
 
     Scaffold(
@@ -127,19 +127,18 @@ fun ShopListScreen(
         }
     )
     { innerPadding ->
-        when (state.value) {
+        when (state) {
             is UiState.Error -> {
-                Loading(isLoading = false)
                 Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
             }
 
             UiState.Idle -> Unit
-            UiState.Loading -> Loading(isLoading = true)
+            UiState.Loading -> Loading()
             is UiState.Success -> {
                 ShopList(
                     innerPadding = innerPadding,
                     selectedItemModel = selectedItemModel,
-                    shopList = (state.value as UiState.Success<List<ShopModel>>).data,
+                    shopList = (state as UiState.Success<List<ShopModel>>).data,
                     onDeleteShop = {
                         shopListViewModel.deleteShop(
                             shopId = it,
@@ -212,7 +211,6 @@ fun ShopList(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        Loading(isLoading = false)
         val modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)

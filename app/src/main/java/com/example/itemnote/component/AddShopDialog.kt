@@ -45,21 +45,19 @@ fun AddShopDialog(
 ) {
 
     val focusManager = LocalFocusManager.current
-    val state = viewModel.uiStateShop.collectAsState()
+    val state by viewModel.uiStateShop.collectAsState()
     val errorName by viewModel.nameState.collectAsState()
     val errorLocation by viewModel.locationState.collectAsState()
     val errorPrice by viewModel.priceState.collectAsState()
 
-    when (state.value) {
+    when (state) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = false)
             Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
             onClick(false)
         }

@@ -58,16 +58,16 @@ fun MainScreen(
     sharedViewModel: SharedViewModel,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val authState = mainViewModel.authState.collectAsState()
+    val authState by mainViewModel.authState.collectAsState()
     val category by mainViewModel.uiStateCategory.collectAsState()
 
-    when (authState.value) {
-        AuthState.Authenticated -> Unit
-        AuthState.Initial -> Unit
-        AuthState.Loading -> Loading(isLoading = true)
+    when (authState) {
+        AuthState.Loading -> Loading()
         AuthState.Unauthenticated -> {
             navController.navigate(NavigationItem.Login.route)
         }
+
+        else -> Unit
     }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     ModalNavigationDrawer(
@@ -137,7 +137,6 @@ fun MainScreen(
                 )
                 when (category) {
                     is UiState.Success -> {
-                        Loading(isLoading = false)
                         (category as UiState.Success<List<CategoryModel>>).data?.let { categoryList ->
                             val list = listOf(
                                 CategoryModel("home", HOME)
@@ -148,26 +147,23 @@ fun MainScreen(
                         }
                     }
 
-                    is UiState.Loading -> Loading(isLoading = true)
-                    is UiState.Error -> Loading(isLoading = false)
-                    is UiState.Idle -> Unit
+                    is UiState.Loading -> Loading()
+                    else -> Unit
                 }
                 val state = mainViewModel.uiState.collectAsState()
                 when (state.value) {
                     is UiState.Error -> {
-                        Loading(isLoading = false)
                         val error = (state.value as UiState.Error).message
                         Toast.makeText(LocalContext.current, "Error : ${error}", Toast.LENGTH_LONG)
                             .show()
                     }
 
-                    UiState.Idle -> Loading(isLoading = false)
+                    UiState.Idle -> Unit
                     UiState.Loading -> {
-                        Loading(isLoading = true)
+                        Loading()
                     }
 
                     is UiState.Success -> {
-                        Loading(isLoading = false)
                         ItemListSection(
                             itemList = (state.value as UiState.Success<List<ItemModel>>).data,
                             onClickListener = {

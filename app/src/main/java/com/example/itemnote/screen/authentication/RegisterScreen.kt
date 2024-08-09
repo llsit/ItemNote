@@ -1,5 +1,6 @@
 package com.example.itemnote.screen.authentication
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -45,25 +46,24 @@ import com.example.itemnote.utils.UiState
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    context: Context = LocalContext.current
 ) {
     val state = viewModel.registerState.collectAsState()
     when (state.value) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
+                context,
                 (state.value as UiState.Error).message,
                 Toast.LENGTH_SHORT
             ).show()
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
+                context,
                 "Register Success",
                 Toast.LENGTH_SHORT
             ).show()

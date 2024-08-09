@@ -1,5 +1,6 @@
 package com.example.itemnote.screen.authentication
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -53,31 +54,28 @@ import com.google.firebase.ktx.BuildConfig
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     viewModel: LoginViewModel = hiltViewModel(),
+    context: Context = LocalContext.current
 ) {
     val state = viewModel.uiState.collectAsState()
+    val authState by viewModel.authState.collectAsState()
     when (state.value) {
         is UiState.Error -> {
-            Loading(isLoading = false)
-            Toast.makeText(
-                LocalContext.current,
-                (state.value as UiState.Error).message,
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(context, (state.value as UiState.Error).message, Toast.LENGTH_SHORT)
+                .show()
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
+                context,
                 stringResource(id = R.string.login_success),
                 Toast.LENGTH_SHORT
             ).show()
             navController.navigate(NavigationItem.Main.route)
         }
     }
-    val authState by viewModel.authState.collectAsState()
+
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {

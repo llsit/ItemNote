@@ -103,7 +103,6 @@ fun AddEditItemScreen(
 
     when (uiStateAddCategory) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(
                 context,
                 "Error : Add Category Unsuccessful",
@@ -112,25 +111,22 @@ fun AddEditItemScreen(
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = true)
             viewModel.getCategory()
             Toast.makeText(context, "Add Category Success!", Toast.LENGTH_LONG).show()
         }
     }
     when (state) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
         }
 
         UiState.Loading -> {
-            Loading(isLoading = true)
+            Loading()
         }
 
         is UiState.Success -> {
-            Loading(isLoading = false)
             LaunchedEffect(key1 = Unit) {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar("Add Item Success!")
@@ -138,22 +134,18 @@ fun AddEditItemScreen(
             }
         }
 
-        else -> {
-            Loading(isLoading = false)
-        }
+        else -> Unit
     }
     when (editItemState) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(context, "Error", Toast.LENGTH_LONG).show()
         }
 
         UiState.Loading -> {
-            Loading(isLoading = true)
+            Loading()
         }
 
         is UiState.Success -> {
-            Loading(isLoading = false)
             LaunchedEffect(key1 = Unit) {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar("Edit Item Success!")
@@ -161,9 +153,7 @@ fun AddEditItemScreen(
             }
         }
 
-        else -> {
-            Loading(isLoading = false)
-        }
+        else -> Unit
     }
 
 
@@ -223,7 +213,7 @@ fun AddItemComponent(
 ) {
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf(false) }
-    val category = viewModel.uiStateCategory.collectAsState()
+    val category by viewModel.uiStateCategory.collectAsState()
 
     Column(
         modifier.verticalScroll(rememberScrollState()),
@@ -271,18 +261,17 @@ fun AddItemComponent(
                 }
             }
             Spacer(modifier = Modifier.size(4.dp))
-            when (category.value) {
-                UiState.Loading -> Loading(isLoading = true)
+            when (category) {
+                UiState.Loading -> Loading()
                 is UiState.Success -> {
-                    Loading(isLoading = false)
                     ChipGroupList(
-                        categoryList = (category.value as UiState.Success).data,
+                        categoryList = (category as UiState.Success).data,
                         onSelected = { viewModel.onCategoryChange(it) },
                         selectedId = viewModel.category?.id.orEmpty()
                     )
                 }
 
-                else -> Loading(isLoading = false)
+                else -> Unit
             }
             Spacer(modifier = Modifier.size(16.dp))
             Row(
@@ -347,8 +336,8 @@ fun ImageSection(
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { imageUri ->
-            imageUri?.let {
+        onResult = { image ->
+            image?.let {
                 onSelectImage.invoke(it)
             }
         }
