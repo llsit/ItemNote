@@ -1,8 +1,8 @@
 package com.example.itemnote.utils
 
-class Constants {
+object Constants {
 
-    companion object {
+    object Firebase {
         const val FIREBASE_ITEMS_COLLECTION = "items"
         const val FIREBASE_SHOP_COLLECTION = "shop"
         const val FIREBASE_ITEM_COLLECTION = "item"
@@ -12,5 +12,9 @@ class Constants {
         const val FIREBASE_CATEGORIES_COLLECTION = "Categories"
 
         const val FIREBASE_PRICE_FIELD = "price"
+    }
+
+    object Category {
+        const val HOME = "home"
     }
 }

@@ -1,8 +1,8 @@
 package com.example.itemnote.data.repository
 
 import com.example.itemnote.usecase.CategoryModel
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_CATEGORIES_COLLECTION
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_CATEGORY_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_CATEGORIES_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_CATEGORY_COLLECTION
 import com.example.itemnote.utils.PreferenceManager
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore

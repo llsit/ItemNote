@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -39,9 +40,11 @@ import com.example.itemnote.component.Loading
 import com.example.itemnote.component.ProfileMenuComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.data.model.ItemModel
+import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.screen.user.UserViewModel
 import com.example.itemnote.usecase.CategoryModel
 import com.example.itemnote.utils.AuthState
+import com.example.itemnote.utils.Constants.Category.HOME
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.CoroutineScope
@@ -55,16 +58,17 @@ fun MainScreen(
     sharedViewModel: SharedViewModel,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val authState = mainViewModel.authState.collectAsState()
+    val authState by mainViewModel.authState.collectAsState()
     val category by mainViewModel.uiStateCategory.collectAsState()
+    val state by mainViewModel.uiState.collectAsState()
 
-    when (authState.value) {
-        AuthState.Authenticated -> Unit
-        AuthState.Initial -> Unit
-        AuthState.Loading -> Loading(isLoading = true)
+    when (authState) {
+        AuthState.Loading -> Loading()
         AuthState.Unauthenticated -> {
             navController.navigate(NavigationItem.Login.route)
         }
+
+        else -> Unit
     }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     ModalNavigationDrawer(
@@ -134,10 +138,9 @@ fun MainScreen(
                 )
                 when (category) {
                     is UiState.Success -> {
-                        Loading(isLoading = false)
                         (category as UiState.Success<List<CategoryModel>>).data?.let { categoryList ->
                             val list = listOf(
-                                CategoryModel("home", "Home")
+                                CategoryModel("home", HOME)
                             ).plus(categoryList)
                             ChipGroupHorizontalList(list) { selectedCategory ->
                                 mainViewModel.getItemsByCategory(selectedCategory?.id.orEmpty())
@@ -145,52 +148,97 @@ fun MainScreen(
                         }
                     }
 
-                    is UiState.Loading -> Loading(isLoading = true)
-                    is UiState.Error -> Loading(isLoading = false)
-                    is UiState.Idle -> Unit
+                    is UiState.Loading -> Loading()
+                    else -> Unit
                 }
-                val state = mainViewModel.uiState.collectAsState()
-                when (state.value) {
+
+                when (state) {
                     is UiState.Error -> {
-                        Loading(isLoading = false)
-                        val error = (state.value as UiState.Error).message
+                        val error = (state as UiState.Error).message
                         Toast.makeText(LocalContext.current, "Error : ${error}", Toast.LENGTH_LONG)
                             .show()
                     }
 
-                    UiState.Idle -> Loading(isLoading = false)
+                    UiState.Idle -> Unit
                     UiState.Loading -> {
-                        Loading(isLoading = true)
+                        Loading()
                     }
 
                     is UiState.Success -> {
-                        Loading(isLoading = false)
-                        LazyVerticalGrid(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(8.dp),
-                            columns = GridCells.Adaptive(minSize = 128.dp)
-                        ) {
-                            (state.value as UiState.Success<List<ItemModel>>).data?.let {
-                                items(it) {
-                                    ItemComponent(
-                                        modifier = Modifier,
-                                        name = it.name,
-                                        price = it.shop?.price.toString(),
-                                        location = it.shop?.location.orEmpty(),
-                                        locationName = it.shop?.name.orEmpty(),
-                                        imageUrl = it.imageUrl
-                                    ) {
-                                        sharedViewModel.updateSelectedItemModel(it)
-                                        navController.navigate("shopList/${it.id}")
-                                    }
-                                }
+                        ItemListSection(
+                            itemList = (state as UiState.Success<List<ItemModel>>).data,
+                            onClickListener = {
+                                sharedViewModel.updateSelectedItemModel(it)
+                                navController.navigate("shopList/${it.id}")
                             }
-                        }
+                        )
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun ItemListSection(
+    itemList: List<ItemModel>?,
+    onClickListener: (ItemModel) -> Unit,
+) {
+    LazyVerticalGrid(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        columns = GridCells.Adaptive(minSize = 128.dp)
+    ) {
+        itemList?.let { items ->
+            itemsIndexed(items) { index, item ->
+                ItemComponent(
+                    modifier = Modifier,
+                    name = item.name,
+                    price = item.shop?.price.toString(),
+                    location = item.shop?.location.orEmpty(),
+                    locationName = item.shop?.name.orEmpty(),
+                    imageUrl = item.imageUrl
+                ) {
+                    onClickListener(item)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ItemListSectionPreview() {
+    ItemListSection(
+        itemList = listOf(
+            ItemModel(
+                id = "1",
+                name = "Item 1",
+                imageUrl = "",
+                shop = ShopModel(
+                    id = "1",
+                    name = "Shop 1",
+                    location = "Location 1",
+                    price = 10.0
+                ),
+                categoryModel = CategoryModel(
+                    id = "1",
+                    name = "Category 1"
+                )
+            ),
+            ItemModel(
+                id = "2",
+                name = "Item 2",
+                imageUrl = "",
+                shop = null,
+                categoryModel = CategoryModel(
+                    id = "2",
+                    name = "Category 2"
+                )
+            )
+        ),
+        onClickListener = {}
+    )
 }
 

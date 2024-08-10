@@ -44,17 +44,15 @@ fun FullScreenDialog(
     var name by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
-    val state = viewModel.uiStateShop.collectAsState()
-    when (state.value) {
+    val state by viewModel.uiStateShop.collectAsState()
+    when (state) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = false)
             Toast.makeText(LocalContext.current, "Success", Toast.LENGTH_LONG).show()
             onClick(false)
         }

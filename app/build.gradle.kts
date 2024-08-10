@@ -5,7 +5,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.service)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.firebase.crashlytics)
+//    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.klint)
 }
 
 android {
@@ -17,7 +18,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.0.3"
+        versionName = "0.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -35,11 +36,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -67,6 +68,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.icon.extend)
 
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.compiler)
@@ -76,12 +78,13 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
-    implementation(libs.firebase.crashlytics)
+//    implementation(libs.firebase.crashlytics)
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.glide)
     implementation(libs.gilde.compose)
     implementation(libs.coil.compose)
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -96,3 +99,14 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
+
+//ktlint {
+//    android = true
+//    version = "0.43.2" // Replace with the desired KtLint version
+//    verbose = true
+//    debug = true
+//    outputToConsole = true
+//    outputColorName = "RED"
+//    ignoreFailures = false
+//    enableExperimentalRules = true
+//}

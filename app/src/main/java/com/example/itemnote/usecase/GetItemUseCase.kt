@@ -1,15 +1,10 @@
 package com.example.itemnote.usecase
 
 import com.example.itemnote.data.model.ItemModel
-import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.data.repository.ItemRepository
-import com.example.itemnote.data.repository.ShopRepository
 import com.example.itemnote.utils.UiState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 interface GetItemUseCase {
@@ -18,31 +13,20 @@ interface GetItemUseCase {
 
 class GetItemUseCaseImpl @Inject constructor(
     private val itemRepository: ItemRepository,
-    private val shopRepository: ShopRepository
+    private val getMinShopUseCase: GetMinShopUseCase
 ) : GetItemUseCase {
-    override fun getItems(): Flow<UiState<List<ItemModel>>> {
-        return itemRepository.getItem().flatMapLatest { result ->
+    override fun getItems(): Flow<UiState<List<ItemModel>>> = flow {
+        itemRepository.getItem().collect { result ->
             when (result) {
                 is UiState.Success -> {
-                    val itemList = result.data
-                    flow {
-                        try {
-                            val itemsWithShops = itemList?.map { item ->
-                                (shopRepository.getMinShop(item.id)
-                                    .first() as UiState.Success).data.let {
-                                    item.copy(shop = it ?: ShopModel())
-                                }
-                            }
-                            emit(UiState.Success(itemsWithShops))
-                        } catch (e: Exception) {
-                            emit(UiState.Error(e.message.toString()))
+                    result.data?.let {
+                        getMinShopUseCase.getMinShop(it).collect { result ->
+                            emit(result)
                         }
                     }
                 }
 
-                else -> {
-                    flowOf(result)
-                }
+                else -> emit(result)
             }
         }
     }

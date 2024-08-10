@@ -16,4 +16,8 @@ class SharedViewModel @Inject constructor() : ViewModel() {
     fun updateSelectedItemModel(newItemModel: ItemModel) {
         _selectedItem.value = newItemModel
     }
+
+    fun clearSelectedItem() {
+        _selectedItem.value = null
+    }
 }

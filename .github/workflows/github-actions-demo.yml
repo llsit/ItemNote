@@ -1,0 +1,54 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run a command
+      run: echo "This job is running on branch ${{ github.ref }}"
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Clean Gradle
+      run: ./gradlew clean
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Run tests
+      run: ./gradlew test
+
+    - name: Build debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Upload to Firebase App Distribution
+      if: github.ref == 'refs/heads/main'
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{ secrets.FIREBASE_APP_ID }}
+        token: ${{ secrets.FIREBASE_TOKEN }}
+        file: app/build/outputs/apk/debug/app-debug.apk
+        groups: 'testers'
+      continue-on-error: true
+
+    # Optional: Add a step for running instrumented tests on an emulator
+    # - name: Run instrumented tests
+    #   uses: reactivecircus/android-emulator-runner@v2
+    #   with:
+    #     api-level: 29
+    #     script: ./gradlew connectedCheck

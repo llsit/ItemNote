@@ -1,9 +1,11 @@
 package com.example.itemnote.screen.authentication
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,25 +46,24 @@ import com.example.itemnote.utils.UiState
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    context: Context = LocalContext.current
 ) {
     val state = viewModel.registerState.collectAsState()
     when (state.value) {
         is UiState.Error -> {
-            Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
+                context,
                 (state.value as UiState.Error).message,
                 Toast.LENGTH_SHORT
             ).show()
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
+                context,
                 "Register Success",
                 Toast.LENGTH_SHORT
             ).show()
@@ -76,79 +77,100 @@ fun RegisterScreen(
             }
         }
     ) { innerPadding ->
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.ime),
-        ) {
-            Image(
-                painter = painterResource(R.drawable.welcome), contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(200.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .align(Alignment.CenterHorizontally)
-            )
-            TextFieldComponent(
-                value = viewModel.name.value,
-                onValueChange = viewModel::onNameChange,
-                label = "Name",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-            TextFieldComponent(
-                value = viewModel.email.value,
-                onValueChange = viewModel::onEmailChange,
-                label = "Email",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                keyboardType = KeyboardType.Email
-            )
-            TextFieldComponent(
-                value = viewModel.password.value,
-                onValueChange = viewModel::onPasswordChange,
-                label = "Password",
-                isPassword = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                isLast = true,
-                keyboardType = KeyboardType.Password
-            )
-            Button(
-                onClick = {
-                    viewModel.registerUser(
-                        viewModel.name.value,
-                        viewModel.email.value,
-                        viewModel.password.value
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(text = "Register")
+        RegisterSection(
+            navController = navController,
+            innerPadding = innerPadding,
+            name = viewModel.name.value,
+            email = viewModel.email.value,
+            password = viewModel.password.value,
+            onNameChange = viewModel::onNameChange,
+            onEmailChange = viewModel::onEmailChange,
+            onPasswordChange = viewModel::onPasswordChange,
+            onClickRegister = {
+                viewModel.registerUser()
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Already have an account? ",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                )
-                TextButton(onClick = {
-                    navController.navigate(NavigationItem.Login.route)
-                }) {
-                    Text(text = "Login Now", color = MaterialTheme.colorScheme.primary)
-                }
+        )
+    }
+}
+
+@Composable
+fun RegisterSection(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+    name: String,
+    email: String,
+    password: String,
+    onNameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onClickRegister: () -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.ime),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.welcome), contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(200.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .align(Alignment.CenterHorizontally)
+        )
+        TextFieldComponent(
+            value = name,
+            onValueChange = { onNameChange(it) },
+            label = "Name",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+        TextFieldComponent(
+            value = email,
+            onValueChange = { onEmailChange(it) },
+            label = "Email",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            keyboardType = KeyboardType.Email
+        )
+        TextFieldComponent(
+            value = password,
+            onValueChange = { onPasswordChange(it) },
+            label = "Password",
+            isPassword = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            isLast = true,
+            keyboardType = KeyboardType.Password
+        )
+        Button(
+            onClick = { onClickRegister() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(text = "Register")
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Already have an account? ",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+            )
+            TextButton(onClick = {
+                navController.navigate(NavigationItem.Login.route)
+            }) {
+                Text(text = "Login Now", color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -157,5 +179,15 @@ fun RegisterScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {
-    RegisterScreen()
+    RegisterSection(
+        navController = rememberNavController(),
+        innerPadding = PaddingValues(),
+        name = "",
+        email = "",
+        password = "",
+        onNameChange = {},
+        onEmailChange = {},
+        onPasswordChange = {},
+        onClickRegister = {}
+    )
 }

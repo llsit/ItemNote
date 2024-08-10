@@ -12,12 +12,18 @@ import com.example.itemnote.usecase.DeleteItemUseCase
 import com.example.itemnote.usecase.DeleteItemUseCaseImpl
 import com.example.itemnote.usecase.DeleteShopUseCase
 import com.example.itemnote.usecase.DeleteShopUseCaseImpl
+import com.example.itemnote.usecase.EditItemUseCase
+import com.example.itemnote.usecase.EditItemUseCaseImpl
 import com.example.itemnote.usecase.GetCategoryUseCase
 import com.example.itemnote.usecase.GetCategoryUseCaseImpl
+import com.example.itemnote.usecase.GetItemByIdUseCase
+import com.example.itemnote.usecase.GetItemByIdUseCaseImpl
 import com.example.itemnote.usecase.GetItemUseCase
 import com.example.itemnote.usecase.GetItemUseCaseImpl
 import com.example.itemnote.usecase.GetItemsByCategory
 import com.example.itemnote.usecase.GetItemsByCategoryImpl
+import com.example.itemnote.usecase.GetMinShopUseCase
+import com.example.itemnote.usecase.GetMinShopUseCaseImpl
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.usecase.GetShopUseCaseImpl
 import com.example.itemnote.usecase.LoginUseCase
@@ -100,4 +106,18 @@ object UseCaseModule {
         return useCase
     }
 
+    @Provides
+    fun provideGetMinShopUseCase(useCase: GetMinShopUseCaseImpl): GetMinShopUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideEditItemUseCase(useCase: EditItemUseCaseImpl): EditItemUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideGetItemByIdUseCase(useCase: GetItemByIdUseCaseImpl): GetItemByIdUseCase {
+        return useCase
+    }
 }

@@ -6,10 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.usecase.AddShopUseCase
 import com.example.itemnote.usecase.DeleteItemUseCase
 import com.example.itemnote.usecase.DeleteShopUseCase
+import com.example.itemnote.usecase.GetItemByIdUseCase
 import com.example.itemnote.usecase.GetShopUseCase
 import com.example.itemnote.usecase.UpdateShopUseCase
 import com.example.itemnote.utils.UiState
@@ -28,7 +30,8 @@ class ShopListViewModel @Inject constructor(
     private val getShopUseCase: GetShopUseCase,
     private val deleteShopUseCase: DeleteShopUseCase,
     private val deleteItemUseCase: DeleteItemUseCase,
-    private val updateShopUseCase: UpdateShopUseCase
+    private val updateShopUseCase: UpdateShopUseCase,
+    private val getItemByIdUseCase: GetItemByIdUseCase
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<String>("id") ?: ""
@@ -50,6 +53,9 @@ class ShopListViewModel @Inject constructor(
     private val _deleteItemState = MutableStateFlow<UiState<Unit>>(UiState.Idle)
     val deleteItemState: StateFlow<UiState<Unit>> = _deleteItemState.asStateFlow()
 
+    private val _selectedItem = MutableStateFlow<ItemModel?>(null)
+    val selectedItem: StateFlow<ItemModel?> = _selectedItem.asStateFlow()
+
     var name by mutableStateOf("")
         private set
     var location by mutableStateOf("")
@@ -59,6 +65,7 @@ class ShopListViewModel @Inject constructor(
 
 
     init {
+        getItemById()
         getShop()
     }
 
@@ -129,6 +136,21 @@ class ShopListViewModel @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    fun getItemById() = viewModelScope.launch {
+        getItemByIdUseCase.getItemById(itemId).collect {
+            when (it) {
+                is UiState.Error -> {
+                    _selectedItem.value = null
+                }
+                is UiState.Success -> {
+                    _selectedItem.value = it.data
+                }
+
+                else -> Unit
+            }
         }
     }
 

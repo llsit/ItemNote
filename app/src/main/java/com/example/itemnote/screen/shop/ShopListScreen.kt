@@ -1,9 +1,16 @@
 package com.example.itemnote.screen.shop
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,7 +63,10 @@ import com.example.itemnote.component.MediumToolbarComponent
 import com.example.itemnote.component.ShopCard
 import com.example.itemnote.data.model.ItemModel
 import com.example.itemnote.data.model.ShopModel
+import com.example.itemnote.screen.addItem.EditResult
+import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
+import com.example.itemnote.utils.resultHandler
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -63,27 +75,39 @@ import java.util.Locale
 fun ShopListScreen(
     navController: NavHostController,
     shopListViewModel: ShopListViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     val showUpdateDialog = remember { mutableStateOf(false) }
     var shopModel by remember { mutableStateOf<ShopModel?>(null) }
     val scope = rememberCoroutineScope()
-    val state = shopListViewModel.uiStateGetShop.collectAsState()
-    val selectedItemModel by sharedViewModel.selectedItem.collectAsState()
-    val deleteItemState = shopListViewModel.deleteItemState.collectAsState()
+    val state by shopListViewModel.uiStateGetShop.collectAsState()
+    val selectedItemModel by shopListViewModel.selectedItem.collectAsState()
+    val deleteItemState by shopListViewModel.deleteItemState.collectAsState()
+    val result = navController.resultHandler<EditResult>("result")
 
-    when (deleteItemState.value) {
+    LaunchedEffect(key1 = result) {
+        result.consumeResult {
+            when (it) {
+                EditResult.SUCCESS -> {
+                    shopListViewModel.getItemById()
+                    result.removeResult()
+                }
+            }
+        }
+    }
+
+    when (deleteItemState) {
         is UiState.Error -> {
             Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
         }
 
-        UiState.Idle -> Unit
-        UiState.Loading -> Unit
         is UiState.Success -> {
             navController.popBackStack()
         }
+
+        else -> Unit
     }
 
     Scaffold(
@@ -94,7 +118,17 @@ fun ShopListScreen(
                 onDeleteClick = {
                     showDialog = true
                 },
-                onBackClick = { navController.popBackStack() })
+                onEditClick = {
+                    selectedItemModel?.let {
+                        sharedViewModel.updateSelectedItemModel(it)
+                    }
+                    navController.navigate(NavigationItem.EditItem.route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                    sharedViewModel.clearSelectedItem()
+                }
+            )
         },
         floatingActionButton = {
             FloatingButton {
@@ -104,30 +138,42 @@ fun ShopListScreen(
         }
     )
     { innerPadding ->
-        when (state.value) {
+        when (state) {
             is UiState.Error -> {
-                Loading(isLoading = false)
                 Toast.makeText(LocalContext.current, "Error", Toast.LENGTH_LONG).show()
             }
 
             UiState.Idle -> Unit
-            UiState.Loading -> Loading(isLoading = true)
+            UiState.Loading -> Loading()
             is UiState.Success -> {
-                ShopList(
-                    innerPadding = innerPadding,
-                    selectedItemModel = selectedItemModel,
-                    shopList = (state.value as UiState.Success<List<ShopModel>>).data,
-                    onDeleteShop = {
-                        shopListViewModel.deleteShop(
-                            shopId = it,
-                            itemId = selectedItemModel?.id.orEmpty(),
-                        )
-                    },
-                    onEditShop = {
-                        shopModel = it
-                        showUpdateDialog.value = true
-                    }
-                )
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            expandVertically(
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ),
+                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically()
+                ) {
+                    ShopList(
+                        innerPadding = innerPadding,
+                        selectedItemModel = selectedItemModel,
+                        shopList = (state as UiState.Success<List<ShopModel>>).data,
+                        onDeleteShop = {
+                            shopListViewModel.deleteShop(
+                                shopId = it,
+                                itemId = selectedItemModel?.id.orEmpty(),
+                            )
+                        },
+                        onEditShop = {
+                            shopModel = it
+                            showUpdateDialog.value = true
+                        }
+                    )
+                }
+
             }
         }
 
@@ -147,8 +193,8 @@ fun ShopListScreen(
         if (showDialog) {
             ConfirmDialog(
                 icon = Icons.Default.Info,
-                dialogTitle = "Delete",
-                dialogText = "Are you sure you want to delete this item?",
+                dialogTitle = stringResource(id = R.string.dialog_confirm_title),
+                dialogText = stringResource(id = R.string.dialog_confirm_delete),
                 onDismissRequest = { showDialog = false },
                 onConfirmation = {
                     if (selectedItemModel?.id?.isNotEmpty() == true)
@@ -189,14 +235,49 @@ fun ShopList(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        Loading(isLoading = false)
+        ShopDetailHeader(
+            imageUrl = selectedItemModel?.imageUrl.orEmpty(),
+            categoryName = selectedItemModel?.categoryModel?.name
+        )
+        shopList?.forEachIndexed { index, shopModel ->
+            ShopCard(
+                model = shopModel,
+                index = index,
+                onEditClick = {
+                    onEditShop(it)
+                }, onDeleteClick = {
+                    deleteShopId.value = shopModel.id
+                    showDialog.value = true
+                }
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+
+    if (showDialog.value) {
+        ConfirmDialog(
+            icon = Icons.Default.Info,
+            dialogTitle = stringResource(id = R.string.dialog_confirm_title),
+            dialogText = stringResource(id = R.string.dialog_confirm_delete),
+            onDismissRequest = { showDialog.value = false },
+            onConfirmation = {
+                if (deleteShopId.value.isNotEmpty())
+                    onDeleteShop(deleteShopId.value)
+                showDialog.value = false
+            })
+    }
+}
+
+@Composable
+fun ShopDetailHeader(imageUrl: String, categoryName: String?) {
+    Column {
         val modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .height(200.dp)
             .clip(RoundedCornerShape(8.dp))
             .align(CenterHorizontally)
-        if (selectedItemModel?.imageUrl.orEmpty().isEmpty()) {
+        if (imageUrl.isEmpty()) {
             Image(
                 painter = painterResource(id = R.drawable.placeholder_product),
                 contentDescription = "Product Image",
@@ -205,12 +286,12 @@ fun ShopList(
             )
         } else {
             AsyncImage(
-                model = selectedItemModel?.imageUrl,
+                model = imageUrl,
                 contentDescription = "Product Image",
                 contentScale = ContentScale.Fit,
                 placeholder = painterResource(id = R.drawable.placeholder_product),
                 error = painterResource(id = R.drawable.placeholder_product),
-                modifier = modifier
+                modifier = modifier,
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -222,7 +303,7 @@ fun ShopList(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Category: ${selectedItemModel?.categoryModel?.name ?: "N/A"}",
+                text = "Category: ${categoryName ?: "N/A"}",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -243,32 +324,6 @@ fun ShopList(
         }
         Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        shopList?.forEachIndexed { index, shopModel ->
-            ShopCard(
-                model = shopModel,
-                index = index,
-                onEditClick = {
-                    onEditShop(it)
-                }, onDeleteClick = {
-                    deleteShopId.value = shopModel.id
-                    showDialog.value = true
-                }
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-
-    if (showDialog.value) {
-        ConfirmDialog(
-            icon = Icons.Default.Info,
-            dialogTitle = "Delete",
-            dialogText = "Are you sure you want to delete this item?",
-            onDismissRequest = { showDialog.value = false },
-            onConfirmation = {
-                if (deleteShopId.value.isNotEmpty())
-                    onDeleteShop(deleteShopId.value)
-                showDialog.value = false
-            })
     }
 }
 

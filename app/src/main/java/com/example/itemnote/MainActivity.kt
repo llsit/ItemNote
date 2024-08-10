@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -12,7 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.compose.ItemNoteTheme
-import com.example.itemnote.screen.addItem.AddItemScreen
+import com.example.itemnote.screen.addItem.AddEditItemMode
+import com.example.itemnote.screen.addItem.AddEditItemScreen
 import com.example.itemnote.screen.authentication.LoginScreen
 import com.example.itemnote.screen.authentication.RegisterScreen
 import com.example.itemnote.screen.main.MainScreen
@@ -52,12 +57,74 @@ fun MyApp() {
             }
             composable(
                 "shopList/{id}",
-                arguments = listOf(navArgument("id") { type = NavType.StringType })
+                arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                // defines how the screen enters when navigating forward
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(300)
+                    )
+                },
+                // defines how the screen exits when navigating forward
+                exitTransition = {
+                    fadeOut(animationSpec = tween(durationMillis = 500))
+                },
+                // defines how the screen enters when navigating backward
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(durationMillis = 500))
+                },
+                // defines how the screen exits when navigating backward
+                popExitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(300)
+                    )
+                }
             ) {
-                ShopListScreen(navController = navController, sharedViewModel = sharedViewModel)
+                ShopListScreen(
+                    navController = navController,
+                    sharedViewModel = sharedViewModel
+                )
             }
-            composable(NavigationItem.AddItem.route) {
-                AddItemScreen(navController = navController)
+            composable(NavigationItem.AddItem.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(300)
+                    )
+                }
+            ) {
+                AddEditItemScreen(
+                    mode = AddEditItemMode.Add,
+                    navController = navController,
+                    sharedViewModel = sharedViewModel
+                )
+            }
+            composable(NavigationItem.EditItem.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        animationSpec = tween(300)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = tween(300)
+                    )
+                }
+            ) {
+                AddEditItemScreen(
+                    mode = AddEditItemMode.Edit,
+                    navController = navController,
+                    sharedViewModel = sharedViewModel
+                )
             }
         }
     }

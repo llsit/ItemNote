@@ -34,8 +34,20 @@ fun ChipComponent(
 }
 
 @Composable
-fun ChipGroupList(categoryList: List<CategoryModel>?, onSelected: (CategoryModel?) -> Unit) {
+fun ChipGroupList(
+    categoryList: List<CategoryModel>?,
+    onSelected: (CategoryModel?) -> Unit,
+    selectedId: String = ""
+) {
     var selectedCategoryId by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        if (selectedId.isNotEmpty()) {
+            selectedCategoryId = selectedId
+            onSelected(categoryList?.firstOrNull { it.id == selectedId })
+        }
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

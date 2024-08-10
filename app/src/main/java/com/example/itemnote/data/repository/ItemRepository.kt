@@ -2,8 +2,9 @@ package com.example.itemnote.data.repository
 
 import android.net.Uri
 import com.example.itemnote.data.model.ItemModel
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEMS_COLLECTION
-import com.example.itemnote.utils.Constants.Companion.FIREBASE_ITEM_COLLECTION
+import com.example.itemnote.data.model.toMap
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
+import com.example.itemnote.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
 import com.example.itemnote.utils.PreferenceManager
 import com.example.itemnote.utils.UiState
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,9 +18,11 @@ import javax.inject.Inject
 interface ItemRepository {
     fun addItem(data: ItemModel): Flow<UiState<Unit>>
     fun getItem(): Flow<UiState<List<ItemModel>>>
+    fun getItemById(itemId: String): Flow<UiState<ItemModel>>
     fun uploadImage(path: String): Flow<String>
     fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>>
     fun deleteItem(itemId: String): Flow<UiState<Unit>>
+    fun editItem(data: ItemModel): Flow<UiState<Unit>>
 }
 
 class ItemRepositoryImpl @Inject constructor(
@@ -52,6 +55,20 @@ class ItemRepositoryImpl @Inject constructor(
             emit(UiState.Success(it))
         }.onFailure { e ->
             emit(UiState.Error(e.message.toString()))
+        }
+    }
+
+    override fun getItemById(itemId: String): Flow<UiState<ItemModel>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(preferenceManager.getUserId() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(itemId)
+                .get().await()
+        }.onSuccess {
+            emit(UiState.Success(it.toObject<ItemModel>()!!))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
         }
     }
 
@@ -91,6 +108,20 @@ class ItemRepositoryImpl @Inject constructor(
                 .collection(FIREBASE_ITEM_COLLECTION)
                 .document(itemId)
                 .delete()
+        }.onSuccess {
+            emit(UiState.Success(Unit))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
+        }
+    }
+
+    override fun editItem(data: ItemModel): Flow<UiState<Unit>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(preferenceManager.getUserId() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(data.id)
+                .update(data.toMap()).await()
         }.onSuccess {
             emit(UiState.Success(Unit))
         }.onFailure {

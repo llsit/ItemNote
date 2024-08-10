@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 fun MediumToolbarComponent(
     title: String,
     isBack: Boolean,
+    onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
@@ -73,6 +74,13 @@ fun MediumToolbarComponent(
                     expanded = showMenu,
                     onDismissRequest = { showMenu = false }
                 ) {
+                    DropdownMenuItem(
+                        text = { Text("Edit") },
+                        onClick = {
+                            onEditClick()
+                            showMenu = false
+                        }
+                    )
                     DropdownMenuItem(
                         text = { Text("Delete") },
                         onClick = {

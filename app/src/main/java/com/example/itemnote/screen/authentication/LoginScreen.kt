@@ -1,9 +1,11 @@
 package com.example.itemnote.screen.authentication
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -32,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,31 +54,28 @@ import com.google.firebase.ktx.BuildConfig
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     viewModel: LoginViewModel = hiltViewModel(),
+    context: Context = LocalContext.current
 ) {
     val state = viewModel.uiState.collectAsState()
+    val authState by viewModel.authState.collectAsState()
     when (state.value) {
         is UiState.Error -> {
-            Loading(isLoading = false)
-            Toast.makeText(
-                LocalContext.current,
-                (state.value as UiState.Error).message,
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(context, (state.value as UiState.Error).message, Toast.LENGTH_SHORT)
+                .show()
         }
 
         UiState.Idle -> Unit
-        UiState.Loading -> Loading(isLoading = true)
+        UiState.Loading -> Loading()
         is UiState.Success -> {
-            Loading(isLoading = false)
             Toast.makeText(
-                LocalContext.current,
-                "Login Success",
+                context,
+                stringResource(id = R.string.login_success),
                 Toast.LENGTH_SHORT
             ).show()
             navController.navigate(NavigationItem.Main.route)
         }
     }
-    val authState by viewModel.authState.collectAsState()
+
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
@@ -89,99 +89,131 @@ fun LoginScreen(
     }
     Scaffold(
         topBar = {
-            ToolbarScreen(title = "Login", false)
+            ToolbarScreen(title = stringResource(id = R.string.login_title), false)
         }
     ) { innerPadding ->
-        Column(
-            verticalArrangement = Arrangement.Center,
+        LoginSection(
+            navController = navController,
+            innerPadding = innerPadding,
+            viewModel.username.value,
+            viewModel.password.value,
+            viewModel::onUsernameChange,
+            viewModel::onPasswordChange,
+            viewModel::login
+        )
+    }
+}
+
+@Composable
+fun LoginSection(
+    navController: NavHostController,
+    innerPadding: PaddingValues,
+    userName: String,
+    password: String,
+    onUserNameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onClickLogin: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.ime),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.welcome), contentDescription = "",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.ime),
+                .size(200.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .align(Alignment.CenterHorizontally)
+        )
+        TextFieldComponent(
+            value = userName,
+            onValueChange = { onUserNameChange(it) },
+            label = stringResource(id = R.string.login_email),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            keyboardType = KeyboardType.Email
+        )
+        TextFieldComponent(
+            value = password,
+            onValueChange = { onPasswordChange(it) },
+            label = stringResource(id = R.string.login_password),
+            isPassword = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            isLast = true,
+            keyboardType = KeyboardType.Password
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(R.drawable.welcome), contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(200.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .align(Alignment.CenterHorizontally)
+            Text(
+                text = stringResource(id = R.string.login_forget_password),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
             )
-            TextFieldComponent(
-                value = viewModel.username.value,
-                onValueChange = viewModel::onUsernameChange,
-                label = "Email",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                keyboardType = KeyboardType.Email
+            TextButton(onClick = { }) {
+                Text(text = "Reset")
+            }
+        }
+        Button(
+            onClick = { onClickLogin() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Text(text = stringResource(id = R.string.login_button))
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.login_for_register_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
             )
-            TextFieldComponent(
-                value = viewModel.password.value,
-                onValueChange = viewModel::onPasswordChange,
-                label = "Password",
-                isPassword = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                isLast = true,
-                keyboardType = KeyboardType.Password
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            TextButton(onClick = {
+                navController.navigate(NavigationItem.Register.route)
+            }) {
                 Text(
-                    text = "Forgot Password?",
-                    style = MaterialTheme.typography.bodySmall,
+                    text = stringResource(id = R.string.login_for_register),
                     color = MaterialTheme.colorScheme.primary
                 )
-                TextButton(onClick = { }) {
-                    Text(text = "Reset")
-                }
             }
-            Button(
-                onClick = { viewModel.login() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(text = "Login")
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Don't have an account? ",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
-                )
-                TextButton(onClick = {
-                    navController.navigate(NavigationItem.Register.route)
-                }) {
-                    Text(text = "Register Now", color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            Spacer(modifier = Modifier.height(50.dp))
-            Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = "Version : ${BuildConfig.VERSION_NAME}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                maxLines = 1,
-            )
         }
+        Spacer(modifier = Modifier.height(50.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = "Version : ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+            maxLines = 1,
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
-    LoginScreen()
+    LoginSection(
+        navController = rememberNavController(),
+        innerPadding = PaddingValues(),
+        userName = "",
+        password = "",
+        onUserNameChange = {},
+        onPasswordChange = {},
+        onClickLogin = {}
+    )
 }
