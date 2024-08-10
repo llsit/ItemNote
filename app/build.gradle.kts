@@ -86,6 +86,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.gson)
 
+    implementation(project(":recipe"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

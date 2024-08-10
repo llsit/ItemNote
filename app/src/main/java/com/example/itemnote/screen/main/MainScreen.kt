@@ -1,5 +1,7 @@
 package com.example.itemnote.screen.main
 
+import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
@@ -47,6 +50,7 @@ import com.example.itemnote.utils.AuthState
 import com.example.itemnote.utils.Constants.Category.HOME
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
+import com.example.recipe.RecipeMainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -56,7 +60,8 @@ fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
     sharedViewModel: SharedViewModel,
-    scope: CoroutineScope = rememberCoroutineScope()
+    scope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current
 ) {
     val authState by mainViewModel.authState.collectAsState()
     val category by mainViewModel.uiStateCategory.collectAsState()
@@ -91,7 +96,24 @@ fun MainScreen(
                         }
                     }
                 )
-
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            Icons.Default.FormatListNumbered,
+                            contentDescription = "Recipe"
+                        )
+                    },
+                    label = { Text("Recipe") },
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            context.startActivity(
+                                Intent(context, RecipeMainActivity::class.java)
+                            )
+                        }
+                    }
+                )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Logout") },
                     label = { Text("Logout") },
