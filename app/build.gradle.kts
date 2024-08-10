@@ -100,13 +100,13 @@ kapt {
     correctErrorTypes = true
 }
 
-ktlint {
-    android = true
-    version = "0.43.2" // Replace with the desired KtLint version
-    verbose = true
-    debug = true
-    outputToConsole = true
-    outputColorName = "RED"
-    ignoreFailures = false
-    enableExperimentalRules = true
-}
+//ktlint {
+//    android = true
+//    version = "0.43.2" // Replace with the desired KtLint version
+//    verbose = true
+//    debug = true
+//    outputToConsole = true
+//    outputColorName = "RED"
+//    ignoreFailures = false
+//    enableExperimentalRules = true
+//}
