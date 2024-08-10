@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
@@ -60,6 +60,7 @@ fun MainScreen(
 ) {
     val authState by mainViewModel.authState.collectAsState()
     val category by mainViewModel.uiStateCategory.collectAsState()
+    val state by mainViewModel.uiState.collectAsState()
 
     when (authState) {
         AuthState.Loading -> Loading()
@@ -150,10 +151,10 @@ fun MainScreen(
                     is UiState.Loading -> Loading()
                     else -> Unit
                 }
-                val state = mainViewModel.uiState.collectAsState()
-                when (state.value) {
+
+                when (state) {
                     is UiState.Error -> {
-                        val error = (state.value as UiState.Error).message
+                        val error = (state as UiState.Error).message
                         Toast.makeText(LocalContext.current, "Error : ${error}", Toast.LENGTH_LONG)
                             .show()
                     }
@@ -165,7 +166,7 @@ fun MainScreen(
 
                     is UiState.Success -> {
                         ItemListSection(
-                            itemList = (state.value as UiState.Success<List<ItemModel>>).data,
+                            itemList = (state as UiState.Success<List<ItemModel>>).data,
                             onClickListener = {
                                 sharedViewModel.updateSelectedItemModel(it)
                                 navController.navigate("shopList/${it.id}")
@@ -189,17 +190,17 @@ fun ItemListSection(
             .padding(8.dp),
         columns = GridCells.Adaptive(minSize = 128.dp)
     ) {
-        itemList?.let { item ->
-            items(item) {
+        itemList?.let { items ->
+            itemsIndexed(items) { index, item ->
                 ItemComponent(
                     modifier = Modifier,
-                    name = it.name,
-                    price = it.shop?.price.toString(),
-                    location = it.shop?.location.orEmpty(),
-                    locationName = it.shop?.name.orEmpty(),
-                    imageUrl = it.imageUrl
+                    name = item.name,
+                    price = item.shop?.price.toString(),
+                    location = item.shop?.location.orEmpty(),
+                    locationName = item.shop?.name.orEmpty(),
+                    imageUrl = item.imageUrl
                 ) {
-                    onClickListener(it)
+                    onClickListener(item)
                 }
             }
         }

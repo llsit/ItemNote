@@ -1,6 +1,14 @@
 package com.example.itemnote.screen.shop
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -58,6 +66,7 @@ import com.example.itemnote.data.model.ShopModel
 import com.example.itemnote.screen.addItem.EditResult
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
+import com.example.itemnote.utils.resultHandler
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -76,13 +85,15 @@ fun ShopListScreen(
     val state by shopListViewModel.uiStateGetShop.collectAsState()
     val selectedItemModel by shopListViewModel.selectedItem.collectAsState()
     val deleteItemState by shopListViewModel.deleteItemState.collectAsState()
-    val result = navController.currentBackStackEntry?.savedStateHandle?.get<EditResult>("result")
+    val result = navController.resultHandler<EditResult>("result")
 
     LaunchedEffect(key1 = result) {
-        result?.let {
-            if (it == EditResult.SUCCESS) {
-                shopListViewModel.getItemById()
-                navController.currentBackStackEntry?.savedStateHandle?.remove<EditResult>("result")
+        result.consumeResult {
+            when (it) {
+                EditResult.SUCCESS -> {
+                    shopListViewModel.getItemById()
+                    result.removeResult()
+                }
             }
         }
     }
@@ -135,21 +146,34 @@ fun ShopListScreen(
             UiState.Idle -> Unit
             UiState.Loading -> Loading()
             is UiState.Success -> {
-                ShopList(
-                    innerPadding = innerPadding,
-                    selectedItemModel = selectedItemModel,
-                    shopList = (state as UiState.Success<List<ShopModel>>).data,
-                    onDeleteShop = {
-                        shopListViewModel.deleteShop(
-                            shopId = it,
-                            itemId = selectedItemModel?.id.orEmpty(),
-                        )
-                    },
-                    onEditShop = {
-                        shopModel = it
-                        showUpdateDialog.value = true
-                    }
-                )
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            expandVertically(
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ),
+                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically()
+                ) {
+                    ShopList(
+                        innerPadding = innerPadding,
+                        selectedItemModel = selectedItemModel,
+                        shopList = (state as UiState.Success<List<ShopModel>>).data,
+                        onDeleteShop = {
+                            shopListViewModel.deleteShop(
+                                shopId = it,
+                                itemId = selectedItemModel?.id.orEmpty(),
+                            )
+                        },
+                        onEditShop = {
+                            shopModel = it
+                            showUpdateDialog.value = true
+                        }
+                    )
+                }
+
             }
         }
 
@@ -211,59 +235,10 @@ fun ShopList(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        val modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .height(200.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .align(CenterHorizontally)
-        if (selectedItemModel?.imageUrl.orEmpty().isEmpty()) {
-            Image(
-                painter = painterResource(id = R.drawable.placeholder_product),
-                contentDescription = "Product Image",
-                contentScale = ContentScale.Fit,
-                modifier = modifier
-            )
-        } else {
-            AsyncImage(
-                model = selectedItemModel?.imageUrl,
-                contentDescription = "Product Image",
-                contentScale = ContentScale.Fit,
-                placeholder = painterResource(id = R.drawable.placeholder_product),
-                error = painterResource(id = R.drawable.placeholder_product),
-                modifier = modifier
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = "Category Icon",
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Category: ${selectedItemModel?.categoryModel?.name ?: "N/A"}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.DateRange,
-                contentDescription = "Date Icon",
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            val dateFormat = SimpleDateFormat("EEE MMM dd", Locale.US)
-            val formattedDate = dateFormat.format(Date())
-            Text(
-                text = "Date: $formattedDate",
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        ShopDetailHeader(
+            imageUrl = selectedItemModel?.imageUrl.orEmpty(),
+            categoryName = selectedItemModel?.categoryModel?.name
+        )
         shopList?.forEachIndexed { index, shopModel ->
             ShopCard(
                 model = shopModel,
@@ -290,6 +265,65 @@ fun ShopList(
                     onDeleteShop(deleteShopId.value)
                 showDialog.value = false
             })
+    }
+}
+
+@Composable
+fun ShopDetailHeader(imageUrl: String, categoryName: String?) {
+    Column {
+        val modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .height(200.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .align(CenterHorizontally)
+        if (imageUrl.isEmpty()) {
+            Image(
+                painter = painterResource(id = R.drawable.placeholder_product),
+                contentDescription = "Product Image",
+                contentScale = ContentScale.Fit,
+                modifier = modifier
+            )
+        } else {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "Product Image",
+                contentScale = ContentScale.Fit,
+                placeholder = painterResource(id = R.drawable.placeholder_product),
+                error = painterResource(id = R.drawable.placeholder_product),
+                modifier = modifier,
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Category Icon",
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Category: ${categoryName ?: "N/A"}",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Date Icon",
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            val dateFormat = SimpleDateFormat("EEE MMM dd", Locale.US)
+            val formattedDate = dateFormat.format(Date())
+            Text(
+                text = "Date: $formattedDate",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
     }
 }
 

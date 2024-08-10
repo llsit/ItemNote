@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +36,7 @@ class MainViewModel @Inject constructor(
 
     private fun getItems() = viewModelScope.launch {
         getItemUseCase.getItems()
+            .onStart { _uiState.value = UiState.Loading }
             .collect {
                 when (it) {
                     is UiState.Error -> {
@@ -56,6 +58,7 @@ class MainViewModel @Inject constructor(
             getItems()
         } else {
             getItemsByCategory.getItemsByCategory(categoryId)
+                .onStart { _uiState.value = UiState.Loading }
                 .collect {
                     when (it) {
                         is UiState.Error -> {

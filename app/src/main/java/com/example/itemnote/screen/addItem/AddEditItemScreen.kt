@@ -75,6 +75,7 @@ import com.example.itemnote.component.TextFieldComponent
 import com.example.itemnote.component.ToolbarScreen
 import com.example.itemnote.utils.ImageUriUtils.getTempUri
 import com.example.itemnote.utils.UiState
+import com.example.itemnote.utils.resultHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -175,8 +176,8 @@ fun AddEditItemScreen(
                         delay(1000)
                         snackbarHostState.currentSnackbarData?.dismiss()
                         sharedViewModel.clearSelectedItem()
-                        navController.previousBackStackEntry?.savedStateHandle?.set(
-                            "result", EditResult.SUCCESS
+                        navController.resultHandler<EditResult>("result").setResult(
+                            EditResult.SUCCESS
                         )
                         navController.popBackStack()
                     }
