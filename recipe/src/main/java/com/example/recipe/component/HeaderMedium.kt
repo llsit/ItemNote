@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderMedium(text: String) {
+fun HeaderMedium(text: String, modifier: Modifier = Modifier) {
     Text(
-        modifier = Modifier.padding(8.dp),
+        modifier = modifier.padding(8.dp),
         style = MaterialTheme.typography.titleMedium,
         text = text
     )
