@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.recipe.screen.detail.RecipeDetailScreen
 import com.example.recipe.screen.main.RecipeMainScreen
 import com.example.recipe.ui.theme.ItemNoteTheme
 
@@ -17,10 +17,15 @@ class RecipeMainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ItemNoteTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    RecipeMainScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = "main") {
+                    composable(route = "main") {
+                        RecipeMainScreen()
+                    }
+
+                    composable(route = "detail") {
+                        RecipeDetailScreen()
+                    }
                 }
             }
         }

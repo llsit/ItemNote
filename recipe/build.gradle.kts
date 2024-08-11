@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -61,6 +64,22 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.icon.extend)
 
+    implementation(libs.androidx.hilt)
+    kapt(libs.androidx.compiler)
+    implementation(libs.androidx.navigation)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytic)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
+//    implementation(libs.firebase.crashlytics)
+    implementation(libs.timber)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.glide)
+    implementation(libs.gilde.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.gson)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -70,3 +89,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
+}
+
