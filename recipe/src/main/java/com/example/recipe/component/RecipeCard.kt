@@ -1,7 +1,6 @@
 package com.example.recipe.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -153,20 +149,21 @@ fun RecipeList() {
             difficulty = "EASY"
         )
     )
-    LazyColumn(
+    Column(
         modifier = Modifier
+            .fillMaxWidth()
     ) {
-        items(recipes) { recipe ->
+        HeaderMedium(text = "Today Recipe")
+        recipes.forEach {
             RecipeCard(
-                imageRes = recipe.imageRes,
-                title = recipe.title,
-                author = recipe.author,
-                rating = recipe.rating,
-                time = recipe.time,
-                difficulty = recipe.difficulty,
+                imageRes = it.imageRes,
+                title = it.title,
+                author = it.author,
+                rating = it.rating,
+                time = it.time,
+                difficulty = it.difficulty,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
             )
         }
     }

@@ -6,19 +6,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -47,6 +47,7 @@ import com.example.recipe.component.HeaderMedium
 import com.example.recipe.component.RecipeList
 import com.example.recipe.component.SearchSection
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeMainScreen() {
     var selectedItem by remember { mutableIntStateOf(0) }
@@ -71,33 +72,60 @@ fun RecipeMainScreen() {
             }
         }
     ) { innerPadding ->
-
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(16.dp)
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            HeaderLarge(
-                modifier = Modifier.padding(bottom = 16.dp),
-                text = "What recipe are you looking for?"
-            )
+            item {
+                HeaderLarge(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    text = "What recipe are you looking for?"
+                )
+            }
 
-            SearchSection(
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = {}
-            )
-            FoodCategories()
-            RecommendationList()
+            item {
+                SearchSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChange = {}
+                )
+            }
 
-            RecipeList()
+            item {
+                FoodCategories()
+            }
+
+            item {
+                RecommendationList()
+            }
+
+            item {
+                RecipeList()
+            }
         }
     }
 }
 
 @Composable
 fun RecommendationList() {
+    val list = listOf(
+        RecommendationModel(
+            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
+            title = "Creamy Pasta",
+            author = "David Charles"
+        ),
+        RecommendationModel(
+            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
+            title = "Macarons",
+            author = "Rachel William"
+        ),
+        RecommendationModel(
+            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
+            title = "Chicken Dish",
+            author = "Samantha Lee"
+        )
+    )
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -117,28 +145,23 @@ fun RecommendationList() {
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        LazyRow {
-            items(3) { // Adjust the number of items
+        Row(modifier = Modifier.fillMaxWidth()) {
+            list.forEach {
                 RecommendationCard(
-                    imageRes = com.google.firebase.appcheck.interop.R.drawable.common_full_open_on_phone, // Replace with your image resource
-                    title = "Creamy Pasta",
-                    author = "David Charles"
-                )
-                RecommendationCard(
-                    imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone, // Replace with your image resource
-                    title = "Macarons",
-                    author = "Rachel William"
-                )
-                RecommendationCard(
-                    imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone, // Replace with your image resource
-                    title = "Chicken Dish",
-                    author = "Samantha Lee"
+                    imageRes = it.imageRes,
+                    title = it.title,
+                    author = it.author
                 )
             }
         }
     }
 }
 
+data class RecommendationModel(
+    val imageRes: Int,
+    val title: String,
+    val author: String,
+)
 
 @Composable
 fun RecommendationCard(

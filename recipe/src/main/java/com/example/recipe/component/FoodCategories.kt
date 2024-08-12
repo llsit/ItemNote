@@ -5,11 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,35 +23,34 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FoodCategories() {
+    val foodList = listOf(
+        "Chicken",
+        "Beef",
+        "Fish",
+        "Bakery",
+        "Dessert",
+        "Salad",
+        "Soup",
+        "Noodles",
+        "Rice",
+        "Pasta",
+    )
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
         HeaderMedium(text = "Categories")
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
+        LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            FoodCategoryItem(
-                "Chicken",
-                com.google.firebase.appcheck.interop.R.drawable.common_full_open_on_phone,
-                Color(0xFFE0F7FA)
-            )
-            FoodCategoryItem(
-                "Beef",
-                com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-                Color(0xFFFFF8E1)
-            )
-            FoodCategoryItem(
-                "Fish",
-                com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-                Color(0xFFF3E5F5)
-            )
-            FoodCategoryItem(
-                "Bakery",
-                com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-                Color(0xFFFFEBEE)
-            )
+            items(foodList) {
+                FoodCategoryItem(
+                    it,
+                    com.google.firebase.appcheck.interop.R.drawable.common_full_open_on_phone,
+                    Color(0xFFE0F7FA)
+                )
+            }
         }
     }
 
