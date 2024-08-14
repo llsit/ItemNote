@@ -26,6 +26,7 @@ iconExtend = "1.3.1"
 klint = "11.1.0"
 appcompat = "1.7.0"
 material = "1.12.0"
+retrofit = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 icon-extend = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "iconExtend" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+gson-convertor = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -71,5 +74,5 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-service = { id = "com.google.gms.google-services", version.ref = "googleService" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
-klint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "klint"}
+klint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "klint" }
 android-library = { id = "com.android.library", version.ref = "agp" }

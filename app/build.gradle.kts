@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.service)
     alias(libs.plugins.kotlin.serialization)
-//    alias(libs.plugins.firebase.crashlytics)
-    alias(libs.plugins.klint)
 }
 
 android {

@@ -20,21 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.example.recipe.data.model.CategoryModel
 
 @Composable
-fun FoodCategories() {
-    val foodList = listOf(
-        "Chicken",
-        "Beef",
-        "Fish",
-        "Bakery",
-        "Dessert",
-        "Salad",
-        "Soup",
-        "Noodles",
-        "Rice",
-        "Pasta",
-    )
+fun FoodCategories(categories: List<CategoryModel>) {
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -44,11 +34,11 @@ fun FoodCategories() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(foodList) {
+            items(categories) {
                 FoodCategoryItem(
-                    it,
-                    com.google.firebase.appcheck.interop.R.drawable.common_full_open_on_phone,
-                    Color(0xFFE0F7FA)
+                    name = it.strCategory,
+                    iconUrl = it.strCategoryThumb,
+                    backgroundColor = Color.Gray
                 )
             }
         }
@@ -57,7 +47,7 @@ fun FoodCategories() {
 }
 
 @Composable
-fun FoodCategoryItem(name: String, iconRes: Int, backgroundColor: Color) {
+fun FoodCategoryItem(name: String, iconUrl: String, backgroundColor: Color) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -68,11 +58,19 @@ fun FoodCategoryItem(name: String, iconRes: Int, backgroundColor: Color) {
                 .background(backgroundColor),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = name,
-                modifier = Modifier.size(40.dp)
-            )
+            if (iconUrl.isEmpty()) {
+                Image(
+                    painter = painterResource(id = com.google.firebase.database.collection.R.drawable.googleg_standard_color_18),
+                    contentDescription = name,
+                    modifier = Modifier.size(40.dp)
+                )
+            } else {
+                AsyncImage(
+                    model = iconUrl,
+                    contentDescription = name,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = name)

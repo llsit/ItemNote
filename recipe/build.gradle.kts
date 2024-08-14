@@ -79,7 +79,9 @@ dependencies {
     implementation(libs.gilde.compose)
     implementation(libs.coil.compose)
     implementation(libs.gson)
-
+    // API
+    implementation(libs.retrofit)
+    implementation(libs.gson.convertor)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
