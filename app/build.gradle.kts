@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.service)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
+
+//    id("itemnote.android.application")
 }
 
 android {
@@ -68,9 +71,11 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.icon.extend)
 
-    implementation(libs.androidx.hilt)
-    kapt(libs.androidx.compiler)
+    // Di
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
     implementation(libs.androidx.navigation)
+
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytic)
     implementation(libs.firebase.firestore)

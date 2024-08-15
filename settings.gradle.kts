@@ -1,12 +1,7 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -24,3 +19,4 @@ include(":app")
 include(":recipe")
 include(":core")
 include(":core:design")
+include(":feature:detail")
