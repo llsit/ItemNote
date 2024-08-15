@@ -5,5 +5,5 @@ plugins {
 }
 
 android {
-    namespace = "com.example.feature.detail"
+    namespace = "com.example.feature.recipe"
 }

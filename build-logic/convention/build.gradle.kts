@@ -30,5 +30,9 @@ gradlePlugin {
             id = "itemnote.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("androidFeatureConventionPlugin") {
+            id = "itemnote.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }
