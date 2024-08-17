@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.recipe.R
 import com.example.recipe.data.model.CategoryModel
 
 @Composable
@@ -59,11 +60,11 @@ fun FoodCategoryItem(name: String, iconUrl: String, backgroundColor: Color) {
             contentAlignment = Alignment.Center
         ) {
             if (iconUrl.isEmpty()) {
-                Image(
-                    painter = painterResource(id = com.google.firebase.database.collection.R.drawable.googleg_standard_color_18),
-                    contentDescription = name,
-                    modifier = Modifier.size(40.dp)
-                )
+//                Image(
+//                    painter = painterResource(id = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp),
+//                    contentDescription = name,
+//                    modifier = Modifier.size(40.dp)
+//                )
             } else {
                 AsyncImage(
                     model = iconUrl,

@@ -1,6 +1,5 @@
 plugins {
     id("itemnote.android.library")
-    id("itemnote.android.library.compose")
     id("itemnote.android.hilt")
 }
 

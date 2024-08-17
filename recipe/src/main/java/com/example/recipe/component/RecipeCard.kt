@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.recipe.R
 
 @Composable
 fun RecipeCard(
@@ -131,23 +132,23 @@ data class Recipe(
 
 @Composable
 fun RecipeList() {
-    val recipes = listOf(
-        Recipe(
-            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-            title = "Muffins with cocoa cream",
-            author = "",
-            rating = "5.0",
-            time = "20 Min",
-            difficulty = "EASY"
-        ),
-        Recipe(
-            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-            title = "Muffins with cocoa cream",
-            author = "",
-            rating = "5.0",
-            time = "20 Min",
-            difficulty = "EASY"
-        )
+    val recipes = listOf<Recipe>(
+//        Recipe(
+//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
+//            title = "Muffins with cocoa cream",
+//            author = "",
+//            rating = "5.0",
+//            time = "20 Min",
+//            difficulty = "EASY"
+//        ),
+//        Recipe(
+//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
+//            title = "Muffins with cocoa cream",
+//            author = "",
+//            rating = "5.0",
+//            time = "20 Min",
+//            difficulty = "EASY"
+//        )
     )
     Column(
         modifier = Modifier

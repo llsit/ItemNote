@@ -1,7 +1,6 @@
-package com.example.core.data.model
+package com.example.core.model.response
 
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 @Serializable
 data class RecipeCategoryResponse(
