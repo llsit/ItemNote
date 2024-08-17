@@ -1,6 +1,7 @@
 import com.android.build.gradle.LibraryExtension
 import com.example.itemnote.configureAndroidCompose
 import com.example.itemnote.configureKotlinAndroid
+import com.example.itemnote.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -19,9 +20,13 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
       dependencies {
         add("implementation", project(":core:design"))
 //        add("implementation", project(":core:navigation"))
-//        add("implementation", project(":core:viewmodel"))
-//        add("implementation", project(":core:data"))
+        add("implementation", project(":core:data"))
 //        add("compileOnly", project(":core:preview"))
+
+        // Add lifecycle dependencies
+        add("implementation", target.libs.findLibrary("androidx-lifecycle-viewmodel-ktx").get())
+        add("implementation", target.libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
+
       }
 
       extensions.configure<LibraryExtension> {

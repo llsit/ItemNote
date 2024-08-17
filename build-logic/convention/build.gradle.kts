@@ -34,5 +34,9 @@ gradlePlugin {
             id = "itemnote.android.feature"
             implementationClass = "AndroidFeatureConventionPlugin"
         }
+        register("androidFirebase") {
+            id = "itemnote.android.application.firebase"
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
     }
 }

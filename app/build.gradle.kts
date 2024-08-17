@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 
-//    id("itemnote.android.application")
+    id("itemnote.android.application.firebase")
 }
 
 android {
@@ -72,14 +72,6 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    //Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytic)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.storage)
-//    implementation(libs.firebase.crashlytics)
-
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.gson)
@@ -94,7 +86,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.icon.extend)
 
-    implementation(project(":recipe"))
+    implementation(projects.recipe)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

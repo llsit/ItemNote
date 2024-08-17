@@ -26,22 +26,22 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun RecommendationList() {
-    val list = listOf(
-        RecommendationModel(
-            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-            title = "Creamy Pasta",
-            author = "David Charles"
-        ),
-        RecommendationModel(
-            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-            title = "Macarons",
-            author = "Rachel William"
-        ),
-        RecommendationModel(
-            imageRes = com.google.android.gms.base.R.drawable.common_full_open_on_phone,
-            title = "Chicken Dish",
-            author = "Samantha Lee"
-        )
+    val list = listOf<RecommendationModel>(
+//        RecommendationModel(
+//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
+//            title = "Creamy Pasta",
+//            author = "David Charles"
+//        ),
+//        RecommendationModel(
+//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
+//            title = "Macarons",
+//            author = "Rachel William"
+//        ),
+//        RecommendationModel(
+//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
+//            title = "Chicken Dish",
+//            author = "Samantha Lee"
+//        )
     )
     Column {
         Row(
