@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.android)
     kotlin("kapt")
-    alias(libs.plugins.hilt)
+    alias(libs.plugins.hilt.plugin)
     alias(libs.plugins.google.service)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
@@ -62,32 +62,37 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.icon.extend)
+    implementation(libs.androidx.navigation)
 
     // Di
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation(libs.androidx.navigation)
+    implementation(libs.androidx.hilt.navigation.compose)
 
+    //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytic)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
 //    implementation(libs.firebase.crashlytics)
+
     implementation(libs.timber)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.gson)
+
+    //design
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     implementation(libs.glide)
     implementation(libs.gilde.compose)
     implementation(libs.coil.compose)
-    implementation(libs.gson)
+    implementation(libs.icon.extend)
 
     implementation(project(":recipe"))
 

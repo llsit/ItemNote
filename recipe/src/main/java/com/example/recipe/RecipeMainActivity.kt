@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.design.theme.ItemNoteTheme
 import com.example.recipe.screen.detail.RecipeDetailScreen
 import com.example.recipe.screen.main.RecipeMainScreen
-import com.example.recipe.ui.theme.ItemNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

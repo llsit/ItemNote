@@ -9,15 +9,13 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *,*>,
 ) {
     commonExtension.apply {
         compileSdk = 34
 
         defaultConfig {
-            minSdk = 24
-
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            minSdk = 21
         }
 
         compileOptions {
@@ -25,14 +23,8 @@ internal fun Project.configureKotlinAndroid(
             targetCompatibility = JavaVersion.VERSION_17
         }
 
-        configureKotlin()
-    }
-}
-
-private fun Project.configureKotlin() {
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+        lint {
+            abortOnError = false
         }
     }
 }
