@@ -10,6 +10,8 @@ android {
 dependencies {
 
     // core
+    implementation(projects.core.model)
+    implementation(projects.core.network)
 
     // coroutines
 

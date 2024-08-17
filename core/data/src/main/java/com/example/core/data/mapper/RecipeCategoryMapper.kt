@@ -1,14 +1,13 @@
 package com.example.core.data.mapper
 
-import com.example.core.model.response.Category
-import com.example.core.model.data.CategoryModel
 import com.example.core.data.utils.ResponseMapper
+import com.example.core.model.data.CategoryModel
+import com.example.core.model.response.Category
 
-
-object RecipeCategoryMapper : ResponseMapper<List<com.example.core.model.data.CategoryModel>, List<com.example.core.model.response.Category>> {
-    override fun asResponse(domain: List<com.example.core.model.data.CategoryModel>): List<com.example.core.model.response.Category> {
+object RecipeCategoryMapper : ResponseMapper<List<CategoryModel>, List<Category>> {
+    override fun asResponse(domain: List<CategoryModel>): List<Category> {
         return domain.map {
-            com.example.core.model.response.Category(
+            Category(
                 idCategory = it.idCategory,
                 strCategory = it.strCategory,
                 strCategoryThumb = it.strCategoryThumb,
@@ -17,9 +16,9 @@ object RecipeCategoryMapper : ResponseMapper<List<com.example.core.model.data.Ca
         }
     }
 
-    override fun asDomain(entity: List<com.example.core.model.response.Category>): List<com.example.core.model.data.CategoryModel> {
+    override fun asDomain(entity: List<Category>): List<CategoryModel> {
         return entity.map {
-            com.example.core.model.data.CategoryModel(
+            CategoryModel(
                 idCategory = it.idCategory,
                 strCategory = it.strCategory,
                 strCategoryThumb = it.strCategoryThumb,
@@ -29,6 +28,6 @@ object RecipeCategoryMapper : ResponseMapper<List<com.example.core.model.data.Ca
     }
 }
 
-fun List<com.example.core.model.response.Category>.toCategoryModel(): List<com.example.core.model.data.CategoryModel> {
+fun List<Category>.toCategoryModel(): List<CategoryModel> {
     return RecipeCategoryMapper.asDomain(this)
 }
