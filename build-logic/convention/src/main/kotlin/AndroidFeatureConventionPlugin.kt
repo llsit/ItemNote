@@ -22,6 +22,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
         add("implementation", project(":core:data"))
         add("implementation", project(":core:domain"))
         add("implementation", project(":core:network"))
+        add("implementation", project(":core:model"))
 
         // Add lifecycle dependencies
         add("implementation", target.libs.findLibrary("androidx-lifecycle-viewmodel-ktx").get())
