@@ -59,7 +59,8 @@ fun MainScreen(
     userViewModel: UserViewModel = hiltViewModel(),
     sharedViewModel: SharedViewModel,
     scope: CoroutineScope = rememberCoroutineScope(),
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    onBackClick: () -> Unit = {}
 ) {
     val authState by mainViewModel.authState.collectAsState()
     val category by mainViewModel.uiStateCategory.collectAsState()

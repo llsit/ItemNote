@@ -58,10 +58,13 @@ android {
 
 dependencies {
     // core
+    implementation(projects.core.design)
     implementation(projects.feature.recipe)
     implementation(projects.feature.detail)
+    implementation(projects.feature.note)
     implementation(projects.core.model)
     implementation(projects.core.design)
+    implementation(projects.core.data)
 
     // compose
     implementation(libs.androidx.core.ktx)

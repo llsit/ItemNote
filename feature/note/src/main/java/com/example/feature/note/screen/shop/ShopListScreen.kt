@@ -57,6 +57,7 @@ import com.example.core.data.utils.SharedViewModel
 import com.example.core.data.utils.UiState
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.ShopModel
+import com.example.feature.note.R
 import com.example.feature.note.component.AddShopDialog
 import com.example.feature.note.component.ConfirmDialog
 import com.example.feature.note.component.FloatingButton
@@ -66,7 +67,6 @@ import com.example.feature.note.component.ShopCard
 import com.example.feature.note.screen.addItem.EditResult
 import com.example.feature.note.utils.NavigationItem
 import com.example.feature.note.utils.resultHandler
-import com.example.itemnote.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

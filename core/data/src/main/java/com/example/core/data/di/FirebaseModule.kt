@@ -12,19 +12,19 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
-//    @Provides
-//    fun provideFirestore(): FirebaseFirestore {
-//        return FirebaseFirestore.getInstance()
-//    }
-//
-//    @Provides
-//    fun provideFirebaseAuth(): FirebaseAuth {
-//        return FirebaseAuth.getInstance()
-//    }
-//
-//    @Provides
-//    fun provideFirebaseStorage(): FirebaseStorage {
-//        return FirebaseStorage.getInstance()
-//    }
+    @Provides
+    fun provideFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return FirebaseStorage.getInstance()
+    }
 
 }

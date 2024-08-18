@@ -15,14 +15,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.compose.ItemNoteTheme
-import com.example.itemnote.screen.addItem.AddEditItemMode
-import com.example.itemnote.screen.addItem.AddEditItemScreen
-import com.example.itemnote.screen.authentication.LoginScreen
-import com.example.itemnote.screen.authentication.RegisterScreen
-import com.example.itemnote.screen.main.MainScreen
-import com.example.itemnote.screen.shop.ShopListScreen
-import com.example.itemnote.utils.NavigationItem
+import com.example.core.data.utils.SharedViewModel
+import com.example.design.theme.ItemNoteTheme
+import com.example.feature.note.navigation.mainScreen
+import com.example.feature.note.screen.addItem.AddEditItemMode
+import com.example.feature.note.screen.addItem.AddEditItemScreen
+import com.example.feature.note.screen.authentication.LoginScreen
+import com.example.feature.note.screen.authentication.RegisterScreen
+import com.example.feature.note.screen.shop.ShopListScreen
+import com.example.feature.note.utils.NavigationItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,8 +54,21 @@ fun MyApp() {
                 RegisterScreen(navController = navController)
             }
             composable(NavigationItem.Main.route) {
-                MainScreen(navController = navController, sharedViewModel = sharedViewModel)
+                mainScreen(
+                    navController = navController,
+                    sharedViewModel = sharedViewModel,
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
+            mainScreen(
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
             composable(
                 "shopList/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),

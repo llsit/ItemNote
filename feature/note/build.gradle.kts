@@ -7,6 +7,3 @@ plugins {
 android {
     namespace = "com.example.feature.note"
 }
-dependencies {
-    implementation(project(":app"))
-}

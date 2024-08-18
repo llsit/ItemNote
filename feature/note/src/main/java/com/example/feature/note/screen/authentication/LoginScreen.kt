@@ -41,13 +41,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.core.data.utils.AuthState
 import com.example.core.data.utils.UiState
 import com.example.feature.note.R
 import com.example.feature.note.component.Loading
+import com.example.feature.note.component.TextFieldComponent
 import com.example.feature.note.component.ToolbarScreen
 import com.example.feature.note.utils.NavigationItem
-import com.example.itemnote.component.TextFieldComponent
-import com.example.itemnote.utils.AuthState
 
 @Composable
 fun LoginScreen(
