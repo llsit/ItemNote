@@ -17,7 +17,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "ItemNote"
 include(":app")
-include(":recipe")
 include(":core")
 include(":core:design")
 include(":feature:detail")

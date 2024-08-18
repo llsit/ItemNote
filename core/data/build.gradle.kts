@@ -10,11 +10,15 @@ android {
 dependencies {
 
     // core
-    implementation(projects.core.model)
+    api(projects.core.model)
     implementation(projects.core.network)
 
     // coroutines
 
+    // network
+    implementation(libs.retrofit)
+    implementation(libs.gson.convertor)
+    implementation(platform(libs.okhttp.bom))
 
     // unit test
     testImplementation(libs.junit)

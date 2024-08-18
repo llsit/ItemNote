@@ -6,6 +6,10 @@ plugins {
 
 android {
     namespace = "com.example.core.network"
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {

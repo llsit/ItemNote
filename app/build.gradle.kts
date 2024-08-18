@@ -57,7 +57,13 @@ android {
 }
 
 dependencies {
+    // core
+    implementation(projects.feature.recipe)
+    implementation(projects.feature.detail)
+    implementation(projects.core.model)
+    implementation(projects.core.design)
 
+    // compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -86,8 +92,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.icon.extend)
 
-    implementation(projects.recipe)
-
+    // test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

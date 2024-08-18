@@ -1,7 +1,6 @@
 package com.example.itemnote.screen.main
 
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,7 +49,6 @@ import com.example.itemnote.utils.AuthState
 import com.example.itemnote.utils.Constants.Category.HOME
 import com.example.itemnote.utils.NavigationItem
 import com.example.itemnote.utils.UiState
-import com.example.recipe.RecipeMainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -108,9 +106,7 @@ fun MainScreen(
                     onClick = {
                         scope.launch {
                             drawerState.close()
-                            context.startActivity(
-                                Intent(context, RecipeMainActivity::class.java)
-                            )
+                            // Navigate to recipe
                         }
                     }
                 )
