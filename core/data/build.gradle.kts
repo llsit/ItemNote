@@ -20,6 +20,13 @@ dependencies {
     implementation(libs.gson.convertor)
     implementation(platform(libs.okhttp.bom))
 
+    // firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytic)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.storage)
+
     // unit test
     testImplementation(libs.junit)
 }

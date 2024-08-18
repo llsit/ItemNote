@@ -3,7 +3,7 @@ package com.example.feature.recipe.screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.usecase.GetRecipeCategoryUseCase
-import com.example.core.model.data.CategoryModel
+import com.example.core.model.data.RecipeCategoryModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +19,7 @@ class RecipeMainViewModel @Inject constructor(
     private val _state = MutableStateFlow<RecipeCategoryState>(RecipeCategoryState.Idle)
     val state = _state.asStateFlow()
 
-    val categories: MutableStateFlow<List<CategoryModel>> = MutableStateFlow(emptyList())
+    val categories: MutableStateFlow<List<RecipeCategoryModel>> = MutableStateFlow(emptyList())
 
     init {
         getCategories()

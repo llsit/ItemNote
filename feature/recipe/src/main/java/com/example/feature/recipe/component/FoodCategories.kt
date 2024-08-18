@@ -21,10 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.core.model.data.CategoryModel
+import com.example.core.model.data.RecipeCategoryModel
 
 @Composable
-fun FoodCategories(categories: List<CategoryModel>) {
+fun FoodCategories(categories: List<RecipeCategoryModel>) {
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {

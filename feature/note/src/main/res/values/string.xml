@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Grocery Notes</string>
+
+    <string name="fileprovider">com.example.itemnote.fileprovider</string>
+
+    <string name="dialog_confirm_title">Delete</string>
+    <string name="dialog_confirm_delete">Are you sure you want to delete this item?</string>
+
+    <string name="login_title">Login</string>
+    <string name="login_for_register">Register Now</string>
+    <string name="login_for_register_description">Don\'t have an account? </string>
+    <string name="login_button">Login</string>
+    <string name="login_forget_password">Forgot Password?</string>
+    <string name="login_reset_password">Reset</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_success">Login Success</string>
+
+    <string name="register_button">Register</string>
+
+</resources>
