@@ -44,11 +44,10 @@ import com.example.core.model.data.ShopModel
 import com.example.feature.note.component.ChipGroupHorizontalList
 import com.example.feature.note.component.FloatingButton
 import com.example.feature.note.component.ItemComponent
-import com.example.feature.note.component.Loading
+import com.example.design.ui.Loading
 import com.example.feature.note.component.ProfileMenuComponent
-import com.example.feature.note.component.ToolbarScreen
+import com.example.design.ui.ToolbarScreen
 import com.example.feature.note.screen.user.UserViewModel
-import com.example.feature.note.utils.NavigationItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -69,7 +68,7 @@ fun MainScreen(
     when (authState) {
         AuthState.Loading -> Loading()
         AuthState.Unauthenticated -> {
-            navController.navigate(NavigationItem.Login.route)
+            navController.navigate(com.example.core.common.navigation.NavigationItem.Login.route)
         }
 
         else -> Unit
@@ -91,7 +90,7 @@ fun MainScreen(
                     onClick = {
                         scope.launch {
                             drawerState.close()
-                            navController.navigate(NavigationItem.Main.route)
+                            navController.navigate(com.example.core.common.navigation.NavigationItem.Main.route)
                         }
                     }
                 )
@@ -119,7 +118,7 @@ fun MainScreen(
                         scope.launch {
                             drawerState.close()
                             mainViewModel.logout()
-                            navController.navigate(NavigationItem.Login.route)
+                            navController.navigate(com.example.core.common.navigation.NavigationItem.Login.route)
                         }
                     }
                 )
@@ -138,7 +137,7 @@ fun MainScreen(
             },
             floatingActionButton = {
                 FloatingButton {
-                    navController.navigate(NavigationItem.AddItem.route)
+                    navController.navigate(com.example.core.common.navigation.NavigationItem.AddItem.route)
                 }
             }
         )

@@ -1,13 +1,11 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     kotlin("kapt")
     alias(libs.plugins.hilt.plugin)
     alias(libs.plugins.google.service)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 
-    id("itemnote.android.application.firebase")
+    id("itemnote.android.application.compose")
+    id("itemnote.android.application")
 }
 
 android {
@@ -36,19 +34,11 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+
     buildFeatures {
-        compose = true
+        buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -59,41 +49,29 @@ android {
 dependencies {
     // core
     implementation(projects.core.design)
-    implementation(projects.feature.recipe)
-    implementation(projects.feature.detail)
-    implementation(projects.feature.note)
     implementation(projects.core.model)
     implementation(projects.core.design)
     implementation(projects.core.data)
-
-    // compose
+    implementation(projects.core.common)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation)
+
+    // feature
+    implementation(projects.feature.recipe)
+    implementation(projects.feature.detail)
+    implementation(projects.feature.note)
+    implementation(projects.feature.authentication)
 
     // Di
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation(libs.timber)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.gson)
-
     //design
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.glide)
-    implementation(libs.gilde.compose)
-    implementation(libs.coil.compose)
-    implementation(libs.icon.extend)
 
     // test
     testImplementation(libs.junit)

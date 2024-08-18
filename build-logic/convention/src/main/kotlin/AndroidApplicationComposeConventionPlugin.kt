@@ -1,23 +1,15 @@
-import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.example.itemnote.configureAndroidCompose
-import com.example.itemnote.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
 
 class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
-            project.pluginManager.apply("com.android.application")
-
-            extensions.configure<ApplicationExtension> {
-                configureAndroidCompose(this)
-
-                dependencies {
-                    add("implementation", libs.findLibrary("activity.compose").get())
-                }
-            }
+            pluginManager.apply("com.android.application")
+            val extension = extensions.getByType<BaseAppModuleExtension>()
+            configureAndroidCompose(extension)
         }
     }
 }

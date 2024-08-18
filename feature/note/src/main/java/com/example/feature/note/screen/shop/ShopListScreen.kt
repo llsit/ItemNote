@@ -53,20 +53,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.core.common.navigation.resultHandler
 import com.example.core.data.utils.SharedViewModel
 import com.example.core.data.utils.UiState
+import com.example.core.design.R
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.ShopModel
-import com.example.feature.note.R
+import com.example.design.ui.Loading
 import com.example.feature.note.component.AddShopDialog
 import com.example.feature.note.component.ConfirmDialog
 import com.example.feature.note.component.FloatingButton
-import com.example.feature.note.component.Loading
 import com.example.feature.note.component.MediumToolbarComponent
 import com.example.feature.note.component.ShopCard
 import com.example.feature.note.screen.addItem.EditResult
-import com.example.feature.note.utils.NavigationItem
-import com.example.feature.note.utils.resultHandler
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -122,7 +121,7 @@ fun ShopListScreen(
                     selectedItemModel?.let {
                         sharedViewModel.updateSelectedItemModel(it)
                     }
-                    navController.navigate(NavigationItem.EditItem.route)
+                    navController.navigate(com.example.core.common.navigation.NavigationItem.EditItem.route)
                 },
                 onBackClick = {
                     navController.popBackStack()

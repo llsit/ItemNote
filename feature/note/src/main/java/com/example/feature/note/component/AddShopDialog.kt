@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.data.utils.UiState
 import com.example.core.model.data.ShopModel
+import com.example.design.ui.Loading
+import com.example.design.ui.TextFieldComponent
 import com.example.feature.note.screen.shop.ShopListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
