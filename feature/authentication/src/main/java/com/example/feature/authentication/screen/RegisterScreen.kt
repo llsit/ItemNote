@@ -78,7 +78,6 @@ fun RegisterScreen(
         }
     ) { innerPadding ->
         RegisterSection(
-            navController = navController,
             innerPadding = innerPadding,
             name = viewModel.name.value,
             email = viewModel.email.value,
@@ -86,16 +85,14 @@ fun RegisterScreen(
             onNameChange = viewModel::onNameChange,
             onEmailChange = viewModel::onEmailChange,
             onPasswordChange = viewModel::onPasswordChange,
-            onClickRegister = {
-                viewModel.registerUser()
-            }
+            onClickRegister = viewModel::registerUser,
+            onClickLogin = { navController.navigate(NavigationItem.Login.route) }
         )
     }
 }
 
 @Composable
 fun RegisterSection(
-    navController: NavHostController,
     innerPadding: PaddingValues,
     name: String,
     email: String,
@@ -103,7 +100,8 @@ fun RegisterSection(
     onNameChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onClickRegister: () -> Unit
+    onClickRegister: () -> Unit,
+    onClickLogin: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -168,7 +166,7 @@ fun RegisterSection(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
             )
             TextButton(onClick = {
-                navController.navigate(NavigationItem.Login.route)
+                onClickLogin()
             }) {
                 Text(text = "Login Now", color = MaterialTheme.colorScheme.primary)
             }
@@ -180,7 +178,6 @@ fun RegisterSection(
 @Composable
 fun PreviewRegisterScreen() {
     RegisterSection(
-        navController = rememberNavController(),
         innerPadding = PaddingValues(),
         name = "",
         email = "",
@@ -188,6 +185,7 @@ fun PreviewRegisterScreen() {
         onNameChange = {},
         onEmailChange = {},
         onPasswordChange = {},
-        onClickRegister = {}
+        onClickRegister = {},
+        onClickLogin = {}
     )
 }

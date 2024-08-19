@@ -92,26 +92,26 @@ fun LoginScreen(
         }
     ) { innerPadding ->
         LoginSection(
-            navController = navController,
             innerPadding = innerPadding,
-            viewModel.username.value,
-            viewModel.password.value,
-            viewModel::onUsernameChange,
-            viewModel::onPasswordChange,
-            viewModel::login
+            userName = viewModel.username.value,
+            password = viewModel.password.value,
+            onUserNameChange = viewModel::onUsernameChange,
+            onPasswordChange = viewModel::onPasswordChange,
+            onClickLogin = viewModel::login,
+            onClickRegister = { navController.navigate(NavigationItem.Register.route) }
         )
     }
 }
 
 @Composable
 fun LoginSection(
-    navController: NavHostController,
     innerPadding: PaddingValues,
     userName: String,
     password: String,
     onUserNameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onClickLogin: () -> Unit,
+    onClickRegister: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -184,7 +184,7 @@ fun LoginSection(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
             )
             TextButton(onClick = {
-                navController.navigate(NavigationItem.Register.route)
+                onClickRegister()
             }) {
                 Text(
                     text = stringResource(id = R.string.login_for_register),
@@ -207,12 +207,12 @@ fun LoginSection(
 @Composable
 fun PreviewLoginScreen() {
     LoginSection(
-        navController = rememberNavController(),
         innerPadding = PaddingValues(),
         userName = "",
         password = "",
         onUserNameChange = {},
         onPasswordChange = {},
-        onClickLogin = {}
+        onClickLogin = {},
+        onClickRegister = {}
     )
 }

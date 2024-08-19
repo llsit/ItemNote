@@ -53,9 +53,6 @@ dependencies {
     implementation(projects.core.design)
     implementation(projects.core.data)
     implementation(projects.core.common)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // feature
     implementation(projects.feature.recipe)
@@ -72,6 +69,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+
+    implementation(libs.androidx.navigation)
 
     // test
     testImplementation(libs.junit)

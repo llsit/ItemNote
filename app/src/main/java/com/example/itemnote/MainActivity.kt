@@ -39,12 +39,9 @@ fun MyApp() {
             navController = navController,
             startDestination = NavigationItem.Login.route
         ) {
-            composable(NavigationItem.Login.route) {
-                LoginScreen(navController = navController)
-            }
-            composable(NavigationItem.Register.route) {
-                RegisterScreen(navController = navController)
-            }
+            authenNavigation(
+                navController = navController
+            )
             noteNavigation(
                 navController = navController,
                 sharedViewModel = sharedViewModel,
