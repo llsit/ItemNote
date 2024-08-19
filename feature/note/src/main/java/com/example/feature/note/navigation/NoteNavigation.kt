@@ -22,7 +22,7 @@ fun NavController.navigateToMain(navOptions: NavOptions? = null) =
     navigate(NavigationItem.Main.route, navOptions)
 
 fun NavGraphBuilder.noteNavigation(
-    onBackClick: () -> Unit,
+    onNavigateToRecipe: () -> Unit,
     navController: NavHostController,
     sharedViewModel: SharedViewModel,
 ) {
@@ -30,7 +30,7 @@ fun NavGraphBuilder.noteNavigation(
         MainScreen(
             navController = navController,
             sharedViewModel = sharedViewModel,
-            onBackClick = onBackClick
+            onNavigateToRecipe = onNavigateToRecipe
         )
     }
     composable(

@@ -7,7 +7,8 @@ enum class Screen {
     REGISTER,
     LOGIN,
     EDITITEM,
-    AUTHENTICATION
+    AUTHENTICATION,
+    RECIPE
 }
 
 sealed class NavigationItem(val route: String) {
@@ -20,4 +21,5 @@ sealed class NavigationItem(val route: String) {
         fun createRoute(id: String) = "$route/$id"
     }
     object Authentication : NavigationItem(Screen.AUTHENTICATION.name)
+    object Recipe : NavigationItem(Screen.RECIPE.name)
 }

@@ -14,6 +14,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.design.ui.ToolbarScreen
 import com.example.feature.recipe.component.BottomNavigationBar
 import com.example.feature.recipe.component.FoodCategories
 import com.example.feature.recipe.component.HeaderLarge
@@ -23,13 +26,20 @@ import com.example.feature.recipe.component.SearchSection
 
 @Composable
 fun RecipeMainScreen(
+    navController: NavHostController = rememberNavController(),
     viewModel: RecipeMainViewModel = hiltViewModel()
 ) {
     val categories by viewModel.categories.collectAsState()
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         topBar = {
-
+            ToolbarScreen(
+                title = "",
+                isBack = true,
+                onManuClick = {
+                    navController.navigateUp()
+                }
+            )
         },
         bottomBar = {
             BottomNavigationBar()
