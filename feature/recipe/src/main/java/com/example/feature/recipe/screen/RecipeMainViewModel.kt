@@ -1,6 +1,5 @@
 package com.example.feature.recipe.screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.usecase.GetRecipeCategoryUseCase
@@ -44,7 +43,6 @@ class RecipeMainViewModel @Inject constructor(
             .onStart { _state.value = RecipeCategoryState.Loading }
             .catch { _state.value = RecipeCategoryState.Error(it.message.toString()) }
             .collect {
-                Log.d("NutZa", "Sucess: ${it}")
                 recommendRecipes.value = it
             }
     }
