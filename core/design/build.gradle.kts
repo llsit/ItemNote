@@ -19,4 +19,6 @@ dependencies {
     api(libs.coil.compose)
     api(libs.material)
     api(libs.icon.extend)
+    api(libs.androidx.compose.ui.tooling)
+    api(libs.androidx.compose.ui.tooling.preview)
 }
