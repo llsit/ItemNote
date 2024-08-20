@@ -42,8 +42,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.core.common.navigation.NavigationItem
-import com.example.core.data.utils.AuthState
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.AuthState
+import com.example.core.common.utils.UiState
 import com.example.core.design.R
 import com.example.design.ui.Loading
 import com.example.design.ui.TextFieldComponent

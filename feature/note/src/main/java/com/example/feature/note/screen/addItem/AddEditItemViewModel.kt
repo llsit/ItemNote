@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.domain.usecase.AddCategoryUseCase
 import com.example.core.domain.usecase.AddItemUseCase
 import com.example.core.domain.usecase.EditItemUseCase

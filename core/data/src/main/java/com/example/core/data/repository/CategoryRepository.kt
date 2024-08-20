@@ -1,9 +1,8 @@
 package com.example.core.data.repository
 
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_CATEGORIES_COLLECTION
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_CATEGORY_COLLECTION
-import com.example.core.data.utils.PreferenceManager
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_CATEGORIES_COLLECTION
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_CATEGORY_COLLECTION
+import com.example.core.common.utils.UiState
 import com.example.core.model.data.CategoryModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -20,34 +19,36 @@ interface CategoryRepository {
 
 class CategoryRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val preferenceManager: PreferenceManager
+    private val preferenceManager: com.example.core.common.utils.PreferenceManager
 ) : CategoryRepository {
-    override fun addCategory(category: CategoryModel): Flow<UiState<Unit>> = flow {
-        runCatching {
-            firestore.collection(FIREBASE_CATEGORIES_COLLECTION)
-                .document(preferenceManager.getUserId() ?: "No User ID")
-                .collection(FIREBASE_CATEGORY_COLLECTION)
-                .add(category)
-                .await()
-        }.onSuccess {
-            emit(UiState.Success(Unit))
-        }.onFailure {
-            emit(UiState.Error(it.message.toString()))
+    override fun addCategory(category: CategoryModel): Flow<UiState<Unit>> =
+        flow {
+            runCatching {
+                firestore.collection(FIREBASE_CATEGORIES_COLLECTION)
+                    .document(preferenceManager.getUserId() ?: "No User ID")
+                    .collection(FIREBASE_CATEGORY_COLLECTION)
+                    .add(category)
+                    .await()
+            }.onSuccess {
+                emit(UiState.Success(Unit))
+            }.onFailure {
+                emit(UiState.Error(it.message.toString()))
+            }
         }
-    }
 
-    override fun getCategory(): Flow<UiState<List<CategoryModel>>> = flow {
-        runCatching {
-            firestore.collection(FIREBASE_CATEGORIES_COLLECTION)
-                .document(preferenceManager.getUserId() ?: "No User ID")
-                .collection(FIREBASE_CATEGORY_COLLECTION)
-                .get()
-                .await().documents.mapNotNull { it.toObject<CategoryModel>() }
-        }.onSuccess {
-            emit(UiState.Success(it))
-        }.onFailure {
-            emit(UiState.Error(it.message.toString()))
+    override fun getCategory(): Flow<UiState<List<CategoryModel>>> =
+        flow {
+            runCatching {
+                firestore.collection(FIREBASE_CATEGORIES_COLLECTION)
+                    .document(preferenceManager.getUserId() ?: "No User ID")
+                    .collection(FIREBASE_CATEGORY_COLLECTION)
+                    .get()
+                    .await().documents.mapNotNull { it.toObject<CategoryModel>() }
+            }.onSuccess {
+                emit(UiState.Success(it))
+            }.onFailure {
+                emit(UiState.Error(it.message.toString()))
+            }
         }
-    }
 
 }

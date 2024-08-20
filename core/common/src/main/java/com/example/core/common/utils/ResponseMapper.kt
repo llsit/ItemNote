@@ -1,4 +1,4 @@
-package com.example.core.data.utils
+package com.example.core.common.utils
 
 interface ResponseMapper<Domain, Response> {
 

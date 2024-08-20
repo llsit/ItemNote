@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.core.common.navigation.NavigationItem
-import com.example.core.data.utils.AuthState
+import com.example.core.common.utils.AuthState
 import com.example.core.data.utils.SharedViewModel
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel

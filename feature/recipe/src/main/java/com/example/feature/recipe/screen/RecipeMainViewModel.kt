@@ -1,9 +1,12 @@
 package com.example.feature.recipe.screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.domain.usecase.GetRecipeCategoryUseCase
+import com.example.core.domain.usecase.GetRecommendRecipeUseCase
 import com.example.core.model.data.RecipeCategoryModel
+import com.example.core.model.data.RecommendationModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,15 +17,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipeMainViewModel @Inject constructor(
-    private val getRecipeCategoryUseCase: GetRecipeCategoryUseCase
+    private val getRecipeCategoryUseCase: GetRecipeCategoryUseCase,
+    private val getRecommendRecipeUseCase: GetRecommendRecipeUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow<RecipeCategoryState>(RecipeCategoryState.Idle)
     val state = _state.asStateFlow()
 
     val categories: MutableStateFlow<List<RecipeCategoryModel>> = MutableStateFlow(emptyList())
+    val recommendRecipes: MutableStateFlow<List<RecommendationModel>> =
+        MutableStateFlow(emptyList())
 
     init {
         getCategories()
+        getRecommendRecipes()
     }
 
     private fun getCategories() = viewModelScope.launch {
@@ -30,5 +37,15 @@ class RecipeMainViewModel @Inject constructor(
             .onStart { _state.value = RecipeCategoryState.Loading }
             .catch { _state.value = RecipeCategoryState.Error(it.message.toString()) }
             .collect { categories.value = it }
+    }
+
+    private fun getRecommendRecipes() = viewModelScope.launch {
+        getRecommendRecipeUseCase.invoke()
+            .onStart { _state.value = RecipeCategoryState.Loading }
+            .catch { _state.value = RecipeCategoryState.Error(it.message.toString()) }
+            .collect {
+                Log.d("NutZa", "Sucess: ${it}")
+                recommendRecipes.value = it
+            }
     }
 }

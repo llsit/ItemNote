@@ -65,8 +65,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.core.common.image.ImageUriUtils.getTempUri
 import com.example.core.common.navigation.resultHandler
+import com.example.core.common.utils.UiState
 import com.example.core.data.utils.SharedViewModel
-import com.example.core.data.utils.UiState
 import com.example.core.design.R
 import com.example.design.ui.Loading
 import com.example.design.ui.TextFieldComponent

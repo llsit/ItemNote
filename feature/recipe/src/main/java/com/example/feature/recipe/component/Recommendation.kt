@@ -1,6 +1,5 @@
 package com.example.feature.recipe.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,26 +24,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.core.design.R
+import com.example.core.model.data.RecommendationModel
 
 @Composable
-fun RecommendationList() {
-    val list = listOf<RecommendationModel>(
-//        RecommendationModel(
-//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
-//            title = "Creamy Pasta",
-//            author = "David Charles"
-//        ),
-//        RecommendationModel(
-//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
-//            title = "Macarons",
-//            author = "Rachel William"
-//        ),
-//        RecommendationModel(
-//            imageRes = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp,
-//            title = "Chicken Dish",
-//            author = "Samantha Lee"
-//        )
-    )
+fun RecommendationList(recommendRecipes: List<RecommendationModel>) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -62,39 +49,37 @@ fun RecommendationList() {
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.fillMaxWidth()) {
-            list.forEach {
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(recommendRecipes) {
                 RecommendationCard(
-                    imageRes = it.imageRes,
+                    mealThumb = it.mealThumb,
                     title = it.title,
-                    author = it.author
+                    category = it.category
                 )
             }
         }
     }
 }
 
-data class RecommendationModel(
-    val imageRes: Int,
-    val title: String,
-    val author: String,
-)
-
 @Composable
 fun RecommendationCard(
-    imageRes: Int,
+    mealThumb: String,
     title: String,
-    author: String,
+    category: String,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .width(150.dp)
-            .padding(8.dp)
     ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = null,
+        AsyncImage(
+            model = mealThumb,
+            contentDescription = title,
+            placeholder = painterResource(id = R.drawable.placeholder_product),
+            error = painterResource(id = R.drawable.placeholder_product),
             modifier = Modifier
                 .height(120.dp)
                 .fillMaxWidth()
@@ -111,7 +96,7 @@ fun RecommendationCard(
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = "By $author",
+            text = "Category $category",
             fontSize = 12.sp,
             color = Color.Gray,
             modifier = Modifier.fillMaxWidth(),

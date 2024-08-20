@@ -55,7 +55,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.core.common.navigation.resultHandler
 import com.example.core.data.utils.SharedViewModel
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.design.R
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.ShopModel

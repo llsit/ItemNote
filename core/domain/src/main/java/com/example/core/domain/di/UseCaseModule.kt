@@ -26,6 +26,8 @@ import com.example.core.domain.usecase.GetMinShopUseCase
 import com.example.core.domain.usecase.GetMinShopUseCaseImpl
 import com.example.core.domain.usecase.GetRecipeCategoryUseCase
 import com.example.core.domain.usecase.GetRecipeCategoryUseCaseImpl
+import com.example.core.domain.usecase.GetRecommendRecipeUseCase
+import com.example.core.domain.usecase.GetRecommendRecipeUseCaseImpl
 import com.example.core.domain.usecase.GetShopUseCase
 import com.example.core.domain.usecase.GetShopUseCaseImpl
 import com.example.core.domain.usecase.LoginUseCase
@@ -127,4 +129,10 @@ object UseCaseModule {
     fun provideGetItemByIdUseCase(useCase: GetItemByIdUseCaseImpl): GetItemByIdUseCase {
         return useCase
     }
+
+    @Provides
+    fun provideGetRecommendRecipeUseCase(useCase: GetRecommendRecipeUseCaseImpl): GetRecommendRecipeUseCase {
+        return useCase
+    }
+
 }

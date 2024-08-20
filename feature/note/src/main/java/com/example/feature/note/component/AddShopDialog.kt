@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.model.data.ShopModel
 import com.example.design.ui.Loading
 import com.example.design.ui.TextFieldComponent

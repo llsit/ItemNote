@@ -1,7 +1,7 @@
 package com.example.core.domain.usecase
 
 import com.example.core.data.mapper.toCategoryModel
-import com.example.core.data.repository.GetRecipeCategoryRepository
+import com.example.core.data.repository.RecipeRepository
 import com.example.core.model.data.RecipeCategoryModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -12,7 +12,7 @@ interface GetRecipeCategoryUseCase {
 }
 
 class GetRecipeCategoryUseCaseImpl @Inject constructor(
-    private val repository: GetRecipeCategoryRepository
+    private val repository: RecipeRepository
 ) : GetRecipeCategoryUseCase {
     override suspend fun invoke(): Flow<List<RecipeCategoryModel>> {
         return repository.getCategory().map {

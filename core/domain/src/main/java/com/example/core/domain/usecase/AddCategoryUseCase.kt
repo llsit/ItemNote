@@ -1,7 +1,7 @@
 package com.example.core.domain.usecase
 
+import com.example.core.common.utils.UiState
 import com.example.core.data.repository.CategoryRepository
-import com.example.core.data.utils.UiState
 import com.example.core.model.data.CategoryModel
 import kotlinx.coroutines.flow.Flow
 import java.util.Date

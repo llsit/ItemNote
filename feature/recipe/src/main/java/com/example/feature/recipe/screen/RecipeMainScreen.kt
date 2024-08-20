@@ -1,5 +1,6 @@
 package com.example.feature.recipe.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.design.ui.Loading
 import com.example.design.ui.ToolbarScreen
 import com.example.feature.recipe.component.BottomNavigationBar
 import com.example.feature.recipe.component.FoodCategories
@@ -30,14 +32,29 @@ fun RecipeMainScreen(
     viewModel: RecipeMainViewModel = hiltViewModel()
 ) {
     val categories by viewModel.categories.collectAsState()
+    val recommendRecipes by viewModel.recommendRecipes.collectAsState()
+    val state by viewModel.state.collectAsState()
+    when (state) {
+        is RecipeCategoryState.Loading -> {
+            Loading()
+        }
+
+        is RecipeCategoryState.Error -> {
+            val error = state as RecipeCategoryState.Error
+            Log.d("NutZa", "Error: ${error.message}")
+        }
+
+        else -> Unit
+    }
+
     Scaffold(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         topBar = {
             ToolbarScreen(
                 title = "",
                 isBack = true,
-                onManuClick = {
-                    navController.navigateUp()
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         },
@@ -70,7 +87,7 @@ fun RecipeMainScreen(
             }
 
             item {
-                RecommendationList()
+                RecommendationList(recommendRecipes)
             }
 
             item {

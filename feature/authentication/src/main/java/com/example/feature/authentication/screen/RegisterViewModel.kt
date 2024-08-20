@@ -3,7 +3,7 @@ package com.example.feature.authentication.screen
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.domain.usecase.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

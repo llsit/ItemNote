@@ -33,7 +33,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.design.ui.Loading
 import com.example.design.ui.ToolbarScreen
 import com.example.feature.note.screen.shop.ShopListViewModel

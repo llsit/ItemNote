@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.network)
     implementation(projects.core.data)
+    implementation(projects.core.common)
 
     // firebase
     implementation(libs.firebase.auth)

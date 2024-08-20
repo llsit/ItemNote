@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.domain.usecase.AddShopUseCase
 import com.example.core.domain.usecase.DeleteItemUseCase
 import com.example.core.domain.usecase.DeleteShopUseCase

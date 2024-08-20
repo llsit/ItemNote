@@ -1,7 +1,7 @@
 package com.example.core.domain.usecase
 
+import com.example.core.common.utils.UiState
 import com.example.core.data.repository.AuthRepository
-import com.example.core.data.utils.UiState
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

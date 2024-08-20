@@ -1,10 +1,10 @@
 package com.example.core.data.repository
 
 import android.net.Uri
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
-import com.example.core.data.utils.PreferenceManager
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
+import com.example.core.common.utils.PreferenceManager
+import com.example.core.common.utils.UiState
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.toMap
 import com.google.firebase.firestore.FirebaseFirestore

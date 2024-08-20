@@ -2,9 +2,9 @@ package com.example.feature.note.screen.main
 
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.repository.AuthRepository
-import com.example.core.data.utils.AuthState
-import com.example.core.data.utils.Constants.Category.HOME
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.AuthState
+import com.example.core.common.utils.Constants.Category.HOME
+import com.example.core.common.utils.UiState
 import com.example.core.domain.usecase.GetCategoryUseCase
 import com.example.core.domain.usecase.GetItemUseCase
 import com.example.core.domain.usecase.GetItemsByCategory

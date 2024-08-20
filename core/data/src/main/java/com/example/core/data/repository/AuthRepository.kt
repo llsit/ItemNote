@@ -1,8 +1,7 @@
 package com.example.core.data.repository
 
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_USERS_COLLECTION
-import com.example.core.data.utils.PreferenceManager
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_USERS_COLLECTION
+import com.example.core.common.utils.UiState
 import com.example.core.model.data.UserModel
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -13,7 +12,10 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface AuthRepository {
-    fun loginUser(email: String, password: String): Flow<UiState<AuthResult>>
+    fun loginUser(
+        email: String,
+        password: String
+    ): Flow<UiState<AuthResult>>
 
     fun registerUser(email: String, password: String): Flow<UiState<Unit>>
 
@@ -33,9 +35,12 @@ interface AuthRepository {
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val preferenceManager: PreferenceManager
+    private val preferenceManager: com.example.core.common.utils.PreferenceManager
 ) : AuthRepository {
-    override fun loginUser(email: String, password: String): Flow<UiState<AuthResult>> = flow {
+    override fun loginUser(
+        email: String,
+        password: String
+    ): Flow<UiState<AuthResult>> = flow {
         runCatching {
             emit(value = UiState.Loading)
             firebaseAuth.signInWithEmailAndPassword(email, password).await()

@@ -1,11 +1,11 @@
 plugins {
-    kotlin("kapt")
     alias(libs.plugins.hilt.plugin)
     alias(libs.plugins.google.service)
     alias(libs.plugins.compose.compiler)
 
     id("itemnote.android.application.compose")
     id("itemnote.android.application")
+    id("itemnote.android.hilt")
 }
 
 android {
@@ -39,6 +39,17 @@ android {
         buildConfig = true
     }
 
+    kotlin {
+        sourceSets.configureEach {
+            kotlin.srcDir(layout.buildDirectory.files("generated/ksp/$name/kotlin/"))
+        }
+        sourceSets.all {
+            languageSettings {
+                languageVersion = "2.0"
+            }
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -62,7 +73,7 @@ dependencies {
 
     // Di
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     //design
@@ -81,19 +92,3 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
-}
-
-//ktlint {
-//    android = true
-//    version = "0.43.2" // Replace with the desired KtLint version
-//    verbose = true
-//    debug = true
-//    outputToConsole = true
-//    outputColorName = "RED"
-//    ignoreFailures = false
-//    enableExperimentalRules = true
-//}

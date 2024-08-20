@@ -20,9 +20,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.core.data.utils.Constants.Category.HOME
+import com.example.core.common.utils.Constants.Category.HOME
 import com.example.core.data.utils.SharedViewModel
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.design.ui.Loading

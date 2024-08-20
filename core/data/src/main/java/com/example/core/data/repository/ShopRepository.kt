@@ -1,10 +1,10 @@
 package com.example.core.data.repository
 
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_PRICE_FIELD
-import com.example.core.data.utils.Constants.Firebase.FIREBASE_SHOP_COLLECTION
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_PRICE_FIELD
+import com.example.core.common.utils.Constants.Firebase.FIREBASE_SHOP_COLLECTION
+import com.example.core.common.utils.UiState
 import com.example.core.model.data.ShopModel
 import com.example.core.model.data.toMap
 import com.google.firebase.firestore.FirebaseFirestore
@@ -95,20 +95,19 @@ class ShopRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updateShop(itemId: String, shopModel: ShopModel): Flow<UiState<Unit>> =
-        flow {
-            runCatching {
-                firestore.collection(FIREBASE_ITEMS_COLLECTION)
-                    .document(authRepository.getUserID() ?: "No User ID")
-                    .collection(FIREBASE_ITEM_COLLECTION)
-                    .document(itemId)
-                    .collection(FIREBASE_SHOP_COLLECTION)
-                    .document(shopModel.id)
-                    .update(shopModel.toMap()).await()
-            }.onSuccess {
-                emit(UiState.Success(Unit))
-            }.onFailure {
-                emit(UiState.Error(it.message.toString()))
-            }
+    override fun updateShop(itemId: String, shopModel: ShopModel): Flow<UiState<Unit>> = flow {
+        runCatching {
+            firestore.collection(FIREBASE_ITEMS_COLLECTION)
+                .document(authRepository.getUserID() ?: "No User ID")
+                .collection(FIREBASE_ITEM_COLLECTION)
+                .document(itemId)
+                .collection(FIREBASE_SHOP_COLLECTION)
+                .document(shopModel.id)
+                .update(shopModel.toMap()).await()
+        }.onSuccess {
+            emit(UiState.Success(Unit))
+        }.onFailure {
+            emit(UiState.Error(it.message.toString()))
         }
+    }
 }

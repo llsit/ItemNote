@@ -1,11 +1,11 @@
 package com.example.core.data.mapper
 
-import com.example.core.data.utils.ResponseMapper
+import com.example.core.common.utils.ResponseMapper
 import com.example.core.model.data.RecipeCategoryModel
 import com.example.core.model.response.Category
 
-
-object RecipeCategoryMapper : ResponseMapper<List<RecipeCategoryModel>, List<Category>> {
+object RecipeCategoryMapper :
+    com.example.core.common.utils.ResponseMapper<List<RecipeCategoryModel>, List<Category>> {
     override fun asResponse(domain: List<RecipeCategoryModel>): List<Category> {
         return domain.map {
             Category(

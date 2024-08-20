@@ -2,7 +2,7 @@ package com.example.feature.note.screen.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.utils.UiState
+import com.example.core.common.utils.UiState
 import com.example.core.domain.usecase.GetCategoryUseCase
 import com.example.core.model.data.CategoryModel
 import dagger.hilt.android.lifecycle.HiltViewModel
