@@ -16,13 +16,13 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface ItemRepository {
-    fun addItem(data: ItemModel): Flow<UiState<Unit>>
-    fun getItem(): Flow<UiState<List<ItemModel>>>
+    fun addItem(data: ItemModel): Flow<Unit>
+    fun getItem(): Flow<List<ItemModel>>
     fun getItemById(itemId: String): Flow<UiState<ItemModel>>
     fun uploadImage(path: String): Flow<String>
-    fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>>
+    fun getItemByCategory(categoryId: String): Flow<List<ItemModel>>
     fun deleteItem(itemId: String): Flow<UiState<Unit>>
-    fun editItem(data: ItemModel): Flow<UiState<Unit>>
+    fun editItem(data: ItemModel): Flow<Unit>
 }
 
 class ItemRepositoryImpl @Inject constructor(
@@ -30,7 +30,7 @@ class ItemRepositoryImpl @Inject constructor(
     private val preferenceManager: PreferenceManager,
     private val storage: FirebaseStorage
 ) : ItemRepository {
-    override fun addItem(data: ItemModel): Flow<UiState<Unit>> = flow {
+    override fun addItem(data: ItemModel): Flow<Unit> = flow {
         runCatching {
             firestore.collection(FIREBASE_ITEMS_COLLECTION)
                 .document(preferenceManager.getUserId() ?: "No User ID")
@@ -38,13 +38,13 @@ class ItemRepositoryImpl @Inject constructor(
                 .document(data.id)
                 .set(data).await()
         }.onSuccess {
-            emit(UiState.Success(Unit))
+            emit(Unit)
         }.onFailure { e ->
-            emit(UiState.Error(e.message.toString()))
+            error(e.message.toString())
         }
     }
 
-    override fun getItem(): Flow<UiState<List<ItemModel>>> = flow {
+    override fun getItem(): Flow<List<ItemModel>> = flow {
         runCatching {
             val snapshot = firestore.collection(FIREBASE_ITEMS_COLLECTION)
                 .document(preferenceManager.getUserId() ?: "No User ID")
@@ -52,9 +52,9 @@ class ItemRepositoryImpl @Inject constructor(
                 .get().await()
             snapshot.documents.mapNotNull { it.toObject<ItemModel>() }
         }.onSuccess {
-            emit(UiState.Success(it))
+            emit(it)
         }.onFailure { e ->
-            emit(UiState.Error(e.message.toString()))
+            error(e.message.toString())
         }
     }
 
@@ -86,7 +86,7 @@ class ItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getItemByCategory(categoryId: String): Flow<UiState<List<ItemModel>>> = flow {
+    override fun getItemByCategory(categoryId: String): Flow<List<ItemModel>> = flow {
         runCatching {
             firestore.collection(FIREBASE_ITEMS_COLLECTION)
                 .document(preferenceManager.getUserId() ?: "No User ID")
@@ -95,9 +95,9 @@ class ItemRepositoryImpl @Inject constructor(
                 .get()
                 .await().documents.mapNotNull { it.toObject<ItemModel>() }
         }.onSuccess {
-            emit(UiState.Success(it))
+            emit(it)
         }.onFailure {
-            error("getItemByCategory Error")
+            error(it.message.toString())
         }
     }
 
@@ -115,7 +115,7 @@ class ItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun editItem(data: ItemModel): Flow<UiState<Unit>> = flow {
+    override fun editItem(data: ItemModel): Flow<Unit> = flow {
         runCatching {
             firestore.collection(FIREBASE_ITEMS_COLLECTION)
                 .document(preferenceManager.getUserId() ?: "No User ID")
@@ -123,9 +123,9 @@ class ItemRepositoryImpl @Inject constructor(
                 .document(data.id)
                 .update(data.toMap()).await()
         }.onSuccess {
-            emit(UiState.Success(Unit))
+            emit(Unit)
         }.onFailure {
-            emit(UiState.Error(it.message.toString()))
+            error(it.message.toString())
         }
     }
 }

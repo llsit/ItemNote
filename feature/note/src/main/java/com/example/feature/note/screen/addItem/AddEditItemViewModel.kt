@@ -16,6 +16,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,7 +43,7 @@ class AddEditItemViewModel @Inject constructor(
     val uiStateAddCategory: StateFlow<UiState<Unit>> = _uiStateAddCategory.asStateFlow()
 
     private val _screenMode = MutableStateFlow<AddEditItemMode>(AddEditItemMode.Add)
-    val screenMode: StateFlow<AddEditItemMode> = _screenMode.asStateFlow()
+    private val screenMode: StateFlow<AddEditItemMode> = _screenMode.asStateFlow()
 
     var name by mutableStateOf("")
         private set
@@ -111,59 +113,28 @@ class AddEditItemViewModel @Inject constructor(
     }
 
     private fun editItem() = viewModelScope.launch {
-        editItemUseCase.editItem(name, imageUri, category!!, itemModel!!).collect {
-            when (it) {
-                is UiState.Error -> {
-                    _uiStateEditItem.value = UiState.Error(it.message)
-                }
-
-                UiState.Loading -> {
-                    _uiStateEditItem.value = UiState.Loading
-                }
-
-                is UiState.Success -> {
-                    _uiStateEditItem.value = UiState.Success(it.data)
-                }
-
-                else -> Unit
+        editItemUseCase.editItem(name, imageUri, category!!, itemModel!!)
+            .onStart { _uiStateEditItem.value = UiState.Loading }
+            .catch { _uiStateEditItem.value = UiState.Error(it.message.toString()) }
+            .collect {
+                _uiStateEditItem.value = UiState.Success(it)
             }
-        }
     }
 
     private fun addItem() = viewModelScope.launch {
-        addItemUseCase.addItem(name, imageUri, category!!).collect {
-            when (it) {
-                is UiState.Error -> {
-                    _uiStateAddItem.value = UiState.Error(it.message)
-                }
-
-                UiState.Loading -> {
-                    _uiStateAddItem.value = UiState.Loading
-                }
-
-                is UiState.Success -> {
-                    _uiStateAddItem.value = UiState.Success(it.data)
-                }
-
-                else -> Unit
-            }
-        }
+        addItemUseCase.addItem(name, imageUri, category!!)
+            .onStart { _uiStateAddItem.value = UiState.Loading }
+            .catch { _uiStateAddItem.value = UiState.Error(it.message.toString()) }
+            .collect { _uiStateAddItem.value = UiState.Success(it) }
     }
 
     fun addCategory(newCategory: String) = viewModelScope.launch {
-        addCategoryUseCase.addCategory(newCategory).collect {
-            when (it) {
-                is UiState.Error -> {
-                    _uiStateAddCategory.value = UiState.Error(it.message)
-                }
-
-                UiState.Idle -> Unit
-                UiState.Loading -> _uiStateAddCategory.value = UiState.Loading
-                is UiState.Success -> {
-                    _uiStateAddCategory.value = UiState.Success(Unit)
-                }
+        addCategoryUseCase.addCategory(newCategory)
+            .onStart { _uiStateAddCategory.value = UiState.Loading }
+            .catch { _uiStateAddCategory.value = UiState.Error(it.message.toString()) }
+            .collect {
+                _uiStateAddCategory.value = UiState.Success(Unit)
             }
-        }
     }
 
     private fun checkErrorState() {

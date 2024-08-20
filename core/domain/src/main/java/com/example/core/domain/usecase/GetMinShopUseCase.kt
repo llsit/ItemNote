@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 interface GetMinShopUseCase {
-    fun getMinShop(items: List<ItemModel>): Flow<UiState<List<ItemModel>>>
+    fun getMinShop(items: List<ItemModel>): Flow<List<ItemModel>>
 }
 
 class GetMinShopUseCaseImpl @Inject constructor(
     private val shopRepository: ShopRepository
 ) : GetMinShopUseCase {
-    override fun getMinShop(items: List<ItemModel>): Flow<UiState<List<ItemModel>>> =
+    override fun getMinShop(items: List<ItemModel>): Flow<List<ItemModel>> =
         flow {
             try {
                 val itemsWithShops = items.map { item ->
@@ -37,9 +37,9 @@ class GetMinShopUseCaseImpl @Inject constructor(
                     }
                 }.awaitAll()
 
-                emit(UiState.Success(itemsWithShops))
+                emit(itemsWithShops)
             } catch (e: Exception) {
-                emit(UiState.Error(e.message ?: "Unknown error occurred"))
+                error(e.message ?: "Unknown error occurred")
             }
         }
 }

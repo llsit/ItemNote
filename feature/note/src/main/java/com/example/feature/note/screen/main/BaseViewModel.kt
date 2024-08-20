@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,15 +25,9 @@ open class BaseViewModel @Inject constructor(
     fun getCategory() = viewModelScope.launch {
         getCategoryUseCase.getCategory()
             .onStart { _uiStateCategory.value = UiState.Loading }
+            .catch { _uiStateCategory.value = UiState.Error(it.message.toString()) }
             .collect {
-                when (it) {
-                    is UiState.Error -> _uiStateCategory.value = UiState.Error(it.message)
-                    UiState.Idle -> Unit
-                    UiState.Loading -> _uiStateCategory.value = UiState.Loading
-                    is UiState.Success -> {
-                        _uiStateCategory.value = UiState.Success(it.data)
-                    }
-                }
+                _uiStateCategory.value = UiState.Success(it)
             }
     }
 }

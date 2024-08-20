@@ -2,7 +2,6 @@ package com.example.core.data.repository
 
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_CATEGORIES_COLLECTION
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_CATEGORY_COLLECTION
-import com.example.core.common.utils.UiState
 import com.example.core.model.data.CategoryModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -12,16 +11,16 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface CategoryRepository {
-    fun addCategory(category: CategoryModel): Flow<UiState<Unit>>
+    fun addCategory(category: CategoryModel): Flow<Unit>
 
-    fun getCategory(): Flow<UiState<List<CategoryModel>>>
+    fun getCategory(): Flow<List<CategoryModel>>
 }
 
 class CategoryRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val preferenceManager: com.example.core.common.utils.PreferenceManager
 ) : CategoryRepository {
-    override fun addCategory(category: CategoryModel): Flow<UiState<Unit>> =
+    override fun addCategory(category: CategoryModel): Flow<Unit> =
         flow {
             runCatching {
                 firestore.collection(FIREBASE_CATEGORIES_COLLECTION)
@@ -30,13 +29,13 @@ class CategoryRepositoryImpl @Inject constructor(
                     .add(category)
                     .await()
             }.onSuccess {
-                emit(UiState.Success(Unit))
+                emit(Unit)
             }.onFailure {
-                emit(UiState.Error(it.message.toString()))
+                error(it.message.toString())
             }
         }
 
-    override fun getCategory(): Flow<UiState<List<CategoryModel>>> =
+    override fun getCategory(): Flow<List<CategoryModel>> =
         flow {
             runCatching {
                 firestore.collection(FIREBASE_CATEGORIES_COLLECTION)
@@ -45,9 +44,9 @@ class CategoryRepositoryImpl @Inject constructor(
                     .get()
                     .await().documents.mapNotNull { it.toObject<CategoryModel>() }
             }.onSuccess {
-                emit(UiState.Success(it))
+                emit(it)
             }.onFailure {
-                emit(UiState.Error(it.message.toString()))
+                error(it.message.toString())
             }
         }
 

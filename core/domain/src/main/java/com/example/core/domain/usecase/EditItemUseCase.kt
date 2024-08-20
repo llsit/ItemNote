@@ -1,6 +1,5 @@
 package com.example.core.domain.usecase
 
-import com.example.core.common.utils.UiState
 import com.example.core.data.repository.ItemRepository
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
@@ -13,7 +12,7 @@ interface EditItemUseCase {
         imageUri: String,
         category: CategoryModel,
         itemModel: ItemModel
-    ): Flow<UiState<Unit>>
+    ): Flow<Unit>
 }
 
 class EditItemUseCaseImpl @Inject constructor(
@@ -24,7 +23,7 @@ class EditItemUseCaseImpl @Inject constructor(
         imageUri: String,
         category: CategoryModel,
         itemModel: ItemModel
-    ): Flow<UiState<Unit>> {
+    ): Flow<Unit> {
         val item = itemModel.copy(
             name = name,
             imageUrl = imageUri,

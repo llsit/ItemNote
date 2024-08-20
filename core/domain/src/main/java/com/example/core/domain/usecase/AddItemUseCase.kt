@@ -1,6 +1,5 @@
 package com.example.core.domain.usecase
 
-import com.example.core.common.utils.UiState
 import com.example.core.data.repository.ItemRepository
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
@@ -12,7 +11,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 interface AddItemUseCase {
-    fun addItem(name: String, imageUri: String, category: CategoryModel): Flow<UiState<Unit>>
+    fun addItem(name: String, imageUri: String, category: CategoryModel): Flow<Unit>
 }
 
 class AddItemUseCaseImpl @Inject constructor(
@@ -22,9 +21,8 @@ class AddItemUseCaseImpl @Inject constructor(
         name: String,
         imageUri: String,
         category: CategoryModel
-    ): Flow<UiState<Unit>> = flow {
+    ): Flow<Unit> = flow {
         try {
-            emit(UiState.Loading)
             val data = ItemModel(
                 id = UUID.randomUUID().toString(),
                 name = name,
@@ -42,7 +40,7 @@ class AddItemUseCaseImpl @Inject constructor(
                 emit(it)
             }
         } catch (e: Exception) {
-            emit(UiState.Error(e.message ?: "Unknown error occurred"))
+            error(e.message ?: "Unknown error occurred")
         }
     }
 }

@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.core.common.utils.Constants.Category.HOME
-import com.example.core.data.utils.SharedViewModel
 import com.example.core.common.utils.UiState
+import com.example.core.data.utils.SharedViewModel
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.design.ui.Loading
@@ -55,9 +55,7 @@ fun NoteMainScreen(
         when (category) {
             is UiState.Success -> {
                 (category as UiState.Success<List<CategoryModel>>).data?.let { categoryList ->
-                    val list = listOf(
-                        CategoryModel("home", HOME)
-                    ).plus(categoryList)
+                    val list = listOf(CategoryModel("home", HOME)).plus(categoryList)
                     ChipGroupHorizontalList(list) { selectedCategory ->
                         mainViewModel.getItemsByCategory(selectedCategory?.id.orEmpty())
                     }

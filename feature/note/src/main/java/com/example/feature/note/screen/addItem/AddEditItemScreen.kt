@@ -114,8 +114,10 @@ fun AddEditItemScreen(
         UiState.Idle -> Unit
         UiState.Loading -> Loading()
         is UiState.Success -> {
-            viewModel.getCategory()
-            Toast.makeText(context, "Add Category Success!", Toast.LENGTH_LONG).show()
+            LaunchedEffect(uiStateAddCategory) {
+                viewModel.getCategory()
+                Toast.makeText(context, "Add Category Success!", Toast.LENGTH_LONG).show()
+            }
         }
     }
     when (state) {

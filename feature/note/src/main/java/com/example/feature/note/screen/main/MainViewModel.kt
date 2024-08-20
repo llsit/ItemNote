@@ -1,10 +1,10 @@
 package com.example.feature.note.screen.main
 
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.repository.AuthRepository
 import com.example.core.common.utils.AuthState
 import com.example.core.common.utils.Constants.Category.HOME
 import com.example.core.common.utils.UiState
+import com.example.core.data.repository.AuthRepository
 import com.example.core.domain.usecase.GetCategoryUseCase
 import com.example.core.domain.usecase.GetItemUseCase
 import com.example.core.domain.usecase.GetItemsByCategory
@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,19 +38,9 @@ class MainViewModel @Inject constructor(
     private fun getItems() = viewModelScope.launch {
         getItemUseCase.getItems()
             .onStart { _uiState.value = UiState.Loading }
+            .catch { _uiState.value = UiState.Error(it.message.toString()) }
             .collect {
-                when (it) {
-                    is UiState.Error -> {
-                        _uiState.value = UiState.Error(it.message)
-                    }
-
-                    UiState.Idle -> Unit
-                    UiState.Loading -> _uiState.value = UiState.Loading
-                    is UiState.Success -> {
-                        _uiState.value = UiState.Success(it.data)
-
-                    }
-                }
+                _uiState.value = UiState.Success(it)
             }
     }
 
@@ -59,18 +50,9 @@ class MainViewModel @Inject constructor(
         } else {
             getItemsByCategory.getItemsByCategory(categoryId)
                 .onStart { _uiState.value = UiState.Loading }
+                .catch { _uiState.value = UiState.Error(it.message.toString()) }
                 .collect {
-                    when (it) {
-                        is UiState.Error -> {
-                            _uiState.value = UiState.Error(it.message)
-                        }
-
-                        UiState.Idle -> Unit
-                        UiState.Loading -> _uiState.value = UiState.Loading
-                        is UiState.Success -> {
-                            _uiState.value = UiState.Success(it.data)
-                        }
-                    }
+                    _uiState.value = UiState.Success(it)
                 }
         }
     }
@@ -79,12 +61,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.logout().collect {
                 when (it) {
-                    is UiState.Error -> Unit
-                    UiState.Idle -> Unit
-                    UiState.Loading -> Unit
                     is UiState.Success -> {
                         _authState.value = AuthState.Unauthenticated
                     }
+
+                    else -> Unit
                 }
             }
         }
