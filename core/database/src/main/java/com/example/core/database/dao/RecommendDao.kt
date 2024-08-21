@@ -10,9 +10,9 @@ import com.example.core.database.entity.RecommendEntity
 interface RecommendDao {
 
     @Query("SELECT * FROM RecommendEntity")
-    fun getAll(): List<RecommendEntity>
+    suspend fun getAll(): List<RecommendEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(recommend: RecommendEntity)
+    suspend fun insertAll(recommendList: List<RecommendEntity>)
 
 }

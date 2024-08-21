@@ -60,6 +60,5 @@ data class MealResponse(
     @SerialName("strImageSource") var strImageSource: String? = null,
     @SerialName("strCreativeCommonsConfirmed") var strCreativeCommonsConfirmed: String? = null,
     @SerialName("dateModified") var dateModified: String? = null
-
 )
 

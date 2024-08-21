@@ -75,7 +75,7 @@ fun ChipGroupHorizontalList(
 
     LaunchedEffect(categoryList) {
         categoryList?.firstOrNull()?.let { firstCategory ->
-            selectedCategoryId = firstCategory.id // Assuming CategoryModel has an 'id' field
+            selectedCategoryId = firstCategory.id
             onSelected(firstCategory)
         }
     }
