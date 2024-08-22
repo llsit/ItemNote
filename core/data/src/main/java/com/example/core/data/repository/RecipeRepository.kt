@@ -1,8 +1,12 @@
 package com.example.core.data.repository
 
+import com.example.core.data.mapper.asRecipeEntity
+import com.example.core.database.dao.RecipeInfoDao
 import com.example.core.database.dao.RecommendDao
+import com.example.core.database.entity.mapper.asRecipeInfo
 import com.example.core.database.entity.mapper.toMealResponse
 import com.example.core.database.entity.mapper.toRecommendEntity
+import com.example.core.model.data.RecipeInfo
 import com.example.core.model.response.MealResponse
 import com.example.core.model.response.RecipeCategoryResponse
 import com.example.core.network.service.ApiService
@@ -15,11 +19,13 @@ import javax.inject.Inject
 interface RecipeRepository {
     suspend fun getCategory(): Flow<RecipeCategoryResponse>
     suspend fun getRecommendRecipe(): Flow<List<MealResponse>>
+    suspend fun getRecipeDetail(id: String): Flow<RecipeInfo>
 }
 
 class RecipeRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
-    private val recommendDao: RecommendDao
+    private val recommendDao: RecommendDao,
+    private val recipeInfoDao: RecipeInfoDao
 ) : RecipeRepository {
     override suspend fun getCategory(): Flow<RecipeCategoryResponse> = flow {
         val response = apiService.getCategory()
@@ -52,5 +58,20 @@ class RecipeRepositoryImpl @Inject constructor(
             emit(dao.toMealResponse())
         }
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun getRecipeDetail(id: String): Flow<RecipeInfo> = flow {
+        val dao = recipeInfoDao.getRecipeInfoById(id)
+        if (dao == null) {
+            val response = apiService.getRecipeDetail(id)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    recipeInfoDao.insertRecipeInfo(it.meals.first().asRecipeEntity())
+                    emit(it.meals.first().asRecipeEntity().asRecipeInfo())
+                }
+            }
+        } else {
+            emit(dao.asRecipeInfo())
+        }
+    }
 
 }

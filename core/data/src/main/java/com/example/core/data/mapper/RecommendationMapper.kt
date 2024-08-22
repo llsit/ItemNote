@@ -12,6 +12,7 @@ object RecommendationMapper : ResponseMapper<List<RecommendationModel>, List<Mea
     override fun asDomain(entity: List<MealResponse>): List<RecommendationModel> {
         return entity.map {
             RecommendationModel(
+                id = it.idMeal.orEmpty(),
                 mealThumb = it.strMealThumb.orEmpty(),
                 title = it.strMeal.orEmpty(),
                 category = it.strCategory.orEmpty()

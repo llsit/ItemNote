@@ -5,9 +5,9 @@ import com.example.core.common.utils.AuthState
 import com.example.core.common.utils.Constants.Category.HOME
 import com.example.core.common.utils.UiState
 import com.example.core.data.repository.AuthRepository
-import com.example.core.domain.usecase.GetCategoryUseCase
-import com.example.core.domain.usecase.GetItemUseCase
-import com.example.core.domain.usecase.GetItemsByCategory
+import com.example.core.domain.usecase.note.GetCategoryUseCase
+import com.example.core.domain.usecase.note.GetItemUseCase
+import com.example.core.domain.usecase.note.GetItemsByCategory
 import com.example.core.model.data.ItemModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

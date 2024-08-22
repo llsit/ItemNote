@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.utils.UiState
-import com.example.core.domain.usecase.AddCategoryUseCase
-import com.example.core.domain.usecase.AddItemUseCase
-import com.example.core.domain.usecase.EditItemUseCase
-import com.example.core.domain.usecase.GetCategoryUseCase
+import com.example.core.domain.usecase.note.AddCategoryUseCase
+import com.example.core.domain.usecase.note.AddItemUseCase
+import com.example.core.domain.usecase.note.EditItemUseCase
+import com.example.core.domain.usecase.note.GetCategoryUseCase
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.feature.note.screen.main.BaseViewModel

@@ -87,7 +87,9 @@ fun RecipeMainScreen(
             }
 
             item {
-                RecommendationList(recommendRecipes)
+                RecommendationList(recommendRecipes) {
+                    navController.navigate("detail/${it}")
+                }
             }
 
             item {

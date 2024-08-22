@@ -1,5 +1,6 @@
 package com.example.feature.recipe.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +30,10 @@ import com.example.core.design.R
 import com.example.core.model.data.RecommendationModel
 
 @Composable
-fun RecommendationList(recommendRecipes: List<RecommendationModel>) {
+fun RecommendationList(
+    recommendRecipes: List<RecommendationModel>,
+    onClick: (String) -> Unit = {}
+) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -57,7 +61,10 @@ fun RecommendationList(recommendRecipes: List<RecommendationModel>) {
                 RecommendationCard(
                     mealThumb = it.mealThumb,
                     title = it.title,
-                    category = it.category
+                    category = it.category,
+                    onClick = {
+                        onClick(it.id)
+                    }
                 )
             }
         }
@@ -69,11 +76,13 @@ fun RecommendationCard(
     mealThumb: String,
     title: String,
     category: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .width(150.dp)
+            .clickable { onClick() },
     ) {
         AsyncImage(
             model = mealThumb,

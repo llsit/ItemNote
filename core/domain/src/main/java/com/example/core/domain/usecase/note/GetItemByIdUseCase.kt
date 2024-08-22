@@ -1,7 +1,6 @@
-package com.example.core.domain.usecase
+package com.example.core.domain.usecase.note
 
 import com.example.core.data.repository.ItemRepository
-import com.example.core.common.utils.UiState
 import com.example.core.model.data.ItemModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

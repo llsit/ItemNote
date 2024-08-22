@@ -1,4 +1,4 @@
-package com.example.core.domain.usecase
+package com.example.core.domain.usecase.recipe
 
 import com.example.core.data.mapper.toCategoryModel
 import com.example.core.data.repository.RecipeRepository

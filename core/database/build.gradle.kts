@@ -30,4 +30,5 @@ dependencies {
 
     // json parsing
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.gson)
 }

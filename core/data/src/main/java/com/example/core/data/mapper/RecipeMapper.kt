@@ -7,7 +7,7 @@ import com.example.core.model.response.MealResponse
 import com.example.core.model.response.RecipeResponse
 
 object RecipeMapper :
-    com.example.core.common.utils.ResponseMapper<List<RecipeModel>, List<RecipeResponse>> {
+    ResponseMapper<List<RecipeModel>, List<RecipeResponse>> {
     override fun asResponse(domain: List<RecipeModel>): List<RecipeResponse> {
         return domain.map { recipe ->
             RecipeResponse(

@@ -2,8 +2,8 @@ package com.example.feature.recipe.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.domain.usecase.GetRecipeCategoryUseCase
-import com.example.core.domain.usecase.GetRecommendRecipeUseCase
+import com.example.core.domain.usecase.recipe.GetRecipeCategoryUseCase
+import com.example.core.domain.usecase.recipe.GetRecommendRecipeUseCase
 import com.example.core.model.data.RecipeCategoryModel
 import com.example.core.model.data.RecommendationModel
 import dagger.hilt.android.lifecycle.HiltViewModel

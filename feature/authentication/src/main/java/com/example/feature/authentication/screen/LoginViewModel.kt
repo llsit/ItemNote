@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.utils.AuthState
 import com.example.core.common.utils.UiState
-import com.example.core.domain.usecase.CheckUserLoginUseCase
-import com.example.core.domain.usecase.LoginUseCase
+import com.example.core.domain.usecase.authen.CheckUserLoginUseCase
+import com.example.core.domain.usecase.authen.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

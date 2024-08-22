@@ -7,5 +7,4 @@ sealed class RecipeCategoryState {
     object Loading : RecipeCategoryState()
     data class Success(val categories: List<CategoryModel>) : RecipeCategoryState()
     data class Error(val message: String) : RecipeCategoryState()
-
 }

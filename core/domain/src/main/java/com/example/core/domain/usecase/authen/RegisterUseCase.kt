@@ -1,4 +1,4 @@
-package com.example.core.domain.usecase
+package com.example.core.domain.usecase.authen
 
 import com.example.core.common.utils.UiState
 import com.example.core.data.repository.AuthRepository

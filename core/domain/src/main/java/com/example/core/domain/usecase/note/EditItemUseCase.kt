@@ -1,4 +1,4 @@
-package com.example.core.domain.usecase
+package com.example.core.domain.usecase.note
 
 import com.example.core.data.repository.ItemRepository
 import com.example.core.model.data.CategoryModel

@@ -27,4 +27,8 @@ internal object DatabaseModule {
     @Provides
     @Singleton
     fun provideRecommendDao(database: RecipeDatabase) = database.recommendDao()
+
+    @Provides
+    @Singleton
+    fun provideRecipeInfoDao(database: RecipeDatabase) = database.recipeInfoDao()
 }
