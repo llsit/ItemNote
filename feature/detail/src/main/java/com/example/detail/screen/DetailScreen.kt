@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,8 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Bookmark
-import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,21 +42,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.IngredientInfo
+import com.example.core.model.data.RecipeInfo
 
 @Composable
 fun DetailScreen(
     viewModel: RecipeDetailViewModel = hiltViewModel(),
     onBackPressed: () -> Unit,
-    onBookmarkToggled: () -> Unit = {}
 ) {
     val recipeInfo by viewModel.recipeInfo.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Choco Macarons") },
+                title = { },
                 modifier = Modifier.background(color = Color.Transparent),
                 navigationIcon = {
                     IconButton(
@@ -68,79 +70,118 @@ fun DetailScreen(
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                actions = {
-                    IconButton(onClick = onBookmarkToggled) {
-                        Icon(
-                            if (recipeInfo.isBookmarked.or(false)) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
-                            contentDescription = "Bookmark",
-                            tint = if (recipeInfo!!.isBookmarked) Color.Red else Color.Black
-                        )
-                    }
-                }
+//                actions = {
+//                    IconButton(onClick = onBookmarkToggled) {
+//                        Icon(
+//                            if (recipeInfo.isBookmarked.or(false)) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
+//                            contentDescription = "Bookmark",
+//                            tint = if (recipeInfo!!.isBookmarked) Color.Red else Color.Black
+//                        )
+//                    }
+//                }
             )
         }
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.placeholder_product),
-                    contentDescription = recipeInfo.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    recipeInfo.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-//                Text(
-//                    "${recipeInfo.prepTime} mins • ${"Medium"} • ${recipeInfo.calories.toInt()} cal",
-//                    style = MaterialTheme.typography.titleSmall,
-//                    modifier = Modifier.fillMaxWidth(),
-//                    color = Color.Gray
-//                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "Description",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    recipeInfo.description,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    maxLines = 3,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "Ingredients",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                recipeInfo.ingredients.forEach { ingredient ->
-                    IngredientItem(ingredient)
-                }
+        RecipeDetailContent(
+            recipeInfo = recipeInfo,
+            padding = padding,
+            onVideoClicked = { }
+        )
+    }
+}
 
-                Button(
-                    onClick = {  },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Watch Videos")
-                }
+@Composable
+fun RecipeDetailContent(
+    recipeInfo: RecipeInfo,
+    padding: PaddingValues,
+    onVideoClicked: (String) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .padding(padding)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            AsyncImage(
+                model = recipeInfo.imageUrl,
+                contentDescription = recipeInfo.title,
+                error = painterResource(R.drawable.placeholder_product),
+                placeholder = painterResource(R.drawable.placeholder_product),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                recipeInfo.title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 1
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Category,
+                    contentDescription = "icon category",
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                )
+                Text(
+                    recipeInfo.category,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = Color.Gray,
+                )
+                Icon(
+                    imageVector = Icons.Filled.Map,
+                    contentDescription = "icon area",
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                )
+                Text(
+                    recipeInfo.area,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    color = Color.Gray,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Instructions",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                recipeInfo.instructions,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                maxLines = 3,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Ingredients",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            recipeInfo.ingredients.forEach { ingredient ->
+                IngredientItem(ingredient)
+            }
+
+            Button(
+                onClick = { onVideoClicked(recipeInfo.videoUrl.orEmpty()) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Watch Videos")
             }
         }
     }
@@ -159,17 +200,31 @@ fun IngredientItem(ingredient: IngredientInfo) {
             modifier = Modifier.size(32.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(ingredient.name)
+        Text(ingredient.name, maxLines = 1)
         Spacer(modifier = Modifier.weight(1f))
-        Text(ingredient.amount)
+        Text(ingredient.amount, maxLines = 1)
     }
 }
 
 @Composable
 @Preview(showBackground = true)
 fun DetailScreenPreview() {
-    DetailScreen(
-        onBackPressed = {},
-        onBookmarkToggled = {}
+    RecipeDetailContent(
+        recipeInfo = RecipeInfo(
+            id = "1",
+            title = "Sample Recipe",
+            category = "Category",
+            area = "Area",
+            ingredients = listOf(
+                IngredientInfo("Ingredient 1", "100g"),
+                IngredientInfo("Ingredient 2", "200g")
+            ),
+            isBookmarked = false,
+            videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            imageUrl = "https://www.themealdb.com/images/media/meals/1548772327.jpg",
+            instructions = "Instructions for the recipe"
+        ),
+        padding = PaddingValues(16.dp),
+        onVideoClicked = {}
     )
 }

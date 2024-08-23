@@ -11,8 +11,8 @@ object RecipeInfoEntityMapper : EntityMapper<RecipeInfo, RecipeEntity> {
             idMeal = domain.id,
             strMeal = domain.title,
             strMealThumb = domain.imageUrl.orEmpty(),
-            strCategory = domain.tags,
-            strArea = "",
+            strCategory = domain.category,
+            strArea = domain.area,
             strInstructions = domain.instructions,
             strYoutube = domain.videoUrl.orEmpty(),
             listIngredient = domain.ingredients.map {
@@ -28,10 +28,8 @@ object RecipeInfoEntityMapper : EntityMapper<RecipeInfo, RecipeEntity> {
         return RecipeInfo(
             id = entity.idMeal,
             title = entity.strMeal,
-            prepTime = "",
-            difficulty = "",
-            calories = "",
-            description = "",
+            category = entity.strCategory,
+            area = entity.strArea,
             ingredients = entity.listIngredient.map {
                 IngredientInfo(
                     name = it.strIngredient,
@@ -41,9 +39,6 @@ object RecipeInfoEntityMapper : EntityMapper<RecipeInfo, RecipeEntity> {
             isBookmarked = false,
             videoUrl = entity.strYoutube,
             imageUrl = entity.strMealThumb,
-            rating = null,
-            reviewCount = null,
-            tags = entity.strCategory,
             instructions = entity.strInstructions
         )
     }
