@@ -92,9 +92,9 @@ fun RecipeMainScreen(
                 }
             }
 
-            item {
-                RecipeList()
-            }
+//            item {
+//                RecipeList()
+//            }
         }
     }
 }

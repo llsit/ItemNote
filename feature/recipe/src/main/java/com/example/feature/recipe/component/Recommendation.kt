@@ -44,13 +44,6 @@ fun RecommendationList(
                 modifier = Modifier.padding(bottom = 16.dp),
                 text = "Recommendation"
             )
-            Text(
-                text = "See all",
-                fontSize = 14.sp,
-                color = Color.Green,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.End
-            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyRow(
