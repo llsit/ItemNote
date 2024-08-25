@@ -22,7 +22,6 @@ import com.example.design.ui.ToolbarScreen
 import com.example.feature.recipe.component.BottomNavigationBar
 import com.example.feature.recipe.component.FoodCategories
 import com.example.feature.recipe.component.HeaderLarge
-import com.example.feature.recipe.component.RecipeList
 import com.example.feature.recipe.component.RecommendationList
 import com.example.feature.recipe.component.SearchSection
 

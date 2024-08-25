@@ -83,7 +83,7 @@ fun DetailScreen(
         RecipeDetailContent(
             recipeInfo = recipeInfo,
             padding = padding,
-            onVideoClicked = { }
+//            onVideoClicked = { }
         )
     }
 }
@@ -92,7 +92,7 @@ fun DetailScreen(
 fun RecipeDetailContent(
     recipeInfo: RecipeInfo,
     padding: PaddingValues,
-    onVideoClicked: (String) -> Unit
+//    onVideoClicked: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -191,6 +191,6 @@ fun DetailScreenPreview() {
             instructions = "Instructions for the recipe"
         ),
         padding = PaddingValues(16.dp),
-        onVideoClicked = {}
+//        onVideoClicked = {}
     )
 }
