@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.core.common.navigation.NavigationItem
 import com.example.core.common.navigation.resultHandler
 import com.example.core.data.utils.SharedViewModel
 import com.example.core.common.utils.UiState
@@ -121,7 +122,7 @@ fun ShopListScreen(
                     selectedItemModel?.let {
                         sharedViewModel.updateSelectedItemModel(it)
                     }
-                    navController.navigate(com.example.core.common.navigation.NavigationItem.EditItem.route)
+                    navController.navigate(NavigationItem.EditItem.route)
                 },
                 onBackClick = {
                     navController.popBackStack()

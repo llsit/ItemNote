@@ -1,5 +1,6 @@
 package com.example.core.data.repository
 
+import com.example.core.common.di.IoDispatcher
 import com.example.core.data.mapper.asRecipeEntity
 import com.example.core.database.dao.RecipeInfoDao
 import com.example.core.database.dao.RecommendDao
@@ -10,6 +11,7 @@ import com.example.core.model.data.RecipeInfo
 import com.example.core.model.response.MealResponse
 import com.example.core.model.response.RecipeCategoryResponse
 import com.example.core.network.service.ApiService
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -25,7 +27,8 @@ interface RecipeRepository {
 class RecipeRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val recommendDao: RecommendDao,
-    private val recipeInfoDao: RecipeInfoDao
+    private val recipeInfoDao: RecipeInfoDao,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : RecipeRepository {
     override suspend fun getCategory(): Flow<RecipeCategoryResponse> = flow {
         val response = apiService.getCategory()
@@ -38,7 +41,7 @@ class RecipeRepositoryImpl @Inject constructor(
         } else {
             error("Get Recipe Category Error")
         }
-    }
+    }.flowOn(ioDispatcher)
 
     override suspend fun getRecommendRecipe(): Flow<List<MealResponse>> = flow {
         val dao = recommendDao.getAll()
@@ -57,7 +60,7 @@ class RecipeRepositoryImpl @Inject constructor(
         } else {
             emit(dao.toMealResponse())
         }
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(ioDispatcher)
 
     override suspend fun getRecipeDetail(id: String): Flow<RecipeInfo> = flow {
         val dao = recipeInfoDao.getRecipeInfoById(id)
@@ -72,6 +75,6 @@ class RecipeRepositoryImpl @Inject constructor(
         } else {
             emit(dao.asRecipeInfo())
         }
-    }
+    }.flowOn(ioDispatcher)
 
 }

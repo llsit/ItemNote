@@ -1,10 +1,12 @@
 package com.example.feature.note.screen.addItem
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.utils.UiState
+import com.example.core.common.utils.collectWithCheckInternet
 import com.example.core.domain.usecase.note.AddCategoryUseCase
 import com.example.core.domain.usecase.note.AddItemUseCase
 import com.example.core.domain.usecase.note.EditItemUseCase
@@ -101,18 +103,18 @@ class AddEditItemViewModel @Inject constructor(
         }
     }
 
-    fun checkAddEditItem() {
+    fun checkAddEditItem(context: Context) {
         checkErrorState()
         if (name.isNotEmpty() && category != null) {
             if (screenMode.value is AddEditItemMode.Add) {
-                addItem()
+                addItem(context)
             } else {
-                editItem()
+                editItem(context)
             }
         }
     }
 
-    private fun editItem() = viewModelScope.launch {
+    private fun editItem(context: Context) = viewModelScope.launch {
         editItemUseCase.editItem(name, imageUri, category!!, itemModel!!)
             .onStart { _uiStateEditItem.value = UiState.Loading }
             .catch { _uiStateEditItem.value = UiState.Error(it.message.toString()) }
@@ -121,20 +123,26 @@ class AddEditItemViewModel @Inject constructor(
             }
     }
 
-    private fun addItem() = viewModelScope.launch {
+    private fun addItem(context: Context) = viewModelScope.launch {
         addItemUseCase.addItem(name, imageUri, category!!)
             .onStart { _uiStateAddItem.value = UiState.Loading }
             .catch { _uiStateAddItem.value = UiState.Error(it.message.toString()) }
-            .collect { _uiStateAddItem.value = UiState.Success(it) }
+            .collectWithCheckInternet(
+                context = context,
+                onNoInternet = { onNoInternet() },
+                onCollect = { _uiStateAddItem.value = UiState.Success(it) }
+            )
     }
 
-    fun addCategory(newCategory: String) = viewModelScope.launch {
+    fun addCategory(newCategory: String, context: Context) = viewModelScope.launch {
         addCategoryUseCase.addCategory(newCategory)
             .onStart { _uiStateAddCategory.value = UiState.Loading }
             .catch { _uiStateAddCategory.value = UiState.Error(it.message.toString()) }
-            .collect {
-                _uiStateAddCategory.value = UiState.Success(Unit)
-            }
+            .collectWithCheckInternet(
+                context = context,
+                onNoInternet = { onNoInternet() },
+                onCollect = { _uiStateAddCategory.value = UiState.Success(Unit) }
+            )
     }
 
     private fun checkErrorState() {

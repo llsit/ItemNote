@@ -1,6 +1,7 @@
 package com.example.core.data.repository
 
 import android.net.Uri
+import com.example.core.common.di.IoDispatcher
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
 import com.example.core.common.utils.PreferenceManager
@@ -10,8 +11,12 @@ import com.example.core.model.data.toMap
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -28,7 +33,8 @@ interface ItemRepository {
 class ItemRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val preferenceManager: PreferenceManager,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ItemRepository {
     override fun addItem(data: ItemModel): Flow<Unit> = flow {
         runCatching {
@@ -42,21 +48,30 @@ class ItemRepositoryImpl @Inject constructor(
         }.onFailure { e ->
             error(e.message.toString())
         }
-    }
+    }.flowOn(ioDispatcher)
 
-    override fun getItem(): Flow<List<ItemModel>> = flow {
-        runCatching {
-            val snapshot = firestore.collection(FIREBASE_ITEMS_COLLECTION)
-                .document(preferenceManager.getUserId() ?: "No User ID")
-                .collection(FIREBASE_ITEM_COLLECTION)
-                .get().await()
-            snapshot.documents.mapNotNull { it.toObject<ItemModel>() }
-        }.onSuccess {
-            emit(it)
-        }.onFailure { e ->
-            error(e.message.toString())
+    override fun getItem(): Flow<List<ItemModel>> = callbackFlow {
+        val userId = preferenceManager.getUserId() ?: "No User ID"
+
+        val listenerRegistration = firestore.collection(FIREBASE_ITEMS_COLLECTION)
+            .document(userId)
+            .collection(FIREBASE_ITEM_COLLECTION)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null) {
+                    val items = snapshot.documents.mapNotNull { it.toObject(ItemModel::class.java) }
+                    trySend(items)
+                }
+            }
+
+        awaitClose {
+            listenerRegistration.remove()
         }
-    }
+    }.flowOn(ioDispatcher)
 
     override fun getItemById(itemId: String): Flow<UiState<ItemModel>> = flow {
         runCatching {
@@ -70,7 +85,7 @@ class ItemRepositoryImpl @Inject constructor(
         }.onFailure {
             emit(UiState.Error(it.message.toString()))
         }
-    }
+    }.flowOn(ioDispatcher)
 
     override fun uploadImage(path: String): Flow<String> = flow {
         runCatching {
@@ -84,7 +99,7 @@ class ItemRepositoryImpl @Inject constructor(
         }.onFailure {
             error("Upload Image Error")
         }
-    }
+    }.flowOn(ioDispatcher)
 
     override fun getItemByCategory(categoryId: String): Flow<List<ItemModel>> = flow {
         runCatching {
@@ -99,7 +114,7 @@ class ItemRepositoryImpl @Inject constructor(
         }.onFailure {
             error(it.message.toString())
         }
-    }
+    }.flowOn(ioDispatcher)
 
     override fun deleteItem(itemId: String): Flow<UiState<Unit>> = flow {
         runCatching {
@@ -113,7 +128,7 @@ class ItemRepositoryImpl @Inject constructor(
         }.onFailure {
             emit(UiState.Error(it.message.toString()))
         }
-    }
+    }.flowOn(ioDispatcher)
 
     override fun editItem(data: ItemModel): Flow<Unit> = flow {
         runCatching {
@@ -127,5 +142,5 @@ class ItemRepositoryImpl @Inject constructor(
         }.onFailure {
             error(it.message.toString())
         }
-    }
+    }.flowOn(ioDispatcher)
 }

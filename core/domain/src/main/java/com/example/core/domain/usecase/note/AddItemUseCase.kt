@@ -1,11 +1,17 @@
 package com.example.core.domain.usecase.note
 
+import android.content.Context
 import com.example.core.data.repository.ItemRepository
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
@@ -15,6 +21,7 @@ interface AddItemUseCase {
 }
 
 class AddItemUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val itemRepository: ItemRepository
 ) : AddItemUseCase {
     override fun addItem(
@@ -40,6 +47,7 @@ class AddItemUseCaseImpl @Inject constructor(
                 emit(it)
             }
         } catch (e: Exception) {
+            Timber.e(e.message)
             error(e.message ?: "Unknown error occurred")
         }
     }

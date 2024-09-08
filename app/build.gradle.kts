@@ -32,6 +32,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
+        }
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
         }
     }
 
@@ -64,6 +69,7 @@ dependencies {
     implementation(projects.core.design)
     implementation(projects.core.data)
     implementation(projects.core.common)
+    implementation(libs.timber)
 
     // feature
     implementation(projects.feature.recipe)

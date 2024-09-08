@@ -22,7 +22,7 @@ import dagger.hilt.components.SingletonComponent
 internal interface DataModule {
 
     @Binds
-    fun bindGetRecipeCategoryRepository(repository: RecipeRepositoryImpl): RecipeRepository
+    fun bindGetRecipeRepository(repository: RecipeRepositoryImpl): RecipeRepository
 
     @Binds
     fun bindItemRepository(repository: ItemRepositoryImpl): ItemRepository

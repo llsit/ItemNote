@@ -22,6 +22,9 @@ open class BaseViewModel @Inject constructor(
     private val _uiStateCategory = MutableStateFlow<UiState<List<CategoryModel>>>(UiState.Idle)
     val uiStateCategory: StateFlow<UiState<List<CategoryModel>>> = _uiStateCategory.asStateFlow()
 
+    private val _uiNoInternet = MutableStateFlow(false)
+    val uiNoInternet: StateFlow<Boolean> = _uiNoInternet.asStateFlow()
+
     fun getCategory() = viewModelScope.launch {
         getCategoryUseCase.getCategory()
             .onStart { _uiStateCategory.value = UiState.Loading }
@@ -29,5 +32,13 @@ open class BaseViewModel @Inject constructor(
             .collect {
                 _uiStateCategory.value = UiState.Success(it)
             }
+    }
+
+    fun onNoInternet() {
+        _uiNoInternet.value = true
+    }
+
+    fun updateNoInternet() {
+        _uiNoInternet.value = false
     }
 }

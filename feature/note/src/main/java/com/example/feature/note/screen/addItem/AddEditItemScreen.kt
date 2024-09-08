@@ -69,6 +69,7 @@ import com.example.core.common.utils.UiState
 import com.example.core.data.utils.SharedViewModel
 import com.example.core.design.R
 import com.example.design.ui.Loading
+import com.example.design.ui.NoInternetDialog
 import com.example.design.ui.TextFieldComponent
 import com.example.design.ui.ToolbarScreen
 import com.example.feature.note.component.AddCategoryDialog
@@ -97,9 +98,18 @@ fun AddEditItemScreen(
     val uiStateAddCategory by viewModel.uiStateAddCategory.collectAsState()
     val editItemState by viewModel.uiStateEditItem.collectAsState()
     val itemModel by sharedViewModel.selectedItem.collectAsState()
+    val uiNoInternet by viewModel.uiNoInternet.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.setScreenMode(mode, itemModel)
+    }
+
+    if (uiNoInternet) {
+        NoInternetDialog(showDialog) {
+            showDialog = it
+            viewModel.updateNoInternet()
+        }
     }
 
     when (uiStateAddCategory) {
@@ -159,7 +169,6 @@ fun AddEditItemScreen(
         else -> Unit
     }
 
-
     Scaffold(
         topBar = {
             ToolbarScreen(
@@ -194,9 +203,6 @@ fun AddEditItemScreen(
             viewModel = viewModel,
             isTextFieldError = errorState.contains(AddEditItemErrorState.EmptyName),
             showErrorCategory = errorState.contains(AddEditItemErrorState.EmptyCategory),
-            onSelectImage = {
-                viewModel.onImageUriChange(it.toString())
-            },
             onDismiss = {
                 navController.popBackStack()
             }
@@ -211,8 +217,7 @@ fun AddItemComponent(
     viewModel: AddEditItemViewModel,
     isTextFieldError: Boolean,
     showErrorCategory: Boolean,
-    onSelectImage: (Uri) -> Unit,
-    onDismiss: () -> Unit = {}
+    onDismiss: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     var showDialog by remember { mutableStateOf(false) }
@@ -222,7 +227,7 @@ fun AddItemComponent(
         modifier.verticalScroll(rememberScrollState()),
     ) {
         ImageSection(
-            onSelectImage = { onSelectImage(it) },
+            onSelectImage = { viewModel.onImageUriChange(it.toString()) },
             imageUri = viewModel.imageUri,
             onClickClearImage = { viewModel.onImageUriChange("") },
             context = context
@@ -289,7 +294,7 @@ fun AddItemComponent(
                 }
                 Button(onClick = {
                     focusManager.clearFocus()
-                    viewModel.checkAddEditItem()
+                    viewModel.checkAddEditItem(context = context)
                 }) {
                     Text("Save")
                 }
@@ -307,7 +312,7 @@ fun AddItemComponent(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onAddCategory = { newCategory ->
-                viewModel.addCategory(newCategory)
+                viewModel.addCategory(newCategory, context)
             }
         )
     }
