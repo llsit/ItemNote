@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.utils.UiState
-import com.example.core.common.utils.collectWithCheckInternet
 import com.example.core.domain.usecase.note.AddCategoryUseCase
 import com.example.core.domain.usecase.note.AddItemUseCase
 import com.example.core.domain.usecase.note.EditItemUseCase
@@ -127,22 +126,18 @@ class AddEditItemViewModel @Inject constructor(
         addItemUseCase.addItem(name, imageUri, category!!)
             .onStart { _uiStateAddItem.value = UiState.Loading }
             .catch { _uiStateAddItem.value = UiState.Error(it.message.toString()) }
-            .collectWithCheckInternet(
-                context = context,
-                onNoInternet = { onNoInternet() },
-                onCollect = { _uiStateAddItem.value = UiState.Success(it) }
-            )
+            .collect {
+                _uiStateAddItem.value = UiState.Success(it)
+            }
     }
 
     fun addCategory(newCategory: String, context: Context) = viewModelScope.launch {
         addCategoryUseCase.addCategory(newCategory)
             .onStart { _uiStateAddCategory.value = UiState.Loading }
             .catch { _uiStateAddCategory.value = UiState.Error(it.message.toString()) }
-            .collectWithCheckInternet(
-                context = context,
-                onNoInternet = { onNoInternet() },
-                onCollect = { _uiStateAddCategory.value = UiState.Success(Unit) }
-            )
+            .collect {
+                _uiStateAddCategory.value = UiState.Success(Unit)
+            }
     }
 
     private fun checkErrorState() {
