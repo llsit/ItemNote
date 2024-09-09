@@ -1,4 +1,4 @@
-package com.example.feature.recipe.component
+package com.example.design.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme

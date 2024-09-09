@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.RecommendationModel
+import com.example.design.ui.HeaderMedium
 
 @Composable
 fun RecommendationList(
