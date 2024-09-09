@@ -24,6 +24,7 @@ import com.example.feature.recipe.component.FoodCategories
 import com.example.feature.recipe.component.HeaderLarge
 import com.example.feature.recipe.component.RecommendationList
 import com.example.feature.recipe.component.SearchSection
+import timber.log.Timber
 
 @Composable
 fun RecipeMainScreen(
@@ -40,7 +41,7 @@ fun RecipeMainScreen(
 
         is RecipeCategoryState.Error -> {
             val error = state as RecipeCategoryState.Error
-            Log.d("NutZa", "Error: ${error.message}")
+            Timber.d("Error: ${error.message}")
         }
 
         else -> Unit
@@ -58,7 +59,7 @@ fun RecipeMainScreen(
             )
         },
         bottomBar = {
-            BottomNavigationBar()
+//            BottomNavigationBar()
         }
     ) { innerPadding ->
         LazyColumn(
@@ -82,7 +83,9 @@ fun RecipeMainScreen(
             }
 
             item {
-                FoodCategories(categories)
+                FoodCategories(categories) {
+
+                }
             }
 
             item {
