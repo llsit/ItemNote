@@ -179,7 +179,6 @@ fun ShopListScreen(
 
         if (showBottomSheet) {
             AddShopDialog(
-                scope = scope,
                 onClick = {
                     showBottomSheet = it
                     shopListViewModel.getShop()
@@ -206,7 +205,6 @@ fun ShopListScreen(
         if (showUpdateDialog.value) {
             AddShopDialog(
                 model = shopModel,
-                scope = scope,
                 onUpdate = {
                     showUpdateDialog.value = it
                     shopListViewModel.getShop()

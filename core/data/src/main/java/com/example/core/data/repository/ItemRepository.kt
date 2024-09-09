@@ -74,7 +74,7 @@ class ItemRepositoryImpl @Inject constructor(
     }.flowOn(ioDispatcher)
 
     override fun getItemById(itemId: String): Flow<UiState<ItemModel>> = callbackFlow {
-        val listener = firestore.collection(FIREBASE_ITEMS_COLLECTION)
+        firestore.collection(FIREBASE_ITEMS_COLLECTION)
             .document(preferenceManager.getUserId() ?: "No User ID")
             .collection(FIREBASE_ITEM_COLLECTION)
             .document(itemId)

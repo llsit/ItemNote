@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.core.common.utils.UiState
@@ -39,14 +40,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddShopDialog(
     model: ShopModel? = null,
-    scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: ShopListViewModel = hiltViewModel(),
     onClick: (Boolean) -> Unit = {},
     onUpdate: (Boolean) -> Unit = {},
     onDismiss: (Boolean) -> Unit = {}
 ) {
 
-    val focusManager = LocalFocusManager.current
     val state by viewModel.uiStateShop.collectAsState()
     val errorName by viewModel.nameState.collectAsState()
     val errorLocation by viewModel.locationState.collectAsState()
@@ -72,76 +71,133 @@ fun AddShopDialog(
     BasicAlertDialog(
         onDismissRequest = {}
     ) {
-        Surface(
-            modifier = Modifier,
-            color = MaterialTheme.colorScheme.surface
+        AddShopDialogSection(
+            model = model,
+            shopName = viewModel.name,
+            shopLocation = viewModel.location,
+            price = viewModel.price,
+            onUpdateName = { viewModel.updateName(it) },
+            onUpdateLocation = { viewModel.updateLocation(it) },
+            onUpdatePrice = { viewModel.updatePrice(it) },
+            errorName = errorName,
+            errorLocation = errorLocation,
+            errorPrice = errorPrice,
+            onClick = {
+                onClick(it)
+                viewModel.addShop()
+            },
+            onUpdate = {
+                onUpdate(it)
+                viewModel.updateShop(model)
+            },
+            onDismiss = {
+                onDismiss(it)
+                viewModel.clearState()
+            },
+        )
+    }
+}
+
+@Composable
+fun AddShopDialogSection(
+    model: ShopModel?,
+    scope: CoroutineScope = rememberCoroutineScope(),
+    shopName: String,
+    shopLocation: String,
+    price: String,
+    errorName: String,
+    errorLocation: String,
+    errorPrice: String,
+    onUpdateName: (String) -> Unit = {},
+    onUpdateLocation: (String) -> Unit = {},
+    onUpdatePrice: (String) -> Unit = {},
+    onClick: (Boolean) -> Unit = {},
+    onUpdate: (Boolean) -> Unit = {},
+    onDismiss: (Boolean) -> Unit = {},
+) {
+    val focusManager = LocalFocusManager.current
+
+    Surface(
+        modifier = Modifier,
+        color = MaterialTheme.colorScheme.surface
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            Text(
+                text = "Enter your shop details",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            TextFieldComponent(
+                value = shopName,
+                onValueChange = { onUpdateName(it) },
+                label = "Shop Name",
+                modifier = Modifier.fillMaxWidth(),
+                isError = errorName.isNotEmpty(),
+                errorMessage = errorName.ifEmpty { "Shop Name cannot be empty" }
+            )
+            TextFieldComponent(
+                value = shopLocation,
+                onValueChange = { onUpdateLocation(it) },
+                label = "Shop Location",
+                modifier = Modifier.fillMaxWidth(),
+                isError = errorLocation.isNotEmpty(),
+                errorMessage = errorLocation.ifEmpty { "Shop Location cannot be empty" }
+            )
+            TextFieldComponent(
+                value = price,
+                onValueChange = { price ->
+                    price.toDoubleOrNull()?.let { onUpdatePrice(price) }
+                },
+                label = "Price",
+                modifier = Modifier.fillMaxWidth(),
+                isLast = true,
+                isError = errorPrice.isNotEmpty(),
+                errorMessage = errorPrice.ifEmpty { "Price cannot be lower than 0" },
+                keyboardType = KeyboardType.Decimal
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                TextFieldComponent(
-                    value = viewModel.name,
-                    onValueChange = viewModel::updateName,
-                    label = "Name",
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = errorName.isNotEmpty(),
-                    errorMessage = errorName.ifEmpty { "Name cannot be empty" }
-                )
-                TextFieldComponent(
-                    value = viewModel.location,
-                    onValueChange = viewModel::updateLocation,
-                    label = "Location",
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = errorLocation.isNotEmpty(),
-                    errorMessage = errorLocation.ifEmpty { "Location cannot be empty" }
-                )
-                TextFieldComponent(
-                    value = viewModel.price,
-                    onValueChange = { price ->
-                        price.toDoubleOrNull()?.let { viewModel.updatePrice(price) }
-                    },
-                    label = "Price",
-                    modifier = Modifier.fillMaxWidth(),
-                    isLast = true,
-                    isError = errorPrice.isNotEmpty(),
-                    errorMessage = errorPrice.ifEmpty { "Price cannot be lower than 0" },
-                    keyboardType = KeyboardType.Decimal
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(onClick = {
-                        scope.launch { onDismiss(false) }.invokeOnCompletion {
-                            onDismiss(false)
-                            viewModel.clearState()
-                        }
-                    }) {
-                        Icon(Icons.Filled.Close, "closeIcon")
-                    }
-                    Button(onClick = {
+                Button(onClick = {
+                    scope.launch { onDismiss(false) }
+                }) {
+                    Icon(Icons.Filled.Close, "closeIcon")
+                }
+                Button(onClick = {
+                    scope.launch {
                         focusManager.clearFocus()
                         if (model == null) {
-                            scope.launch { onClick(false) }.invokeOnCompletion {
-                                onClick(false)
-                                viewModel.addShop()
-                            }
+                            onClick(false)
                         } else {
-                            scope.launch { onUpdate(false) }.invokeOnCompletion {
-                                onUpdate(false)
-                                viewModel.updateShop(model)
-                            }
+                            onUpdate(false)
                         }
-                    }) {
-                        Text("Save")
                     }
+                }) {
+                    Text("Save")
                 }
             }
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun AddShopDialogPreview() {
+    AddShopDialogSection(
+        model = null,
+        scope = rememberCoroutineScope(),
+        errorName = "",
+        errorLocation = "",
+        errorPrice = "",
+        shopName = "",
+        shopLocation = "",
+        price = ""
+    )
 }
