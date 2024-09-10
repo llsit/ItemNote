@@ -21,6 +21,7 @@ interface RecipeRepository {
     suspend fun getCategory(): Flow<RecipeCategoryResponse>
     suspend fun getRecommendRecipe(): Flow<List<MealResponse>>
     suspend fun getRecipeDetail(id: String): Flow<RecipeInfo>
+    suspend fun getRecipeByCategory(category: String): Flow<List<MealResponse>>
 }
 
 class RecipeRepositoryImpl @Inject constructor(
@@ -73,6 +74,17 @@ class RecipeRepositoryImpl @Inject constructor(
             }
         } else {
             emit(dao.asRecipeInfo())
+        }
+    }.flowOn(ioDispatcher)
+
+    override suspend fun getRecipeByCategory(category: String): Flow<List<MealResponse>> = flow {
+        val response = apiService.getRecipeByCategory(category)
+        if (response.isSuccessful) {
+            response.body()?.let {
+                emit(it.meals.toList())
+            }
+        } else {
+            error("Get Recipe By Category Error")
         }
     }.flowOn(ioDispatcher)
 

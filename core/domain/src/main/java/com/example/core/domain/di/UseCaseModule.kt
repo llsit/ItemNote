@@ -1,13 +1,17 @@
 package com.example.core.domain.di
 
+import com.example.core.domain.usecase.authen.CheckUserLoginUseCase
+import com.example.core.domain.usecase.authen.CheckUserLoginUseCaseImpl
+import com.example.core.domain.usecase.authen.LoginUseCase
+import com.example.core.domain.usecase.authen.LoginUseCaseImpl
+import com.example.core.domain.usecase.authen.RegisterUseCase
+import com.example.core.domain.usecase.authen.RegisterUseCaseImpl
 import com.example.core.domain.usecase.note.AddCategoryUseCase
 import com.example.core.domain.usecase.note.AddCategoryUseCaseImpl
 import com.example.core.domain.usecase.note.AddItemUseCase
 import com.example.core.domain.usecase.note.AddItemUseCaseImpl
 import com.example.core.domain.usecase.note.AddShopUseCase
 import com.example.core.domain.usecase.note.AddShopUseCaseImpl
-import com.example.core.domain.usecase.authen.CheckUserLoginUseCase
-import com.example.core.domain.usecase.authen.CheckUserLoginUseCaseImpl
 import com.example.core.domain.usecase.note.DeleteItemUseCase
 import com.example.core.domain.usecase.note.DeleteItemUseCaseImpl
 import com.example.core.domain.usecase.note.DeleteShopUseCase
@@ -24,18 +28,16 @@ import com.example.core.domain.usecase.note.GetItemsByCategory
 import com.example.core.domain.usecase.note.GetItemsByCategoryImpl
 import com.example.core.domain.usecase.note.GetMinShopUseCase
 import com.example.core.domain.usecase.note.GetMinShopUseCaseImpl
+import com.example.core.domain.usecase.note.GetShopUseCase
+import com.example.core.domain.usecase.note.GetShopUseCaseImpl
+import com.example.core.domain.usecase.note.UpdateShopUseCase
+import com.example.core.domain.usecase.note.UpdateShopUseCaseImpl
+import com.example.core.domain.usecase.recipe.GetRecipeByCategoryUseCase
+import com.example.core.domain.usecase.recipe.GetRecipeByCategoryUseCaseImpl
 import com.example.core.domain.usecase.recipe.GetRecipeCategoryUseCase
 import com.example.core.domain.usecase.recipe.GetRecipeCategoryUseCaseImpl
 import com.example.core.domain.usecase.recipe.GetRecommendRecipeUseCase
 import com.example.core.domain.usecase.recipe.GetRecommendRecipeUseCaseImpl
-import com.example.core.domain.usecase.note.GetShopUseCase
-import com.example.core.domain.usecase.note.GetShopUseCaseImpl
-import com.example.core.domain.usecase.authen.LoginUseCase
-import com.example.core.domain.usecase.authen.LoginUseCaseImpl
-import com.example.core.domain.usecase.authen.RegisterUseCase
-import com.example.core.domain.usecase.authen.RegisterUseCaseImpl
-import com.example.core.domain.usecase.note.UpdateShopUseCase
-import com.example.core.domain.usecase.note.UpdateShopUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -134,5 +136,11 @@ object UseCaseModule {
     fun provideGetRecommendRecipeUseCase(useCase: GetRecommendRecipeUseCaseImpl): GetRecommendRecipeUseCase {
         return useCase
     }
+
+    @Provides
+    fun provideGetRecipeByCategoryUseCase(useCase: GetRecipeByCategoryUseCaseImpl): GetRecipeByCategoryUseCase {
+        return useCase
+    }
+
 
 }
