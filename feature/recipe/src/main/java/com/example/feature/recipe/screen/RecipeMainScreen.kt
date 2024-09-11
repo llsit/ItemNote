@@ -1,6 +1,5 @@
 package com.example.feature.recipe.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.design.ui.HeaderLarge
 import com.example.design.ui.Loading
 import com.example.design.ui.ToolbarScreen
-import com.example.feature.recipe.component.BottomNavigationBar
 import com.example.feature.recipe.component.FoodCategories
-import com.example.feature.recipe.component.HeaderLarge
 import com.example.feature.recipe.component.RecommendationList
 import com.example.feature.recipe.component.SearchSection
 import timber.log.Timber
@@ -84,7 +82,7 @@ fun RecipeMainScreen(
 
             item {
                 FoodCategories(categories) {
-
+                    navController.navigate("categoryList/${it}")
                 }
             }
 

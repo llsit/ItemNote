@@ -76,6 +76,7 @@ dependencies {
     implementation(projects.feature.detail)
     implementation(projects.feature.note)
     implementation(projects.feature.authentication)
+    implementation(projects.feature.categorydetail)
 
     // Di
     implementation(libs.hilt.android)

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.RecipeCategoryModel
+import com.example.design.ui.HeaderMedium
 
 @Composable
 fun FoodCategories(categories: List<RecipeCategoryModel>, onClickItem: (String) -> Unit = {}) {

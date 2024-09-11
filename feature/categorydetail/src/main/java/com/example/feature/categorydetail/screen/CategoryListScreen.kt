@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -34,23 +36,22 @@ import com.example.design.ui.ToolbarScreen
 
 @Composable
 fun CategoryListScreen(
-    viewModel: CategoryListViewModel = hiltViewModel()
+    viewModel: CategoryListViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit = {}
 ) {
-//    val recipes by viewModel.recipes.collectAsState(initial = emptyList())
-
-    val recipes = listOf(
-        RecipeInfo("Recipe 1", "https://example.com/recipe1.jpg"),
-        RecipeInfo("Recipe 2", "https://example.com/recipe2.jpg"),
-        RecipeInfo("Recipe 3", "https://example.com/recipe3.jpg")
-    )
+    val recipes by viewModel.recipes.collectAsState()
+    val categoryName = viewModel.categoryName
 
     Scaffold(
         topBar = {
-            ToolbarScreen(title = "Category", isBack = true)
+            ToolbarScreen(title = "Category", isBack = true) {
+                onBackPressed()
+            }
         }
     ) { paddingValues ->
         RecipeList(
             recipes = recipes,
+            categoryName = categoryName,
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
@@ -61,12 +62,13 @@ fun CategoryListScreen(
 @Composable
 fun RecipeList(
     recipes: List<RecipeInfo>,
+    categoryName: String,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
     ) {
-        HeaderLarge(text = "Recipes", modifier = Modifier.padding(8.dp))
+        HeaderLarge(text = categoryName, modifier = Modifier.padding(8.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
         ) {

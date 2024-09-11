@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.core.common.navigation.NavigationItem
 import com.example.detail.screen.DetailScreen
+import com.example.feature.categorydetail.screen.CategoryListScreen
 import com.example.feature.note.screen.shop.ShopListScreen
 import com.example.feature.recipe.screen.RecipeMainScreen
 
@@ -36,4 +37,18 @@ fun NavGraphBuilder.recipeNavigation(
         }
     }
 
+    composable(
+        "categoryList/{categoryName}",
+        arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+    ) {
+        AnimatedVisibility(
+            visible = true,
+            enter = slideInHorizontally(animationSpec = tween(300)),
+            exit = slideOutHorizontally(animationSpec = tween(300))
+        ) {
+            CategoryListScreen(
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
+    }
 }
