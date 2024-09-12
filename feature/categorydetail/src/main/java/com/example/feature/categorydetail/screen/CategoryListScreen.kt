@@ -37,7 +37,8 @@ import com.example.design.ui.ToolbarScreen
 @Composable
 fun CategoryListScreen(
     viewModel: CategoryListViewModel = hiltViewModel(),
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
+    onClick: (String) -> Unit = {}
 ) {
     val recipes by viewModel.recipes.collectAsState()
     val categoryName = viewModel.categoryName
@@ -54,7 +55,8 @@ fun CategoryListScreen(
             categoryName = categoryName,
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxSize(),
+            onClick
         )
     }
 }
@@ -63,7 +65,8 @@ fun CategoryListScreen(
 fun RecipeList(
     recipes: List<RecipeInfo>,
     categoryName: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (String) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -73,7 +76,9 @@ fun RecipeList(
             columns = GridCells.Fixed(2),
         ) {
             items(recipes) { recipe ->
-                RecipeListItem(recipe.imageUrl.orEmpty(), recipe.title)
+                RecipeListItem(recipe.imageUrl.orEmpty(), recipe.title) {
+                    onClick(recipe.id)
+                }
             }
         }
     }
@@ -83,11 +88,12 @@ fun RecipeList(
 fun RecipeListItem(
     mealThumb: String,
     title: String,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .aspectRatio(1f)
-            .clickable { /* Navigate to recipe details */ }
+            .clickable { onClick() }
             .padding(8.dp)
     ) {
         Box(
@@ -104,7 +110,7 @@ fun RecipeListItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
