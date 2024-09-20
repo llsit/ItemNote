@@ -12,6 +12,8 @@ import com.example.core.data.repository.RecipeRepository
 import com.example.core.data.repository.RecipeRepositoryImpl
 import com.example.core.data.repository.ShopRepository
 import com.example.core.data.repository.ShopRepositoryImpl
+import com.example.core.data.utils.DataStoreManager
+import com.example.core.data.utils.DataStoreManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -38,4 +40,8 @@ internal interface DataModule {
 
     @Binds
     fun bindCategoryRepository(repository: CategoryRepositoryImpl): CategoryRepository
+
+    @Binds
+    fun bindDataStoreManager(manager: DataStoreManagerImpl): DataStoreManager
+
 }
