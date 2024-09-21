@@ -4,8 +4,8 @@ import android.net.Uri
 import com.example.core.common.di.IoDispatcher
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEMS_COLLECTION
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_ITEM_COLLECTION
-import com.example.core.common.utils.PreferenceManager
 import com.example.core.common.utils.UiState
+import com.example.core.data.utils.DataStoreManager
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.toMap
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
@@ -30,13 +31,13 @@ interface ItemRepository {
 
 class ItemRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val preferenceManager: PreferenceManager,
+    private val dataStoreManager: DataStoreManager,
     private val storage: FirebaseStorage,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ItemRepository {
     override fun addItem(data: ItemModel): Flow<Unit> = callbackFlow {
         firestore.collection(FIREBASE_ITEMS_COLLECTION)
-            .document(preferenceManager.getUserId() ?: "No User ID")
+            .document(dataStoreManager.getUserId().first())
             .collection(FIREBASE_ITEM_COLLECTION)
             .document(data.id)
             .set(data)
@@ -54,7 +55,7 @@ class ItemRepositoryImpl @Inject constructor(
 
     override fun getItem(): Flow<List<ItemModel>> = callbackFlow {
         val listenerRegistration = firestore.collection(FIREBASE_ITEMS_COLLECTION)
-            .document(preferenceManager.getUserId() ?: "No User ID")
+            .document(dataStoreManager.getUserId().first())
             .collection(FIREBASE_ITEM_COLLECTION)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -75,7 +76,7 @@ class ItemRepositoryImpl @Inject constructor(
 
     override fun getItemById(itemId: String): Flow<UiState<ItemModel>> = callbackFlow {
         firestore.collection(FIREBASE_ITEMS_COLLECTION)
-            .document(preferenceManager.getUserId() ?: "No User ID")
+            .document(dataStoreManager.getUserId().first())
             .collection(FIREBASE_ITEM_COLLECTION)
             .document(itemId)
             .get()
@@ -98,7 +99,11 @@ class ItemRepositoryImpl @Inject constructor(
     override fun uploadImage(path: String): Flow<String> = callbackFlow {
         val storageRef = storage.reference
         val imageRef =
-            storageRef.child("images/${preferenceManager.getUserId()}/${System.currentTimeMillis()}.jpg")
+            storageRef.child(
+                "images/${
+                    dataStoreManager.getUserId().first()
+                }/${System.currentTimeMillis()}.jpg"
+            )
         val uploadImage = imageRef.putFile(Uri.parse(path))
             .addOnSuccessListener {
                 imageRef.downloadUrl.addOnSuccessListener {
@@ -116,7 +121,7 @@ class ItemRepositoryImpl @Inject constructor(
 
     override fun getItemByCategory(categoryId: String): Flow<List<ItemModel>> = callbackFlow {
         firestore.collection(FIREBASE_ITEMS_COLLECTION)
-            .document(preferenceManager.getUserId() ?: "No User ID")
+            .document(dataStoreManager.getUserId().first())
             .collection(FIREBASE_ITEM_COLLECTION)
             .whereEqualTo("categoryModel.id", categoryId)
             .get()
@@ -133,7 +138,7 @@ class ItemRepositoryImpl @Inject constructor(
 
     override fun deleteItem(itemId: String): Flow<UiState<Unit>> = callbackFlow {
         firestore.collection(FIREBASE_ITEMS_COLLECTION)
-            .document(preferenceManager.getUserId() ?: "No User ID")
+            .document(dataStoreManager.getUserId().first())
             .collection(FIREBASE_ITEM_COLLECTION)
             .document(itemId)
             .delete()
@@ -151,7 +156,7 @@ class ItemRepositoryImpl @Inject constructor(
 
     override fun editItem(data: ItemModel): Flow<Unit> = callbackFlow {
         firestore.collection(FIREBASE_ITEMS_COLLECTION)
-            .document(preferenceManager.getUserId() ?: "No User ID")
+            .document(dataStoreManager.getUserId().first())
             .collection(FIREBASE_ITEM_COLLECTION)
             .document(data.id)
             .update(data.toMap())

@@ -1,7 +1,5 @@
 package com.example.core.data.di
 
-import com.example.core.common.utils.PreferenceManager
-import com.example.core.common.utils.PreferenceManagerImpl
 import com.example.core.data.repository.AuthRepository
 import com.example.core.data.repository.AuthRepositoryImpl
 import com.example.core.data.repository.CategoryRepository
@@ -34,9 +32,6 @@ internal interface DataModule {
 
     @Binds
     fun bindAuthRepository(repository: AuthRepositoryImpl): AuthRepository
-
-    @Binds
-    fun bindPreferenceManager(manager: PreferenceManagerImpl): PreferenceManager
 
     @Binds
     fun bindCategoryRepository(repository: CategoryRepositoryImpl): CategoryRepository

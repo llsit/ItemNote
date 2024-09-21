@@ -2,11 +2,13 @@ package com.example.core.data.repository
 
 import com.example.core.common.utils.Constants.Firebase.FIREBASE_USERS_COLLECTION
 import com.example.core.common.utils.UiState
+import com.example.core.data.utils.DataStoreManager
 import com.example.core.model.data.UserModel
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -23,19 +25,19 @@ interface AuthRepository {
 
     fun checkUserLogin(): Boolean
 
-    fun saveCurrentUserId(userId: String)
+    suspend fun saveCurrentUserId(userId: String)
 
     fun logout(): Flow<UiState<Unit>>
 
     fun getDataUser(): Flow<UiState<UserModel>>
 
-    fun getUserID(): String?
+    suspend fun getUserID(): String?
 }
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val preferenceManager: com.example.core.common.utils.PreferenceManager
+    private val dataStoreManager: DataStoreManager,
 ) : AuthRepository {
     override fun loginUser(
         email: String,
@@ -81,15 +83,15 @@ class AuthRepositoryImpl @Inject constructor(
         return firebaseAuth.currentUser != null
     }
 
-    override fun saveCurrentUserId(userId: String) {
-        preferenceManager.saveCurrentUserId(userId)
+    override suspend fun saveCurrentUserId(userId: String) {
+        dataStoreManager.saveCurrentUserId(userId)
     }
 
     override fun logout(): Flow<UiState<Unit>> = flow {
         runCatching {
             firebaseAuth.signOut()
         }.onSuccess {
-            preferenceManager.clearUserId()
+            dataStoreManager.clearUserId()
             emit(UiState.Success(Unit))
         }.onFailure {
 
@@ -113,8 +115,8 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getUserID(): String? {
-        return preferenceManager.getUserId()
+    override suspend fun getUserID(): String? {
+        return dataStoreManager.getUserId().firstOrNull()
     }
 
 }

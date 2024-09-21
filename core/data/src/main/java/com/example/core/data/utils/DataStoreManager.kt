@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 interface DataStoreManager {
     suspend fun saveCurrentUserId(userId: String)
-    fun getUserId(): Flow<String?>
+    fun getUserId(): Flow<String>
     suspend fun clearUserId()
     suspend fun saveCurrentName(name: String)
     fun getName(): Flow<String>
@@ -45,9 +45,9 @@ class DataStoreManagerImpl @Inject constructor(
         }
     }
 
-    override fun getUserId(): Flow<String?> {
+    override fun getUserId(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[USER_ID_KEY]
+            preferences[USER_ID_KEY] ?: "No User ID"
         }
     }
 
