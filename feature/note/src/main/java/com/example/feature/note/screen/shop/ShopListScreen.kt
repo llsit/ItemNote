@@ -37,7 +37,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -55,7 +54,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.core.common.navigation.NavigationItem
 import com.example.core.common.navigation.resultHandler
-import com.example.core.data.utils.SharedViewModel
 import com.example.core.common.utils.UiState
 import com.example.core.design.R
 import com.example.core.model.data.ItemModel
@@ -75,13 +73,11 @@ import java.util.Locale
 fun ShopListScreen(
     navController: NavHostController,
     shopListViewModel: ShopListViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     val showUpdateDialog = remember { mutableStateOf(false) }
     var shopModel by remember { mutableStateOf<ShopModel?>(null) }
-    val scope = rememberCoroutineScope()
     val state by shopListViewModel.uiStateGetShop.collectAsState()
     val selectedItemModel by shopListViewModel.selectedItem.collectAsState()
     val deleteItemState by shopListViewModel.deleteItemState.collectAsState()
@@ -119,14 +115,11 @@ fun ShopListScreen(
                     showDialog = true
                 },
                 onEditClick = {
-                    selectedItemModel?.let {
-                        sharedViewModel.updateSelectedItemModel(it)
-                    }
                     navController.navigate(NavigationItem.EditItem.route)
                 },
                 onBackClick = {
+                    shopListViewModel.clearSelectedItem()
                     navController.popBackStack()
-                    sharedViewModel.clearSelectedItem()
                 }
             )
         },

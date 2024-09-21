@@ -22,7 +22,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.core.common.utils.Constants.Category.HOME
 import com.example.core.common.utils.UiState
-import com.example.core.data.utils.SharedViewModel
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.design.ui.Loading
@@ -35,7 +34,6 @@ fun NoteMainScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel,
     innerPadding: PaddingValues
 ) {
     val category by mainViewModel.uiStateCategory.collectAsState()
@@ -82,7 +80,7 @@ fun NoteMainScreen(
                 ItemListSection(
                     itemList = (state as UiState.Success<List<ItemModel>>).data,
                     onClickListener = {
-                        sharedViewModel.updateSelectedItemModel(it)
+                        mainViewModel.saveItemModel(it)
                         navController.navigate("shopList/${it.id}")
                     }
                 )

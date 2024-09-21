@@ -12,7 +12,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.core.common.navigation.NavigationItem
-import com.example.core.data.utils.SharedViewModel
 import com.example.feature.note.screen.addItem.AddEditItemMode
 import com.example.feature.note.screen.addItem.AddEditItemScreen
 import com.example.feature.note.screen.main.MainScreen
@@ -24,12 +23,10 @@ fun NavController.navigateToMain(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.noteNavigation(
     onNavigateToRecipe: () -> Unit,
     navController: NavHostController,
-    sharedViewModel: SharedViewModel,
 ) {
     composable(route = NavigationItem.Main.route) {
         MainScreen(
             navController = navController,
-            sharedViewModel = sharedViewModel,
             onNavigateToRecipe = onNavigateToRecipe
         )
     }
@@ -44,7 +41,6 @@ fun NavGraphBuilder.noteNavigation(
         ) {
             ShopListScreen(
                 navController = navController,
-                sharedViewModel = sharedViewModel
             )
         }
     }
@@ -57,7 +53,6 @@ fun NavGraphBuilder.noteNavigation(
             AddEditItemScreen(
                 mode = AddEditItemMode.Add,
                 navController = navController,
-                sharedViewModel = sharedViewModel
             )
         }
     }
@@ -70,7 +65,6 @@ fun NavGraphBuilder.noteNavigation(
             AddEditItemScreen(
                 mode = AddEditItemMode.Edit,
                 navController = navController,
-                sharedViewModel = sharedViewModel
             )
         }
     }

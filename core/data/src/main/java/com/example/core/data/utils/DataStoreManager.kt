@@ -1,23 +1,23 @@
 package com.example.core.data.utils
 
-import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.core.model.data.ItemModel
 import com.google.gson.Gson
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
-
-
-val Context.dataStore by preferencesDataStore(name = "app_preferences")
 
 interface DataStoreManager {
     suspend fun saveCurrentUserId(userId: String)
     fun getUserId(): Flow<String?>
     suspend fun clearUserId()
+    suspend fun saveCurrentName(name: String)
+    fun getName(): Flow<String>
+    suspend fun clearName()
 
     suspend fun saveItemModel(model: ItemModel)
     fun getItemModel(): Flow<ItemModel?>
@@ -26,47 +26,70 @@ interface DataStoreManager {
     suspend fun clearAllData()
 }
 
-class DataStoreManagerImpl @Inject constructor(@ApplicationContext private val context: Context) :
-    DataStoreManager {
+class DataStoreManagerImpl @Inject constructor(
+    private val dataStore: DataStore<Preferences>
+) : DataStoreManager {
 
     private val gson = Gson()
 
     companion object {
         val USER_ID_KEY = stringPreferencesKey("user_id")
+        val USER_NAME_KEY = stringPreferencesKey("user_name")
         val ITEM_MODEL_KEY = stringPreferencesKey("item_model")
     }
 
 
     override suspend fun saveCurrentUserId(userId: String) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[USER_ID_KEY] = userId
         }
     }
 
     override fun getUserId(): Flow<String?> {
-        return context.dataStore.data.map { preferences ->
+        return dataStore.data.map { preferences ->
             preferences[USER_ID_KEY]
         }
     }
 
     override suspend fun clearUserId() {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences.remove(USER_ID_KEY)
+        }
+    }
+
+    override suspend fun saveCurrentName(name: String) {
+        dataStore.edit { preferences ->
+            preferences[USER_NAME_KEY] = name
+        }
+    }
+
+    override fun getName(): Flow<String> {
+        return dataStore.data.map { preferences ->
+            preferences[USER_ID_KEY] ?: ""
+        }
+    }
+
+    override suspend fun clearName() {
+        dataStore.edit { preferences ->
+            preferences.remove(USER_NAME_KEY)
         }
     }
 
     override suspend fun saveItemModel(model: ItemModel) {
         val modelJson = gson.toJson(model)
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[ITEM_MODEL_KEY] = modelJson
         }
     }
 
     override fun getItemModel(): Flow<ItemModel?> {
-        return context.dataStore.data.map { preferences ->
+        return dataStore.data.map { preferences ->
             val modelJson = preferences[ITEM_MODEL_KEY]
+            Timber.d("itemModel:1 $modelJson")
             if (modelJson != null) {
-                gson.fromJson(modelJson, ItemModel::class.java)
+                val item = gson.fromJson(modelJson, ItemModel::class.java)
+                Timber.d("itemModel:2 ${item}")
+                item
             } else {
                 null
             }
@@ -74,13 +97,13 @@ class DataStoreManagerImpl @Inject constructor(@ApplicationContext private val c
     }
 
     override suspend fun clearItemModel() {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences.remove(ITEM_MODEL_KEY)
         }
     }
 
     override suspend fun clearAllData() {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences.clear()
         }
     }

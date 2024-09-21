@@ -5,6 +5,7 @@ import com.example.core.common.utils.AuthState
 import com.example.core.common.utils.Constants.Category.HOME
 import com.example.core.common.utils.UiState
 import com.example.core.data.repository.AuthRepository
+import com.example.core.data.utils.DataStoreManager
 import com.example.core.domain.usecase.note.GetCategoryUseCase
 import com.example.core.domain.usecase.note.GetItemUseCase
 import com.example.core.domain.usecase.note.GetItemsByCategory
@@ -23,7 +24,8 @@ class MainViewModel @Inject constructor(
     private val getItemUseCase: GetItemUseCase,
     private val authRepository: AuthRepository,
     getCategoryUseCase: GetCategoryUseCase,
-    private val getItemsByCategory: GetItemsByCategory
+    private val getItemsByCategory: GetItemsByCategory,
+    private val dataStoreManager: DataStoreManager
 ) : BaseViewModel(getCategoryUseCase) {
 
     private val _uiState = MutableStateFlow<UiState<List<ItemModel>>>(UiState.Loading)
@@ -69,5 +71,9 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun saveItemModel(itemModel: ItemModel) = viewModelScope.launch {
+        dataStoreManager.saveItemModel(itemModel)
     }
 }

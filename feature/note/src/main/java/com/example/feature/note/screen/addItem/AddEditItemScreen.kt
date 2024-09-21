@@ -66,7 +66,6 @@ import coil.request.ImageRequest
 import com.example.core.common.image.ImageUriUtils.getTempUri
 import com.example.core.common.navigation.resultHandler
 import com.example.core.common.utils.UiState
-import com.example.core.data.utils.SharedViewModel
 import com.example.core.design.R
 import com.example.design.ui.Loading
 import com.example.design.ui.NoInternetDialog
@@ -87,7 +86,6 @@ fun AddEditItemScreen(
     mode: AddEditItemMode,
     navController: NavHostController = rememberNavController(),
     viewModel: AddEditItemViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
 ) {
@@ -97,12 +95,12 @@ fun AddEditItemScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val uiStateAddCategory by viewModel.uiStateAddCategory.collectAsState()
     val editItemState by viewModel.uiStateEditItem.collectAsState()
-    val itemModel by sharedViewModel.selectedItem.collectAsState()
     val uiNoInternet by viewModel.uiNoInternet.collectAsState()
+    val selectedItem by viewModel.selectedItem.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.setScreenMode(mode, itemModel)
+    LaunchedEffect(selectedItem) {
+        viewModel.setScreenMode(mode)
     }
 
     if (uiNoInternet) {
@@ -175,7 +173,7 @@ fun AddEditItemScreen(
                 title = if (mode is AddEditItemMode.Add) "Add Item" else "Edit Item",
                 true
             ) {
-                sharedViewModel.clearSelectedItem()
+//                viewModel.clearItemModel()
                 navController.popBackStack()
             }
         },
@@ -186,7 +184,7 @@ fun AddEditItemScreen(
                     coroutineScope.launch {
                         delay(1000)
                         snackbarHostState.currentSnackbarData?.dismiss()
-                        sharedViewModel.clearSelectedItem()
+//                        viewModel.clearItemModel()
                         navController.resultHandler<EditResult>("result").setResult(
                             EditResult.SUCCESS
                         )

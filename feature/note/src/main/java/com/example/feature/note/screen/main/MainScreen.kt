@@ -29,11 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.core.common.navigation.NavigationItem
 import com.example.core.common.utils.AuthState
-import com.example.core.data.utils.SharedViewModel
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.ShopModel
-import com.example.core.network.BuildConfig
 import com.example.design.ui.Loading
 import com.example.design.ui.ToolbarScreen
 import com.example.feature.note.component.FloatingButton
@@ -47,7 +45,6 @@ fun MainScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel,
     scope: CoroutineScope = rememberCoroutineScope(),
     onNavigateToRecipe: () -> Unit = {}
 ) {
@@ -102,7 +99,6 @@ fun MainScreen(
                 innerPadding = innerPadding,
                 navController = navController,
                 mainViewModel = mainViewModel,
-                sharedViewModel = sharedViewModel
             )
         }
     }
