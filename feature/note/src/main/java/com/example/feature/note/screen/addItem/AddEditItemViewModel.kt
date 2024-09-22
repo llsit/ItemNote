@@ -109,18 +109,18 @@ class AddEditItemViewModel @Inject constructor(
         }
     }
 
-    fun checkAddEditItem(context: Context) {
+    fun checkAddEditItem() {
         checkErrorState()
         if (name.isNotEmpty() && category != null) {
             if (screenMode.value is AddEditItemMode.Add) {
-                addItem(context)
+                addItem()
             } else {
-                editItem(context)
+                editItem()
             }
         }
     }
 
-    private fun editItem(context: Context) = viewModelScope.launch {
+    private fun editItem() = viewModelScope.launch {
         editItemUseCase.editItem(name, imageUri, category!!, selectedItem.value!!)
             .onStart { _uiStateEditItem.value = UiState.Loading }
             .catch { _uiStateEditItem.value = UiState.Error(it.message.toString()) }
@@ -129,7 +129,7 @@ class AddEditItemViewModel @Inject constructor(
             }
     }
 
-    private fun addItem(context: Context) = viewModelScope.launch {
+    private fun addItem() = viewModelScope.launch {
         addItemUseCase.addItem(name, imageUri, category!!)
             .onStart { _uiStateAddItem.value = UiState.Loading }
             .catch { _uiStateAddItem.value = UiState.Error(it.message.toString()) }
@@ -138,7 +138,7 @@ class AddEditItemViewModel @Inject constructor(
             }
     }
 
-    fun addCategory(newCategory: String, context: Context) = viewModelScope.launch {
+    fun addCategory(newCategory: String) = viewModelScope.launch {
         addCategoryUseCase.addCategory(newCategory)
             .onStart { _uiStateAddCategory.value = UiState.Loading }
             .catch { _uiStateAddCategory.value = UiState.Error(it.message.toString()) }

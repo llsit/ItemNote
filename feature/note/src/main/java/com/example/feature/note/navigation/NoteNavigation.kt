@@ -17,9 +17,6 @@ import com.example.feature.note.screen.addItem.AddEditItemScreen
 import com.example.feature.note.screen.main.MainScreen
 import com.example.feature.note.screen.shop.ShopListScreen
 
-fun NavController.navigateToMain(navOptions: NavOptions? = null) =
-    navigate(NavigationItem.Main.route, navOptions)
-
 fun NavGraphBuilder.noteNavigation(
     onNavigateToRecipe: () -> Unit,
     navController: NavHostController,

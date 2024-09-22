@@ -173,7 +173,6 @@ fun AddEditItemScreen(
                 title = if (mode is AddEditItemMode.Add) "Add Item" else "Edit Item",
                 true
             ) {
-//                viewModel.clearItemModel()
                 navController.popBackStack()
             }
         },
@@ -184,7 +183,6 @@ fun AddEditItemScreen(
                     coroutineScope.launch {
                         delay(1000)
                         snackbarHostState.currentSnackbarData?.dismiss()
-//                        viewModel.clearItemModel()
                         navController.resultHandler<EditResult>("result").setResult(
                             EditResult.SUCCESS
                         )
@@ -292,7 +290,7 @@ fun AddItemComponent(
                 }
                 Button(onClick = {
                     focusManager.clearFocus()
-                    viewModel.checkAddEditItem(context = context)
+                    viewModel.checkAddEditItem()
                 }) {
                     Text("Save")
                 }
@@ -310,7 +308,7 @@ fun AddItemComponent(
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onAddCategory = { newCategory ->
-                viewModel.addCategory(newCategory, context)
+                viewModel.addCategory(newCategory)
             }
         )
     }

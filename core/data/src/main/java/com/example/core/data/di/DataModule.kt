@@ -35,8 +35,4 @@ internal interface DataModule {
 
     @Binds
     fun bindCategoryRepository(repository: CategoryRepositoryImpl): CategoryRepository
-
-    @Binds
-    fun bindDataStoreManager(manager: DataStoreManagerImpl): DataStoreManager
-
 }

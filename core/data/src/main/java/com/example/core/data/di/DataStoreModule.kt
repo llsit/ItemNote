@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.core.data.utils.DataStoreManager
 import com.example.core.data.utils.DataStoreManagerImpl
 import dagger.Module
 import dagger.Provides
@@ -26,7 +27,7 @@ object DataStoreModule {
 
     @Provides
     @Singleton
-    fun provideDataStoreManager(dataStore: DataStore<Preferences>): DataStoreManagerImpl {
+    fun provideDataStoreManager(dataStore: DataStore<Preferences>): DataStoreManager {
         return DataStoreManagerImpl(dataStore)
     }
 }
