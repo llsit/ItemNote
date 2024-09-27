@@ -93,7 +93,7 @@ fun AddEditItemScreen(
     val state by viewModel.uiStateAddItem.collectAsState()
     val errorState by viewModel.uiErrorState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val uiStateAddCategory by viewModel.uiStateAddCategory.collectAsState()
+    val uiStateAddCategory by viewModel.uiStateAddCategory.collectAsState(initial = UiState.Idle)
     val editItemState by viewModel.uiStateEditItem.collectAsState()
     val uiNoInternet by viewModel.uiNoInternet.collectAsState()
     val selectedItem by viewModel.selectedItem.collectAsState()

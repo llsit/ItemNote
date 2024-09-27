@@ -1,6 +1,5 @@
 package com.example.feature.note.screen.addItem
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,9 +14,12 @@ import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.feature.note.screen.main.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
@@ -44,8 +46,8 @@ class AddEditItemViewModel @Inject constructor(
     private val _uiErrorState = MutableStateFlow<List<AddEditItemErrorState>>(emptyList())
     val uiErrorState: StateFlow<List<AddEditItemErrorState>> = _uiErrorState.asStateFlow()
 
-    private val _uiStateAddCategory = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val uiStateAddCategory: StateFlow<UiState<Unit>> = _uiStateAddCategory.asStateFlow()
+    private val _uiStateAddCategory = MutableSharedFlow<UiState<Unit>>(replay = 0)
+    val uiStateAddCategory: SharedFlow<UiState<Unit>> = _uiStateAddCategory.asSharedFlow()
 
     private val _screenMode = MutableStateFlow<AddEditItemMode>(AddEditItemMode.Add)
     private val screenMode: StateFlow<AddEditItemMode> = _screenMode.asStateFlow()
@@ -140,10 +142,10 @@ class AddEditItemViewModel @Inject constructor(
 
     fun addCategory(newCategory: String) = viewModelScope.launch {
         addCategoryUseCase.addCategory(newCategory)
-            .onStart { _uiStateAddCategory.value = UiState.Loading }
-            .catch { _uiStateAddCategory.value = UiState.Error(it.message.toString()) }
+            .onStart { _uiStateAddCategory.emit(UiState.Loading) }
+            .catch { _uiStateAddCategory.emit(UiState.Error(it.message.toString())) }
             .collect {
-                _uiStateAddCategory.value = UiState.Success(Unit)
+                _uiStateAddCategory.emit(UiState.Success(Unit))
             }
     }
 
