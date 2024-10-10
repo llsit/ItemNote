@@ -8,7 +8,10 @@ enum class Screen {
     LOGIN,
     EDITITEM,
     AUTHENTICATION,
-    RECIPE
+    RECIPE,
+    FAVORITE,
+    SEARCH,
+    HOME
 }
 
 sealed class NavigationItem(val route: String) {
@@ -22,4 +25,8 @@ sealed class NavigationItem(val route: String) {
     }
     object Authentication : NavigationItem(Screen.AUTHENTICATION.name)
     object Recipe : NavigationItem(Screen.RECIPE.name)
+    object Favorite : NavigationItem(Screen.FAVORITE.name)
+    object Search : NavigationItem(Screen.SEARCH.name)
+    object Home : NavigationItem(Screen.HOME.name)
+
 }

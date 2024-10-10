@@ -36,6 +36,7 @@
             <option value="$PROJECT_DIR$/feature/authentication" />
             <option value="$PROJECT_DIR$/feature/categorydetail" />
             <option value="$PROJECT_DIR$/feature/detail" />
+            <option value="$PROJECT_DIR$/feature/favoriterecipe" />
             <option value="$PROJECT_DIR$/feature/note" />
             <option value="$PROJECT_DIR$/feature/recipe" />
           </set>

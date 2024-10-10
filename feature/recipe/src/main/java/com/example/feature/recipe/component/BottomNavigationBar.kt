@@ -14,22 +14,50 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavController = rememberNavController()) {
     var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Home", "Search", "Favorite")
-    val icons = listOf(Icons.Filled.Home, Icons.Filled.Search, Icons.Filled.Favorite)
+    val items = BottomNavigationItem.entries.toTypedArray()
+
     Box {
         NavigationBar {
             items.forEachIndexed { index, item ->
                 NavigationBarItem(
-                    icon = { Icon(icons[index], contentDescription = item) },
-                    label = { Text(item) },
+                    icon = { Icon(item.icon, contentDescription = item.label) },
+                    label = { Text(item.label) },
                     selected = selectedItem == index,
-                    onClick = { selectedItem = index }
+                    onClick = {
+                        selectedItem = index
+                        navController.navigate(item.route)
+                    }
                 )
             }
         }
     }
+}
+
+enum class BottomNavigationItem(
+    val icon: ImageVector,
+    val label: String,
+    val route: String
+) {
+    Home(
+        icon = Icons.Filled.Home,
+        label = "Home",
+        route = "home"
+    ),
+    Search(
+        icon = Icons.Filled.Search,
+        label = "Search",
+        route = "search"
+    ),
+    Favorite(
+        icon = Icons.Filled.Favorite,
+        label = "Favorite",
+        route = "favorite"
+    )
 }

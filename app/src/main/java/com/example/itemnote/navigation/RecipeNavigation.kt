@@ -11,14 +11,27 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.core.common.navigation.NavigationItem
 import com.example.detail.screen.DetailScreen
+import com.example.favoriterecipe.screen.FavoriteRecipeScreen
 import com.example.feature.categorydetail.screen.CategoryListScreen
+import com.example.feature.recipe.screen.RecipeHomeScreen
 import com.example.feature.recipe.screen.RecipeMainScreen
 
 fun NavGraphBuilder.recipeNavigation(
     navController: NavHostController
 ) {
     composable(NavigationItem.Recipe.route) {
-        RecipeMainScreen(navController = navController)
+        RecipeMainScreen(
+            mainNavController = navController,
+            navigateToHome = {
+                RecipeHomeScreen(navController)
+            },
+            navigateToSearch = {
+
+            },
+            navigateToFavorite = {
+                FavoriteRecipeScreen()
+            }
+        )
     }
 
     composable(
