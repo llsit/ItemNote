@@ -25,21 +25,9 @@ fun RecipeHomeScreen(
     navController: NavHostController = rememberNavController(),
     viewModel: RecipeMainViewModel = hiltViewModel()
 ) {
-    val categories by viewModel.categories.collectAsState()
     val recommendRecipes by viewModel.recommendRecipes.collectAsState()
-    val state by viewModel.state.collectAsState()
-    when (state) {
-        is RecipeCategoryState.Loading -> {
-            Loading()
-        }
+    val state by viewModel.stateCategories.collectAsState()
 
-        is RecipeCategoryState.Error -> {
-            val error = state as RecipeCategoryState.Error
-            Timber.d("Error: ${error.message}")
-        }
-
-        else -> Unit
-    }
     Box(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -62,8 +50,24 @@ fun RecipeHomeScreen(
             }
 
             item {
-                FoodCategories(categories) {
-                    navController.navigate("categoryList/${it}")
+                when (state) {
+                    is RecipeCategoryState.Loading -> {
+                        Loading()
+                    }
+
+                    is RecipeCategoryState.Error -> {
+                        val error = state as RecipeCategoryState.Error
+                        Timber.d("Error: ${error.message}")
+                    }
+
+                    is RecipeCategoryState.Success -> {
+                        val categoryState = state as RecipeCategoryState.Success
+                        FoodCategories(categoryState.categories) {
+                            navController.navigate("categoryList/${it}")
+                        }
+                    }
+
+                    else -> Unit
                 }
             }
 
