@@ -5,4 +5,5 @@ data class RecommendationModel(
     val mealThumb: String,
     val title: String,
     val category: String,
+    val isFavorite: Boolean
 )

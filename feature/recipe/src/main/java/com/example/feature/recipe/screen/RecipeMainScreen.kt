@@ -27,7 +27,7 @@ fun RecipeMainScreen(
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
         topBar = {
             ToolbarScreen(
-                title = "",
+                title = "Recipe",
                 isBack = true,
                 onBackClick = {
                     mainNavController.popBackStack()

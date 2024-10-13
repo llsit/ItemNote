@@ -57,7 +57,7 @@ fun FavoriteRecipeScreen(
                     IngredientInfo(name = "Ingredient 1", amount = "100g"),
                     IngredientInfo(name = "Ingredient 2", amount = "200g")
                 ),
-                isBookmarked = true,
+                isFavorite = true,
                 videoUrl = "https://example.com/video1",
                 imageUrl = "https://example.com/image1",
                 instructions = "Instructions for Recipe 1"
@@ -71,7 +71,7 @@ fun FavoriteRecipeScreen(
                     IngredientInfo(name = "Ingredient 3", amount = "300g"),
                     IngredientInfo(name = "Ingredient 4", amount = "400g")
                 ),
-                isBookmarked = true,
+                isFavorite = true,
                 videoUrl = "https://example.com/video2",
                 imageUrl = "https://example.com/image2",
                 instructions = "Instructions for Recipe 2"

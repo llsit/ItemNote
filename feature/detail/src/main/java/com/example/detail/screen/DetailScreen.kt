@@ -18,7 +18,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,15 +70,15 @@ fun DetailScreen(
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-//                actions = {
-//                    IconButton(onClick = onBookmarkToggled) {
-//                        Icon(
-//                            if (recipeInfo.isBookmarked.or(false)) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
-//                            contentDescription = "Bookmark",
-//                            tint = if (recipeInfo!!.isBookmarked) Color.Red else Color.Black
-//                        )
-//                    }
-//                }
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            if (recipeInfo.isFavorite.or(false)) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                            contentDescription = "Bookmark",
+                            tint = if (recipeInfo.isFavorite) Color.Red else Color.Black
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
@@ -185,7 +187,7 @@ fun DetailScreenPreview() {
                 IngredientInfo("Ingredient 1", "100g"),
                 IngredientInfo("Ingredient 2", "200g")
             ),
-            isBookmarked = false,
+            isFavorite = false,
             videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
             imageUrl = "https://www.themealdb.com/images/media/meals/1548772327.jpg",
             instructions = "Instructions for the recipe"

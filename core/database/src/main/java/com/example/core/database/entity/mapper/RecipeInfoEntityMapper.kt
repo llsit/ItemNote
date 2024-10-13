@@ -36,7 +36,7 @@ object RecipeInfoEntityMapper : EntityMapper<RecipeInfo, RecipeEntity> {
                     amount = it.strMeasure
                 )
             },
-            isBookmarked = false,
+            isFavorite = false,
             videoUrl = entity.strYoutube,
             imageUrl = entity.strMealThumb,
             instructions = entity.strInstructions
