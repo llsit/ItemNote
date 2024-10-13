@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.core.model.data.RecommendationModel
 import com.example.design.ui.HeaderLarge
 import com.example.design.ui.Loading
 import com.example.feature.recipe.component.FoodCategories
@@ -25,9 +27,28 @@ fun RecipeHomeScreen(
     navController: NavHostController = rememberNavController(),
     viewModel: RecipeMainViewModel = hiltViewModel()
 ) {
-    val recommendRecipes by viewModel.recommendRecipes.collectAsState()
-    val state by viewModel.stateCategories.collectAsState()
+    val recommendRecipes by viewModel.recommendRecipes.collectAsStateWithLifecycle()
+    val state by viewModel.stateCategories.collectAsStateWithLifecycle()
 
+    RecipeHomeComponent(
+        onNavigateToDetail = {
+            navController.navigate("detail/$it")
+        },
+        onNavigateToCategoryDetail = {
+            navController.navigate("categoryList/$it")
+        },
+        recommendRecipes = recommendRecipes,
+        state = state
+    )
+}
+
+@Composable
+fun RecipeHomeComponent(
+    onNavigateToDetail: (String) -> Unit = {},
+    onNavigateToCategoryDetail: (String) -> Unit = {},
+    recommendRecipes: List<RecommendationModel>,
+    state: RecipeCategoryState
+) {
     Box(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -56,14 +77,12 @@ fun RecipeHomeScreen(
                     }
 
                     is RecipeCategoryState.Error -> {
-                        val error = state as RecipeCategoryState.Error
-                        Timber.d("Error: ${error.message}")
+                        Timber.d("Error: ${state.message}")
                     }
 
                     is RecipeCategoryState.Success -> {
-                        val categoryState = state as RecipeCategoryState.Success
-                        FoodCategories(categoryState.categories) {
-                            navController.navigate("categoryList/${it}")
+                        FoodCategories(state.categories) {
+                            onNavigateToCategoryDetail.invoke(it)
                         }
                     }
 
@@ -73,7 +92,7 @@ fun RecipeHomeScreen(
 
             item {
                 RecommendationList(recommendRecipes) {
-                    navController.navigate("detail/${it}")
+                    onNavigateToDetail.invoke(it)
                 }
             }
 
@@ -82,4 +101,10 @@ fun RecipeHomeScreen(
 //            }
         }
     }
+}
+
+@Preview
+@Composable
+fun RecipeHomePreview() {
+    RecipeHomeScreen()
 }

@@ -21,8 +21,7 @@ class RecipeMainViewModel @Inject constructor(
     private val _stateCategories = MutableStateFlow<RecipeCategoryState>(RecipeCategoryState.Idle)
     val stateCategories = _stateCategories.asStateFlow()
 
-    val recommendRecipes: MutableStateFlow<List<RecommendationModel>> =
-        MutableStateFlow(emptyList())
+    val recommendRecipes: MutableStateFlow<List<RecommendationModel>> = MutableStateFlow(emptyList())
 
     init {
         getCategories()
