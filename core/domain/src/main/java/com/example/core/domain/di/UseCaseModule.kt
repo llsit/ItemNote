@@ -36,8 +36,12 @@ import com.example.core.domain.usecase.recipe.GetRecipeByCategoryUseCase
 import com.example.core.domain.usecase.recipe.GetRecipeByCategoryUseCaseImpl
 import com.example.core.domain.usecase.recipe.GetRecipeCategoryUseCase
 import com.example.core.domain.usecase.recipe.GetRecipeCategoryUseCaseImpl
+import com.example.core.domain.usecase.recipe.GetRecipeDetailUseCase
+import com.example.core.domain.usecase.recipe.GetRecipeDetailUseCaseImpl
 import com.example.core.domain.usecase.recipe.GetRecommendRecipeUseCase
 import com.example.core.domain.usecase.recipe.GetRecommendRecipeUseCaseImpl
+import com.example.core.domain.usecase.recipe.SaveFavoriteUseCase
+import com.example.core.domain.usecase.recipe.SaveFavoriteUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -142,5 +146,13 @@ object UseCaseModule {
         return useCase
     }
 
+    @Provides
+    fun provideSaveFavoriteUseCase(useCase: SaveFavoriteUseCaseImpl): SaveFavoriteUseCase {
+        return useCase
+    }
 
+    @Provides
+    fun provideGetRecipeDetailUseCase(useCase: GetRecipeDetailUseCaseImpl): GetRecipeDetailUseCase {
+        return useCase
+    }
 }

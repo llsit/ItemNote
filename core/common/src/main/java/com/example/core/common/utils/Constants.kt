@@ -10,8 +10,11 @@ object Constants {
 
         const val FIREBASE_USERS_COLLECTION = "Users"
         const val FIREBASE_CATEGORIES_COLLECTION = "Categories"
+        const val FIREBASE_FAVORITE_RECIPE_COLLECTION = "FavoriteRecipe"
+        const val FIREBASE_RECIPE_COLLECTION = "recipe"
 
         const val FIREBASE_PRICE_FIELD = "price"
+        const val FIREBASE_RECIPE_ID_FIELD = "recipe_id"
     }
 
     object Category {

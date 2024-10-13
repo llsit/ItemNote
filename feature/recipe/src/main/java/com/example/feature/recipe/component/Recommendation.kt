@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.RecommendationModel
+import com.example.design.ui.FavoriteComponent
 import com.example.design.ui.HeaderMedium
 
 @Composable
@@ -111,13 +112,10 @@ fun RecommendationCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            IconButton(onClick = { onFavoriteClick() }) {
-                Icon(
-                    if (isFavorite.or(false)) Icons.Filled.Favorite else Icons.Outlined.Favorite,
-                    contentDescription = "Bookmark",
-                    tint = if (isFavorite) Color.Red else Color.Black
-                )
-            }
+            FavoriteComponent(
+                isFavorite = isFavorite,
+                onFavoriteClick = onFavoriteClick
+            )
         }
         Text(
             text = "Category $category",

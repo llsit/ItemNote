@@ -91,9 +91,13 @@ fun RecipeHomeComponent(
             }
 
             item {
-                RecommendationList(recommendRecipes) {
-                    onNavigateToDetail.invoke(it)
-                }
+                RecommendationList(
+                    recommendRecipes = recommendRecipes,
+                    onClick = onNavigateToDetail,
+                    onFavoriteClick = {
+
+                    }
+                )
             }
 
 //            item {

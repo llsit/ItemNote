@@ -18,9 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +42,7 @@ import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.IngredientInfo
 import com.example.core.model.data.RecipeInfo
+import com.example.design.ui.FavoriteComponent
 import com.example.detail.component.IngredientItem
 import com.example.detail.component.TextInstructions
 
@@ -71,13 +70,10 @@ fun DetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            if (recipeInfo.isFavorite.or(false)) Icons.Filled.Favorite else Icons.Outlined.Favorite,
-                            contentDescription = "Bookmark",
-                            tint = if (recipeInfo.isFavorite) Color.Red else Color.Black
-                        )
-                    }
+                    FavoriteComponent(
+                        isFavorite = recipeInfo.isFavorite,
+                        onFavoriteClick = { viewModel.setFavorite(!recipeInfo.isFavorite.or(false)) }
+                    )
                 }
             )
         }
