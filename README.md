@@ -39,7 +39,7 @@ To get a local copy up and running, follow these simple steps:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/android-pull-to-refresh-demo.git
+   git clone git@github.com:llsit/ItemNote.git
    ```
 
 2. Open the project in Android Studio.
@@ -66,7 +66,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Your Name - [@yourtwitterhandle](https://twitter.com/yourtwitterhandle) - email@example.com
 
-Project Link: [https://github.com/yourusername/android-pull-to-refresh-demo](https://github.com/yourusername/android-pull-to-refresh-demo)
+Project Link: [https://github.com/llsit/ItemNote](https://github.com/llsit/ItemNote)
 
 ## Acknowledgements
 
