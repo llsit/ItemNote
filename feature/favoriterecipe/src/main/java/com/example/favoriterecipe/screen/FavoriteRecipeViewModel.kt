@@ -40,7 +40,7 @@ class FavoriteRecipeViewModel @Inject constructor(
 
     fun removeFavoriteRecipe(id: String) {
         viewModelScope.launch {
-            recipeRepository.removeFavorite(id)
+            recipeRepository.removeFavorite(id).collect {}
         }
     }
 }

@@ -51,9 +51,9 @@ class RecipeMainViewModel @Inject constructor(
 
     fun setFavorite(recipeId: String, isFavorite: Boolean) = viewModelScope.launch {
         if (isFavorite) {
-            recipeRepository.removeFavorite(recipeId)
+            recipeRepository.removeFavorite(recipeId).collect {}
         } else {
-            saveFavoriteUseCase.invoke(recipeId)
+            saveFavoriteUseCase.invoke(recipeId).collect {}
         }
     }
 }
