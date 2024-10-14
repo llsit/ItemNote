@@ -78,6 +78,7 @@ dependencies {
     implementation(projects.feature.authentication)
     implementation(projects.feature.categorydetail)
     implementation(projects.feature.favoriterecipe)
+    implementation(projects.feature.search)
 
     // Di
     implementation(libs.hilt.android)

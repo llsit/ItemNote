@@ -1,4 +1,4 @@
-package com.example.feature.recipe.component
+package com.example.design.ui
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +18,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchSection(modifier: Modifier, onValueChange: (String) -> Unit) {
+fun SearchSection(
+    modifier: Modifier,
+    isEnable: Boolean = true,
+    onValueChange: (String) -> Unit
+) {
     val searchQuery by remember { mutableStateOf("") }
 
     OutlinedTextField(
@@ -35,6 +39,7 @@ fun SearchSection(modifier: Modifier, onValueChange: (String) -> Unit) {
             focusedBorderColor = Color.Transparent
         ),
         singleLine = true,
+        enabled = isEnable
     )
 }
 

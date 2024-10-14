@@ -1,5 +1,6 @@
 package com.example.feature.recipe.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,31 +16,36 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.core.model.data.RecommendationModel
+import com.example.core.model.navigation.BottomNavigationItem
 import com.example.design.ui.HeaderLarge
 import com.example.design.ui.Loading
+import com.example.design.ui.SearchSection
 import com.example.feature.recipe.component.FoodCategories
 import com.example.feature.recipe.component.RecommendationList
-import com.example.feature.recipe.component.SearchSection
 import timber.log.Timber
 
 @Composable
 fun RecipeHomeScreen(
-    navController: NavHostController = rememberNavController(),
-    viewModel: RecipeMainViewModel = hiltViewModel()
+    mainNavController: NavHostController = rememberNavController(),
+    viewModel: RecipeMainViewModel = hiltViewModel(),
+    navController: NavHostController = rememberNavController()
 ) {
     val recommendRecipes by viewModel.recommendRecipes.collectAsStateWithLifecycle()
     val state by viewModel.stateCategories.collectAsStateWithLifecycle()
 
     RecipeHomeComponent(
         onNavigateToDetail = {
-            navController.navigate("detail/$it")
+            mainNavController.navigate("detail/$it")
         },
         onNavigateToCategoryDetail = {
-            navController.navigate("categoryList/$it")
+            mainNavController.navigate("categoryList/$it")
         },
         recommendRecipes = recommendRecipes,
         state = state,
-        onFavoriteClick = viewModel::setFavorite
+        onFavoriteClick = viewModel::setFavorite,
+        onNavigateToSearch = {
+            navController.navigate(BottomNavigationItem.Search.route)
+        }
     )
 }
 
@@ -49,7 +55,8 @@ fun RecipeHomeComponent(
     onNavigateToCategoryDetail: (String) -> Unit = {},
     recommendRecipes: List<RecommendationModel>,
     state: RecipeCategoryState,
-    onFavoriteClick: (String, Boolean) -> Unit
+    onFavoriteClick: (String, Boolean) -> Unit,
+    onNavigateToSearch: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier.padding(16.dp)
@@ -67,8 +74,13 @@ fun RecipeHomeComponent(
 
             item {
                 SearchSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    onValueChange = {}
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onNavigateToSearch()
+                        },
+                    onValueChange = {},
+                    isEnable = false
                 )
             }
 

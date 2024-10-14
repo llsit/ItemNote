@@ -18,8 +18,8 @@ import com.example.feature.recipe.component.BottomNavigationBar
 @Composable
 fun RecipeMainScreen(
     mainNavController: NavHostController,
-    navigateToHome: @Composable () -> Unit,
-    navigateToSearch: () -> Unit = {},
+    navigateToHome: @Composable (NavHostController) -> Unit,
+    navigateToSearch: @Composable () -> Unit = {},
     navigateToFavorite: @Composable () -> Unit
 ) {
     val navController = rememberNavController()
@@ -44,8 +44,8 @@ fun RecipeMainScreen(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-            composable(NavigationItem.Home.route) { navigateToHome() }
-            composable(NavigationItem.Search.route) { navigateToSearch() }
+            composable(route = NavigationItem.Home.route) { navigateToHome(navController) }
+            composable(route = NavigationItem.Search.route) { navigateToSearch() }
             composable(NavigationItem.Favorite.route) { navigateToFavorite() }
         }
     }
