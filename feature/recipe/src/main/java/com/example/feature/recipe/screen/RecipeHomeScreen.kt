@@ -79,7 +79,6 @@ fun RecipeHomeComponent(
                         .clickable {
                             onNavigateToSearch()
                         },
-                    onValueChange = {},
                     isEnable = false
                 )
             }

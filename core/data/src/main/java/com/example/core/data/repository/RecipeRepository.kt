@@ -32,6 +32,7 @@ interface RecipeRepository {
     suspend fun saveFavorite(recipeId: String): Flow<Unit>
     suspend fun getFavoriteRecipe(): Flow<List<String>>
     suspend fun removeFavorite(recipeId: String): Flow<Unit>
+    suspend fun searchRecipe(query: String): Flow<List<MealResponse>>
 }
 
 class RecipeRepositoryImpl @Inject constructor(
@@ -151,6 +152,17 @@ class RecipeRepositoryImpl @Inject constructor(
             }
 
         awaitClose()
+    }.flowOn(ioDispatcher)
+
+    override suspend fun searchRecipe(query: String): Flow<List<MealResponse>> = flow {
+        val response = apiService.searchRecipe(query)
+        if (response.isSuccessful) {
+            response.body()?.let {
+                emit(it.meals.toList())
+            }
+        } else {
+            error("Search Recipe Error")
+        }
     }.flowOn(ioDispatcher)
 
 }
