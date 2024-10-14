@@ -32,6 +32,8 @@ import com.example.core.domain.usecase.note.GetShopUseCase
 import com.example.core.domain.usecase.note.GetShopUseCaseImpl
 import com.example.core.domain.usecase.note.UpdateShopUseCase
 import com.example.core.domain.usecase.note.UpdateShopUseCaseImpl
+import com.example.core.domain.usecase.recipe.GetFavoriteRecipeUseCase
+import com.example.core.domain.usecase.recipe.GetFavoriteRecipeUseCaseImpl
 import com.example.core.domain.usecase.recipe.GetRecipeByCategoryUseCase
 import com.example.core.domain.usecase.recipe.GetRecipeByCategoryUseCaseImpl
 import com.example.core.domain.usecase.recipe.GetRecipeCategoryUseCase
@@ -153,6 +155,11 @@ object UseCaseModule {
 
     @Provides
     fun provideGetRecipeDetailUseCase(useCase: GetRecipeDetailUseCaseImpl): GetRecipeDetailUseCase {
+        return useCase
+    }
+
+    @Provides
+    fun provideGetFavoriteRecipeUseCase(useCase: GetFavoriteRecipeUseCaseImpl): GetFavoriteRecipeUseCase {
         return useCase
     }
 }
