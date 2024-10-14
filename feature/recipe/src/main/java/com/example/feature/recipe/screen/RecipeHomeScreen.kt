@@ -38,7 +38,8 @@ fun RecipeHomeScreen(
             navController.navigate("categoryList/$it")
         },
         recommendRecipes = recommendRecipes,
-        state = state
+        state = state,
+        onFavoriteClick = viewModel::setFavorite
     )
 }
 
@@ -47,7 +48,8 @@ fun RecipeHomeComponent(
     onNavigateToDetail: (String) -> Unit = {},
     onNavigateToCategoryDetail: (String) -> Unit = {},
     recommendRecipes: List<RecommendationModel>,
-    state: RecipeCategoryState
+    state: RecipeCategoryState,
+    onFavoriteClick: (String, Boolean) -> Unit
 ) {
     Box(
         modifier = Modifier.padding(16.dp)
@@ -94,9 +96,7 @@ fun RecipeHomeComponent(
                 RecommendationList(
                     recommendRecipes = recommendRecipes,
                     onClick = onNavigateToDetail,
-                    onFavoriteClick = {
-
-                    }
+                    onFavoriteClick = onFavoriteClick
                 )
             }
 

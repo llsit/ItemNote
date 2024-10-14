@@ -72,7 +72,7 @@ fun DetailScreen(
                 actions = {
                     FavoriteComponent(
                         isFavorite = recipeInfo.isFavorite,
-                        onFavoriteClick = { viewModel.setFavorite(!recipeInfo.isFavorite.or(false)) }
+                        onFavoriteClick = viewModel::setFavorite
                     )
                 }
             )

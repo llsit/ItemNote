@@ -5,6 +5,7 @@ import com.example.core.model.data.RecipeInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 interface GetFavoriteRecipeUseCase {
@@ -17,12 +18,17 @@ class GetFavoriteRecipeUseCaseImpl @Inject constructor(
     override suspend fun invoke(): Flow<List<RecipeInfo>> {
         return repository.getFavoriteRecipe()
             .flatMapConcat { idList ->
-                val recipeInfoFlows: List<Flow<RecipeInfo>> = idList.map { id ->
+                val recipeInfoFlows = idList.map { id ->
                     repository.getRecipeDetail(id)
                 }
-
-                combine(recipeInfoFlows) { recipeInfoArray ->
-                    recipeInfoArray.toList()
+                if (recipeInfoFlows.isEmpty()) {
+                    flowOf(emptyList())
+                } else {
+                    combine(recipeInfoFlows) { recipeInfoArray ->
+                        recipeInfoArray.map {
+                            it.copy(isFavorite = true)
+                        }.toList()
+                    }
                 }
             }
     }

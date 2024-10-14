@@ -31,6 +31,7 @@ interface RecipeRepository {
     suspend fun getRecipeByCategory(category: String): Flow<List<MealResponse>>
     suspend fun saveFavorite(recipeId: String): Flow<Unit>
     suspend fun getFavoriteRecipe(): Flow<List<String>>
+    suspend fun removeFavorite(recipeId: String): Flow<Unit>
 }
 
 class RecipeRepositoryImpl @Inject constructor(
@@ -128,6 +129,24 @@ class RecipeRepositoryImpl @Inject constructor(
                 if (snapshot != null) {
                     val items = snapshot.documents.mapNotNull { it.get("id") as? String }
                     trySend(items)
+                }
+            }
+
+        awaitClose()
+    }.flowOn(ioDispatcher)
+
+    override suspend fun removeFavorite(recipeId: String): Flow<Unit> = callbackFlow {
+        firestore.collection(FIREBASE_FAVORITE_RECIPE_COLLECTION)
+            .document(dataStoreManager.getUserId().first())
+            .collection(FIREBASE_RECIPE_COLLECTION)
+            .whereEqualTo("id", recipeId)
+            .get().continueWith {
+                if (it.isSuccessful) {
+                    it.result.documents.firstOrNull()?.reference?.delete()
+                    trySend(Unit)
+                    close()
+                } else {
+                    close(it.exception)
                 }
             }
 

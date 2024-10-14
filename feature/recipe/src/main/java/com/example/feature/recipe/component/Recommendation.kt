@@ -12,11 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,7 +35,7 @@ import com.example.design.ui.HeaderMedium
 fun RecommendationList(
     recommendRecipes: List<RecommendationModel>,
     onClick: (String) -> Unit = {},
-    onFavoriteClick: (String) -> Unit = {}
+    onFavoriteClick: (String, Boolean) -> Unit
 ) {
     Column {
         Row(
@@ -67,8 +62,8 @@ fun RecommendationList(
                     onClick = {
                         onClick(it.id)
                     },
-                    onFavoriteClick = {
-                        onFavoriteClick(it.id)
+                    onFavoriteClick = { isFav ->
+                        onFavoriteClick(it.id, isFav)
                     }
                 )
             }
@@ -84,7 +79,7 @@ fun RecommendationCard(
     isFavorite: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onFavoriteClick: () -> Unit = {}
+    onFavoriteClick: (Boolean) -> Unit = {}
 ) {
     Column(
         modifier = modifier

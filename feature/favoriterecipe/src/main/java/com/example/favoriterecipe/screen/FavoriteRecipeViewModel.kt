@@ -2,6 +2,7 @@ package com.example.favoriterecipe.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.data.repository.RecipeRepository
 import com.example.core.domain.usecase.recipe.GetFavoriteRecipeUseCase
 import com.example.core.model.data.RecipeInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteRecipeViewModel @Inject constructor(
-    private val getFavoriteRecipeUseCase: GetFavoriteRecipeUseCase
+    private val getFavoriteRecipeUseCase: GetFavoriteRecipeUseCase,
+    private val recipeRepository: RecipeRepository
 ) : ViewModel() {
 
     private val _favoriteRecipes = MutableStateFlow(emptyList<RecipeInfo>())
@@ -33,6 +35,12 @@ class FavoriteRecipeViewModel @Inject constructor(
             getFavoriteRecipeUseCase.invoke().collect {
                 _favoriteRecipes.value = it
             }
+        }
+    }
+
+    fun removeFavoriteRecipe(id: String) {
+        viewModelScope.launch {
+            recipeRepository.removeFavorite(id)
         }
     }
 }

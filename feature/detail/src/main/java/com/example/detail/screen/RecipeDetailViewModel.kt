@@ -45,13 +45,23 @@ class RecipeDetailViewModel @Inject constructor(
     }
 
     fun setFavorite(isFavorite: Boolean) = viewModelScope.launch {
-        recipeRepository.saveFavorite(recipeId)
-            .catch {
-                recipeInfo.value = recipeInfo.value.copy(isFavorite = !isFavorite)
-            }
-            .collect {
-                recipeInfo.value = recipeInfo.value.copy(isFavorite = isFavorite)
-            }
+        if (isFavorite) {
+            recipeRepository.removeFavorite(recipeId)
+                .catch {
+                    recipeInfo.value = recipeInfo.value.copy(isFavorite = isFavorite)
+                }
+                .collect {
+                    recipeInfo.value = recipeInfo.value.copy(isFavorite = !isFavorite)
+                }
+        } else {
+            recipeRepository.saveFavorite(recipeId)
+                .catch {
+                    recipeInfo.value = recipeInfo.value.copy(isFavorite = isFavorite)
+                }
+                .collect {
+                    recipeInfo.value = recipeInfo.value.copy(isFavorite = !isFavorite)
+                }
+        }
     }
 
 }

@@ -27,7 +27,7 @@ fun FavoriteRecipeScreen(
         FavoriteRecipesList(
             recipes = favoriteRecipes.value,
             navController = navController,
-            onRemove = { }
+            onRemove = { viewModel.removeFavoriteRecipe(it)  }
         )
     }
 }

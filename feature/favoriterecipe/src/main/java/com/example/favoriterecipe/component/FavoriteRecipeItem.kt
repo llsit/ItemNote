@@ -14,12 +14,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +31,7 @@ import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.RecipeInfo
 import com.example.design.ui.EmptyStateView
+import com.example.design.ui.FavoriteComponent
 import com.example.favoriterecipe.screen.FavoriteRecipeScreen
 
 @Composable
@@ -104,13 +101,12 @@ fun FavoriteRecipeItem(
                 Text(text = recipe.category, style = MaterialTheme.typography.titleSmall)
             }
 
-            IconButton(onClick = { }) {
-                Icon(
-                    Icons.Default.Favorite,
-                    contentDescription = "Remove from favorites",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
+            FavoriteComponent(
+                isFavorite = recipe.isFavorite,
+                onFavoriteClick = {
+                    onRemove(recipe.id)
+                }
+            )
         }
     }
 }
