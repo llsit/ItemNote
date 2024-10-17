@@ -27,10 +27,10 @@ fun NavGraphBuilder.recipeNavigation(
                 RecipeHomeScreen(mainNavController = navController, navController = it)
             },
             navigateToSearch = {
-                SearchScreen()
+                SearchScreen(navController = navController)
             },
             navigateToFavorite = {
-                FavoriteRecipeScreen()
+                FavoriteRecipeScreen(navController = navController)
             }
         )
     }

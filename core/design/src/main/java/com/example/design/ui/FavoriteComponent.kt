@@ -16,16 +16,20 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun FavoriteComponent(
     isFavorite: Boolean,
-    onFavoriteClick: (Boolean) -> Unit = {}
+    isEnableFavorite: Boolean = true,
+    onFavoriteClick: (Boolean) -> Unit = {},
 ) {
     val favorite by remember { mutableStateOf(isFavorite) }
-    Box {
-        IconButton(onClick = { onFavoriteClick(favorite) }) {
-            Icon(
-                if (favorite.or(false)) Icons.Filled.Favorite else Icons.Outlined.Favorite,
-                contentDescription = "Favorite",
-                tint = if (isFavorite) Color.Red else Color.Black
-            )
+
+    if (isEnableFavorite) {
+        Box {
+            IconButton(onClick = { onFavoriteClick(favorite) }) {
+                Icon(
+                    if (favorite.or(false)) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                    contentDescription = "Favorite",
+                    tint = if (isFavorite) Color.Red else Color.Black
+                )
+            }
         }
     }
 }
@@ -33,5 +37,5 @@ fun FavoriteComponent(
 @Preview(showBackground = true)
 @Composable
 fun FavoriteComponentPreview() {
-    FavoriteComponent(isFavorite = true)
+    FavoriteComponent(isFavorite = true, isEnableFavorite = true)
 }

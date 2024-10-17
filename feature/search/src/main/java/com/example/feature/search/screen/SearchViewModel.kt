@@ -18,10 +18,10 @@ class SearchViewModel @Inject constructor(
     private val recipeRepository: RecipeRepository
 ) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Idle)
-    val uiState: StateFlow<SearchUiState> = _uiState
-
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     fun search(query: String) {
         _searchQuery.value = query
@@ -38,6 +38,12 @@ class SearchViewModel @Inject constructor(
                         _uiState.value = SearchUiState.Success(results.toRecipeInfoList())
                     }
                 }
+        }
+    }
+
+    fun removeFavorite(recipeId: String) {
+        viewModelScope.launch {
+            recipeRepository.removeFavorite(recipeId).collect {}
         }
     }
 }

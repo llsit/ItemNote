@@ -1,18 +1,14 @@
-package com.example.favoriterecipe.component
+package com.example.design.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,45 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.core.design.R
-import com.example.core.model.data.RecipeInfo
-import com.example.design.ui.EmptyStateView
-import com.example.design.ui.FavoriteComponent
-import com.example.favoriterecipe.screen.FavoriteRecipeScreen
-
-@Composable
-fun FavoriteRecipesList(
-    recipes: List<RecipeInfo>,
-    navController: NavHostController,
-    onRemove: (String) -> Unit
-) {
-    if (recipes.isEmpty()) {
-        EmptyStateView(
-            message = "No favorite recipes yet!"
-        )
-    } else {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(recipes) { recipe ->
-                FavoriteRecipeItem(
-                    recipe = recipe,
-                    onClick = { navController.navigate("detail/${recipe.id}") },
-                    onRemove = onRemove
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun FavoriteRecipeItem(
-    recipe: RecipeInfo,
+    title: String,
+    category: String,
+    isFavorite: Boolean,
+    recipeId: String,
+    imageUrl: String,
+    isEnableFavorite: Boolean = true,
     onClick: () -> Unit,
     onRemove: (String) -> Unit
 ) {
@@ -81,8 +50,8 @@ fun FavoriteRecipeItem(
         ) {
 
             AsyncImage(
-                model = recipe.imageUrl,
-                contentDescription = recipe.title,
+                model = imageUrl,
+                contentDescription = title,
                 placeholder = painterResource(id = R.drawable.placeholder_product),
                 error = painterResource(id = R.drawable.placeholder_product),
                 modifier = Modifier
@@ -97,22 +66,17 @@ fun FavoriteRecipeItem(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = recipe.title, style = MaterialTheme.typography.labelMedium)
-                Text(text = recipe.category, style = MaterialTheme.typography.titleSmall)
+                Text(text = title, style = MaterialTheme.typography.labelMedium)
+                Text(text = category, style = MaterialTheme.typography.titleSmall)
             }
 
             FavoriteComponent(
-                isFavorite = recipe.isFavorite,
+                isFavorite = isFavorite,
+                isEnableFavorite = isEnableFavorite,
                 onFavoriteClick = {
-                    onRemove(recipe.id)
+                    onRemove(recipeId)
                 }
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun FavoriteRecipeScreenPreview() {
-    FavoriteRecipeScreen()
 }

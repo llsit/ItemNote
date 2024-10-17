@@ -23,10 +23,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchSection(
     modifier: Modifier,
+    query: String = "",
     isEnable: Boolean = true,
     onSearch: (String) -> Unit = {}
 ) {
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf(query) }
 
     OutlinedTextField(
         value = searchQuery,
@@ -55,5 +56,5 @@ fun SearchSection(
 @Composable
 @Preview(showBackground = true)
 fun SearchSectionPreview() {
-    SearchSection(modifier = Modifier)
+    SearchSection(modifier = Modifier, "")
 }

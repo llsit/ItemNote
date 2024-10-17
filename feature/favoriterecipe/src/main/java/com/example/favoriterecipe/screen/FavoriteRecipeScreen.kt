@@ -9,8 +9,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.core.model.data.IngredientInfo
-import com.example.core.model.data.RecipeInfo
 import com.example.favoriterecipe.component.FavoriteRecipesList
 
 @Composable
@@ -27,7 +25,7 @@ fun FavoriteRecipeScreen(
         FavoriteRecipesList(
             recipes = favoriteRecipes.value,
             navController = navController,
-            onRemove = { viewModel.removeFavoriteRecipe(it)  }
+            onRemove = { viewModel.removeFavoriteRecipe(it) }
         )
     }
 }
