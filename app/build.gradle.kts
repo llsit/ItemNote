@@ -17,7 +17,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "0.0.7"
+        versionName = "0.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -32,6 +32,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            isDebuggable = false
+        }
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
         }
     }
 
@@ -64,12 +69,16 @@ dependencies {
     implementation(projects.core.design)
     implementation(projects.core.data)
     implementation(projects.core.common)
+    implementation(libs.timber)
 
     // feature
     implementation(projects.feature.recipe)
     implementation(projects.feature.detail)
     implementation(projects.feature.note)
     implementation(projects.feature.authentication)
+    implementation(projects.feature.categorydetail)
+    implementation(projects.feature.favoriterecipe)
+    implementation(projects.feature.search)
 
     // Di
     implementation(libs.hilt.android)

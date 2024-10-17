@@ -31,7 +31,7 @@ class GetMinShopUseCaseImpl @Inject constructor(
                                     shop = shopResult.data ?: ShopModel()
                                 )
 
-                                else -> item // Keep original item if shop fetch fails
+                                else -> item
                             }
                         }
                     }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.utils.UiState
+import com.example.core.data.utils.DataStoreManager
 import com.example.core.domain.usecase.note.AddCategoryUseCase
 import com.example.core.domain.usecase.note.AddItemUseCase
 import com.example.core.domain.usecase.note.EditItemUseCase
@@ -13,11 +14,16 @@ import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.feature.note.screen.main.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +34,7 @@ class AddEditItemViewModel @Inject constructor(
     private val addCategoryUseCase: AddCategoryUseCase,
     private val editItemUseCase: EditItemUseCase,
     getCategoryUseCase: GetCategoryUseCase,
+    dataStoreManager: DataStoreManager
 ) : BaseViewModel(getCategoryUseCase) {
 
     private val _uiStateAddItem = MutableStateFlow<UiState<Unit>>(UiState.Idle)
@@ -39,11 +46,17 @@ class AddEditItemViewModel @Inject constructor(
     private val _uiErrorState = MutableStateFlow<List<AddEditItemErrorState>>(emptyList())
     val uiErrorState: StateFlow<List<AddEditItemErrorState>> = _uiErrorState.asStateFlow()
 
-    private val _uiStateAddCategory = MutableStateFlow<UiState<Unit>>(UiState.Idle)
-    val uiStateAddCategory: StateFlow<UiState<Unit>> = _uiStateAddCategory.asStateFlow()
+    private val _uiStateAddCategory = MutableSharedFlow<UiState<Unit>>(replay = 0)
+    val uiStateAddCategory: SharedFlow<UiState<Unit>> = _uiStateAddCategory.asSharedFlow()
 
     private val _screenMode = MutableStateFlow<AddEditItemMode>(AddEditItemMode.Add)
     private val screenMode: StateFlow<AddEditItemMode> = _screenMode.asStateFlow()
+
+    var selectedItem: StateFlow<ItemModel?> = dataStoreManager.getItemModel().stateIn(
+        scope = viewModelScope,
+        started = WhileSubscribed(5000),
+        initialValue = null
+    )
 
     var name by mutableStateOf("")
         private set
@@ -54,20 +67,17 @@ class AddEditItemViewModel @Inject constructor(
     var category by mutableStateOf<CategoryModel?>(null)
         private set
 
-    private var itemModel: ItemModel? = null
-
     init {
         getCategory()
     }
 
-    fun setScreenMode(mode: AddEditItemMode, itemModel: ItemModel?) {
+    fun setScreenMode(mode: AddEditItemMode) {
         _screenMode.value = mode
-        this.itemModel = itemModel
         if (mode is AddEditItemMode.Edit) {
-            this.itemModel?.let {
-                onNameChange(it.name)
-                onCategoryChange(it.categoryModel)
-                onImageUriChange(it.imageUrl)
+            selectedItem.let {
+                onNameChange(it.value?.name.orEmpty())
+                onCategoryChange(it.value?.categoryModel)
+                onImageUriChange(it.value?.imageUrl.orEmpty())
             }
         }
     }
@@ -113,7 +123,7 @@ class AddEditItemViewModel @Inject constructor(
     }
 
     private fun editItem() = viewModelScope.launch {
-        editItemUseCase.editItem(name, imageUri, category!!, itemModel!!)
+        editItemUseCase.editItem(name, imageUri, category!!, selectedItem.value!!)
             .onStart { _uiStateEditItem.value = UiState.Loading }
             .catch { _uiStateEditItem.value = UiState.Error(it.message.toString()) }
             .collect {
@@ -125,15 +135,17 @@ class AddEditItemViewModel @Inject constructor(
         addItemUseCase.addItem(name, imageUri, category!!)
             .onStart { _uiStateAddItem.value = UiState.Loading }
             .catch { _uiStateAddItem.value = UiState.Error(it.message.toString()) }
-            .collect { _uiStateAddItem.value = UiState.Success(it) }
+            .collect {
+                _uiStateAddItem.value = UiState.Success(it)
+            }
     }
 
     fun addCategory(newCategory: String) = viewModelScope.launch {
         addCategoryUseCase.addCategory(newCategory)
-            .onStart { _uiStateAddCategory.value = UiState.Loading }
-            .catch { _uiStateAddCategory.value = UiState.Error(it.message.toString()) }
+            .onStart { _uiStateAddCategory.emit(UiState.Loading) }
+            .catch { _uiStateAddCategory.emit(UiState.Error(it.message.toString())) }
             .collect {
-                _uiStateAddCategory.value = UiState.Success(Unit)
+                _uiStateAddCategory.emit(UiState.Success(Unit))
             }
     }
 

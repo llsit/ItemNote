@@ -42,6 +42,7 @@ import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.IngredientInfo
 import com.example.core.model.data.RecipeInfo
+import com.example.design.ui.FavoriteComponent
 import com.example.detail.component.IngredientItem
 import com.example.detail.component.TextInstructions
 
@@ -68,15 +69,12 @@ fun DetailScreen(
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-//                actions = {
-//                    IconButton(onClick = onBookmarkToggled) {
-//                        Icon(
-//                            if (recipeInfo.isBookmarked.or(false)) Icons.Filled.Bookmark else Icons.Outlined.Bookmark,
-//                            contentDescription = "Bookmark",
-//                            tint = if (recipeInfo!!.isBookmarked) Color.Red else Color.Black
-//                        )
-//                    }
-//                }
+                actions = {
+                    FavoriteComponent(
+                        isFavorite = recipeInfo.isFavorite,
+                        onFavoriteClick = viewModel::setFavorite
+                    )
+                }
             )
         }
     ) { padding ->
@@ -185,7 +183,7 @@ fun DetailScreenPreview() {
                 IngredientInfo("Ingredient 1", "100g"),
                 IngredientInfo("Ingredient 2", "200g")
             ),
-            isBookmarked = false,
+            isFavorite = false,
             videoUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
             imageUrl = "https://www.themealdb.com/images/media/meals/1548772327.jpg",
             instructions = "Instructions for the recipe"

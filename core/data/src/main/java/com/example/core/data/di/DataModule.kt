@@ -1,7 +1,5 @@
 package com.example.core.data.di
 
-import com.example.core.common.utils.PreferenceManager
-import com.example.core.common.utils.PreferenceManagerImpl
 import com.example.core.data.repository.AuthRepository
 import com.example.core.data.repository.AuthRepositoryImpl
 import com.example.core.data.repository.CategoryRepository
@@ -12,6 +10,8 @@ import com.example.core.data.repository.RecipeRepository
 import com.example.core.data.repository.RecipeRepositoryImpl
 import com.example.core.data.repository.ShopRepository
 import com.example.core.data.repository.ShopRepositoryImpl
+import com.example.core.data.utils.DataStoreManager
+import com.example.core.data.utils.DataStoreManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,7 +22,7 @@ import dagger.hilt.components.SingletonComponent
 internal interface DataModule {
 
     @Binds
-    fun bindGetRecipeCategoryRepository(repository: RecipeRepositoryImpl): RecipeRepository
+    fun bindGetRecipeRepository(repository: RecipeRepositoryImpl): RecipeRepository
 
     @Binds
     fun bindItemRepository(repository: ItemRepositoryImpl): ItemRepository
@@ -32,9 +32,6 @@ internal interface DataModule {
 
     @Binds
     fun bindAuthRepository(repository: AuthRepositoryImpl): AuthRepository
-
-    @Binds
-    fun bindPreferenceManager(manager: PreferenceManagerImpl): PreferenceManager
 
     @Binds
     fun bindCategoryRepository(repository: CategoryRepositoryImpl): CategoryRepository

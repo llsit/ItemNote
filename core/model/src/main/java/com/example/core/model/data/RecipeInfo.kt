@@ -6,7 +6,7 @@ data class RecipeInfo(
     val category: String = "",
     val area: String = "",
     val ingredients: List<IngredientInfo> = listOf(),
-    val isBookmarked: Boolean = false,
+    val isFavorite: Boolean = false,
     val videoUrl: String? = null,
     val imageUrl: String? = null,
     val instructions: String = "",

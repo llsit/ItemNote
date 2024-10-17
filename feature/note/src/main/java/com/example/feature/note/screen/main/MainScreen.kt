@@ -1,5 +1,8 @@
 package com.example.feature.note.screen.main
 
+import android.content.Context
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FormatListNumbered
@@ -18,12 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.core.common.navigation.NavigationItem
 import com.example.core.common.utils.AuthState
-import com.example.core.data.utils.SharedViewModel
 import com.example.core.model.data.CategoryModel
 import com.example.core.model.data.ItemModel
 import com.example.core.model.data.ShopModel
@@ -40,7 +45,6 @@ fun MainScreen(
     navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
-    sharedViewModel: SharedViewModel,
     scope: CoroutineScope = rememberCoroutineScope(),
     onNavigateToRecipe: () -> Unit = {}
 ) {
@@ -95,7 +99,6 @@ fun MainScreen(
                 innerPadding = innerPadding,
                 navController = navController,
                 mainViewModel = mainViewModel,
-                sharedViewModel = sharedViewModel
             )
         }
     }
@@ -109,7 +112,8 @@ fun ModalDrawerSheetSection(
     email: String,
     onNavigateToHome: () -> Unit,
     onNavigateToRecipe: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    context: Context = LocalContext.current
 ) {
     ModalDrawerSheet {
         ProfileMenuComponent(
@@ -117,44 +121,54 @@ fun ModalDrawerSheetSection(
             email = email
         )
         HorizontalDivider()
-        NavigationDrawerItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            selected = false,
-            onClick = {
-                scope.launch {
-                    drawerState.close()
-                    onNavigateToHome()
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            NavigationDrawerItem(
+                icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                label = { Text("Home") },
+                selected = false,
+                onClick = {
+                    scope.launch {
+                        drawerState.close()
+                        onNavigateToHome()
+                    }
                 }
-            }
-        )
-        NavigationDrawerItem(
-            icon = {
-                Icon(
-                    Icons.Default.FormatListNumbered,
-                    contentDescription = "Recipe"
-                )
-            },
-            label = { Text("Recipe") },
-            selected = false,
-            onClick = {
-                scope.launch {
-                    drawerState.close()
-                    // Navigate to recipe
-                    onNavigateToRecipe()
+            )
+            NavigationDrawerItem(
+                icon = {
+                    Icon(
+                        Icons.Default.FormatListNumbered,
+                        contentDescription = "Recipe"
+                    )
+                },
+                label = { Text("Recipe") },
+                selected = false,
+                onClick = {
+                    scope.launch {
+                        drawerState.close()
+                        // Navigate to recipe
+                        onNavigateToRecipe()
+                    }
                 }
-            }
-        )
-        NavigationDrawerItem(
-            icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Logout") },
-            label = { Text("Logout") },
-            selected = false,
-            onClick = {
-                scope.launch {
-                    drawerState.close()
-                    onLogout()
+            )
+            NavigationDrawerItem(
+                icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Logout") },
+                label = { Text("Logout") },
+                selected = false,
+                onClick = {
+                    scope.launch {
+                        drawerState.close()
+                        onLogout()
+                    }
                 }
-            }
+            )
+        }
+        HorizontalDivider()
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        Text(
+            text = "Version {${packageInfo.versionName}}",
+            modifier = Modifier.padding(8.dp)
         )
     }
 }

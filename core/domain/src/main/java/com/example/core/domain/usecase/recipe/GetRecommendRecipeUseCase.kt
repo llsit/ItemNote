@@ -4,6 +4,7 @@ import com.example.core.data.mapper.toRecommendationModel
 import com.example.core.data.repository.RecipeRepository
 import com.example.core.model.data.RecommendationModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -17,6 +18,10 @@ class GetRecommendRecipeUseCaseImpl @Inject constructor(
     override suspend fun invoke(): Flow<List<RecommendationModel>> {
         return repository.getRecommendRecipe().map {
             it.toRecommendationModel()
+        }.combine(repository.getFavoriteRecipe()) { recommend, favorite ->
+            recommend.map {
+                it.copy(isFavorite = favorite.contains(it.id))
+            }
         }
     }
 }

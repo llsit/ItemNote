@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.common.utils.UiState
+import com.example.core.data.utils.DataStoreManager
 import com.example.core.domain.usecase.note.AddShopUseCase
 import com.example.core.domain.usecase.note.DeleteItemUseCase
 import com.example.core.domain.usecase.note.DeleteShopUseCase
@@ -31,7 +32,8 @@ class ShopListViewModel @Inject constructor(
     private val deleteShopUseCase: DeleteShopUseCase,
     private val deleteItemUseCase: DeleteItemUseCase,
     private val updateShopUseCase: UpdateShopUseCase,
-    private val getItemByIdUseCase: GetItemByIdUseCase
+    private val getItemByIdUseCase: GetItemByIdUseCase,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     private val itemId = savedStateHandle.get<String>("id") ?: ""
@@ -223,5 +225,9 @@ class ShopListViewModel @Inject constructor(
         } else {
             _priceState.value = ""
         }
+    }
+
+    fun clearSelectedItem() = viewModelScope.launch {
+        dataStoreManager.clearItemModel()
     }
 }

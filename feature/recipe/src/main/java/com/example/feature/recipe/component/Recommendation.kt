@@ -22,16 +22,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.core.design.R
 import com.example.core.model.data.RecommendationModel
+import com.example.design.ui.FavoriteComponent
+import com.example.design.ui.HeaderMedium
 
 @Composable
 fun RecommendationList(
     recommendRecipes: List<RecommendationModel>,
-    onClick: (String) -> Unit = {}
+    onClick: (String) -> Unit = {},
+    onFavoriteClick: (String, Boolean) -> Unit
 ) {
     Column {
         Row(
@@ -54,8 +58,12 @@ fun RecommendationList(
                     mealThumb = it.mealThumb,
                     title = it.title,
                     category = it.category,
+                    isFavorite = it.isFavorite,
                     onClick = {
                         onClick(it.id)
+                    },
+                    onFavoriteClick = { isFav ->
+                        onFavoriteClick(it.id, isFav)
                     }
                 )
             }
@@ -68,8 +76,10 @@ fun RecommendationCard(
     mealThumb: String,
     title: String,
     category: String,
+    isFavorite: Boolean,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onFavoriteClick: (Boolean) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -88,14 +98,20 @@ fun RecommendationCard(
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = title,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            FavoriteComponent(
+                isFavorite = isFavorite,
+                onFavoriteClick = onFavoriteClick
+            )
+        }
         Text(
             text = "Category $category",
             fontSize = 12.sp,
@@ -105,4 +121,15 @@ fun RecommendationCard(
             overflow = TextOverflow.Ellipsis
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RecommendationCardPreview() {
+    RecommendationCard(
+        mealThumb = "",
+        title = "Title",
+        category = "Category",
+        isFavorite = false
+    )
 }

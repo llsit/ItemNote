@@ -11,14 +11,28 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.core.common.navigation.NavigationItem
 import com.example.detail.screen.DetailScreen
-import com.example.feature.note.screen.shop.ShopListScreen
+import com.example.favoriterecipe.screen.FavoriteRecipeScreen
+import com.example.feature.categorydetail.screen.CategoryListScreen
+import com.example.feature.recipe.screen.RecipeHomeScreen
 import com.example.feature.recipe.screen.RecipeMainScreen
+import com.example.feature.search.screen.SearchScreen
 
 fun NavGraphBuilder.recipeNavigation(
     navController: NavHostController
 ) {
     composable(NavigationItem.Recipe.route) {
-        RecipeMainScreen(navController = navController)
+        RecipeMainScreen(
+            mainNavController = navController,
+            navigateToHome = {
+                RecipeHomeScreen(mainNavController = navController, navController = it)
+            },
+            navigateToSearch = {
+                SearchScreen(navController = navController)
+            },
+            navigateToFavorite = {
+                FavoriteRecipeScreen(navController = navController)
+            }
+        )
     }
 
     composable(
@@ -36,4 +50,19 @@ fun NavGraphBuilder.recipeNavigation(
         }
     }
 
+    composable(
+        "categoryList/{categoryName}",
+        arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+    ) {
+        AnimatedVisibility(
+            visible = true,
+            enter = slideInHorizontally(animationSpec = tween(300)),
+            exit = slideOutHorizontally(animationSpec = tween(300))
+        ) {
+            CategoryListScreen(
+                onBackPressed = { navController.popBackStack() },
+                onClick = { navController.navigate("detail/${it}") }
+            )
+        }
+    }
 }

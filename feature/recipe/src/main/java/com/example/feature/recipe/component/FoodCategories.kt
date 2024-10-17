@@ -2,6 +2,7 @@ package com.example.feature.recipe.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,12 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.core.design.R
 import com.example.core.model.data.RecipeCategoryModel
+import com.example.design.ui.HeaderMedium
 
 @Composable
-fun FoodCategories(categories: List<RecipeCategoryModel>) {
+fun FoodCategories(categories: List<RecipeCategoryModel>, onClickItem: (String) -> Unit = {}) {
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -38,7 +42,8 @@ fun FoodCategories(categories: List<RecipeCategoryModel>) {
                 FoodCategoryItem(
                     name = it.strCategory,
                     iconUrl = it.strCategoryThumb,
-                    backgroundColor = Color.Gray
+                    backgroundColor = Color.LightGray,
+                    onClickItem = onClickItem
                 )
             }
         }
@@ -47,9 +52,15 @@ fun FoodCategories(categories: List<RecipeCategoryModel>) {
 }
 
 @Composable
-fun FoodCategoryItem(name: String, iconUrl: String, backgroundColor: Color) {
+fun FoodCategoryItem(
+    name: String,
+    iconUrl: String,
+    backgroundColor: Color,
+    onClickItem: (String) -> Unit
+) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClickItem(name) }
     ) {
         Box(
             modifier = Modifier
@@ -60,7 +71,7 @@ fun FoodCategoryItem(name: String, iconUrl: String, backgroundColor: Color) {
         ) {
             if (iconUrl.isEmpty()) {
                 Image(
-                    painter = painterResource(id = com.google.android.material.R.drawable.abc_ic_star_half_black_48dp),
+                    painter = painterResource(id = R.drawable.placeholder_product),
                     contentDescription = name,
                     modifier = Modifier.size(40.dp)
                 )
@@ -75,4 +86,25 @@ fun FoodCategoryItem(name: String, iconUrl: String, backgroundColor: Color) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = name)
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun FoodCategoriesPreview() {
+    FoodCategories(
+        categories = listOf(
+            RecipeCategoryModel(
+                idCategory = "",
+                strCategory = "Category 1",
+                strCategoryThumb = "",
+                strCategoryDescription = ""
+            ),
+            RecipeCategoryModel(
+                idCategory = "",
+                strCategory = "Category 2",
+                strCategoryThumb = "",
+                strCategoryDescription = ""
+            )
+        ),
+    )
 }
