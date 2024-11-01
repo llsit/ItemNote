@@ -6,6 +6,7 @@ plugins {
     id("itemnote.android.application.compose")
     id("itemnote.android.application")
     id("itemnote.android.hilt")
+    id("itemnote.android.application.firebase")
 }
 
 android {
