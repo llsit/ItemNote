@@ -90,8 +90,7 @@ fun MainScreen(
             },
             floatingActionButton = {
                 FloatingButton {
-                    throw RuntimeException("Test Crash") // Force a crash
-//                    navController.navigate(NavigationItem.AddItem.route)
+                    navController.navigate(NavigationItem.AddItem.route)
                 }
             }
         )
