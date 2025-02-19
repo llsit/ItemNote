@@ -43,5 +43,9 @@ gradlePlugin {
             id = "itemnote.android.common"
             implementationClass = "AndroidCommonConventionPlugin"
         }
+        register("androidTestConventionPlugin") {
+            id = "itemnote.android.test"
+            implementationClass = "AndroidTestConventionPlugin"
+        }
     }
 }
