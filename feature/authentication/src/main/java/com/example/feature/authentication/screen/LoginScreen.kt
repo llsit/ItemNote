@@ -88,7 +88,11 @@ fun LoginScreen(
     }
     Scaffold(
         topBar = {
-            ToolbarScreen(title = stringResource(id = R.string.login_title), false)
+            ToolbarScreen(
+                title = stringResource(id = R.string.login_title),
+                isBack = false,
+                isMenu = false
+            )
         }
     ) { innerPadding ->
         LoginSection(

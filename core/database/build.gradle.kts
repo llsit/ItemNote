@@ -7,19 +7,13 @@ plugins {
 
 android {
     namespace = "com.example.core.database"
+}
 
-    defaultConfig {
-        // The schemas directory contains a schema file for each version of the Room database.
-        // This is required to enable Room auto migrations.
-        // See https://developer.android.com/reference/kotlin/androidx/room/AutoMigration.
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
-    }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
-
     // core
     implementation(projects.core.model)
 

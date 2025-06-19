@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.hilt.plugin)
-    alias(libs.plugins.google.service)
     alias(libs.plugins.compose.compiler)
 
     id("itemnote.android.application.compose")
     id("itemnote.android.application")
     id("itemnote.android.hilt")
+
+    alias(libs.plugins.google.service)
 }
 
 android {
@@ -64,7 +65,6 @@ android {
 
 dependencies {
     // core
-    implementation(projects.core.design)
     implementation(projects.core.model)
     implementation(projects.core.design)
     implementation(projects.core.data)

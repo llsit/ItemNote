@@ -23,6 +23,7 @@ import com.example.design.theme.ItemNoteTheme
 fun ToolbarScreen(
     title: String,
     isBack: Boolean,
+    isMenu: Boolean = true,
     onManuClick: () -> Unit = {},
     onBackClick: () -> Unit = {}
 ) {
@@ -43,7 +44,7 @@ fun ToolbarScreen(
                 IconButton(onClick = { onBackClick() }) {
                     Icon(Icons.Filled.ArrowBack, "backIcon")
                 }
-            } else {
+            } else if (isMenu) {
                 IconButton(onClick = {
                     onManuClick()
                 }) {
